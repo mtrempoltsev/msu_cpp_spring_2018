@@ -13,7 +13,7 @@ namespace Limits
     constexpr uint32_t min_value = -Limits::max_value;
 }
 
-// Times class
+// Timer class
 class Timer
 {
 public:
