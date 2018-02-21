@@ -49,7 +49,7 @@ void
 sum_row(int **arr)
 {
     Timer t;
-    int sum = 0;
+    volatile int sum = 0;
     for (int i = 0; i < SIZE; ++i) {
         for (int j = 0; j < SIZE; ++j) {
             sum += arr[i][j];
@@ -61,7 +61,7 @@ void
 sum_col(int **arr)
 {
     Timer t;
-    int sum = 0;
+    volatile int sum = 0;
     for (int i = 0; i < SIZE; ++i) {
         for (int j = 0; j < SIZE; ++j) {
             sum += arr[j][i];
