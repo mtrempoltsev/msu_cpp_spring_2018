@@ -29,7 +29,7 @@ void sum_row(int **arr, size_t n);
 void sum_col(int **arr, size_t n);
 
 int
-main()
+main(void)
 {
     int **arr = new int*[SIZE];
     arr[0] = new int[SIZE * SIZE];
