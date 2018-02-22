@@ -59,18 +59,18 @@ int main()
 {
     // Allocates memory
     int** arr = new int*[opt::size];
-	for(int i = 0; i < opt::size; i++)
+    for(int i = 0; i < opt::size; i++)
     {
         arr[i] = new int[opt::size];
-	}
+    }
 
     // Fill the array
-	for(int i = 0; i < opt::size; i++)
+    for(int i = 0; i < opt::size; i++)
     {
-		for(int j = 0; j < opt::size; j++)
+	for(int j = 0; j < opt::size; j++)
         {
             arr[i][j] = 0;
-		}
+	}
     }
 
     // Show benchmark results
