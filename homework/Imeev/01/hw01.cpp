@@ -53,8 +53,8 @@ sum_row(int **arr, size_t n)
 {
     Timer t;
     volatile int sum = 0;
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
+    for (size_t i = 0; i < n; ++i) {
+        for (size_t j = 0; j < n; ++j) {
             sum += arr[i][j];
         }
     }
@@ -65,8 +65,8 @@ sum_col(int **arr, size_t n)
 {
     Timer t;
     volatile int sum = 0;
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
+    for (size_t i = 0; i < n; ++i) {
+        for (size_t j = 0; j < n; ++j) {
             sum += arr[j][i];
         }
     }
