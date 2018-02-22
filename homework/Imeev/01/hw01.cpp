@@ -25,8 +25,8 @@ private:
     const std::chrono::high_resolution_clock::time_point start_;
 };
 
-void sum_row(int **arr);
-void sum_col(int **arr);
+void sum_row(int **arr, size_t n);
+void sum_col(int **arr, size_t n);
 
 int
 main()
@@ -35,35 +35,38 @@ main()
     arr[0] = new int[SIZE * SIZE];
     for (int i = 1; i < SIZE; ++i) {
         arr[i] = arr[i - 1] + SIZE;
+        for (int j = 0; j < SIZE; ++j) {
+            arr[i][j] = 1;
+        }
     }
     std::cout << "By rows:" << std::endl;
-    sum_row(arr);
+    sum_row(arr, SIZE);
     std::cout << "By cols:" << std::endl;
-    sum_col(arr);
+    sum_col(arr, SIZE);
     delete[] arr[0];
     delete[] arr;
     return 0;
 }
 
 void
-sum_row(int **arr)
+sum_row(int **arr, size_t n)
 {
     Timer t;
     volatile int sum = 0;
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j) {
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
             sum += arr[i][j];
         }
     }
 }
 
 void
-sum_col(int **arr)
+sum_col(int **arr, size_t n)
 {
     Timer t;
     volatile int sum = 0;
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j) {
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
             sum += arr[j][i];
         }
     }
