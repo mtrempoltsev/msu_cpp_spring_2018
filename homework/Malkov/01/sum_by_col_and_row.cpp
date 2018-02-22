@@ -4,9 +4,9 @@
 
 namespace opt
 {
-    //size of matrix
+    // Size of matrix
     constexpr size_t size = 10000;
-    //number of iterations
+    // Number of iterations
     constexpr size_t numb_of_iter = 10;
 }
 
@@ -64,7 +64,7 @@ int main()
         arr[i] = new int[opt::size];
 	}
 
-    //Fill the array
+    // Fill the array
 	for(int i = 0; i < opt::size; i++)
     {
 		for(int j = 0; j < opt::size; j++)
@@ -73,7 +73,7 @@ int main()
 		}
     }
 
-    //Show benchmark results
+    // Show benchmark results
     for(int i = 0; i < opt::numb_of_iter; i++)
     {
         std::cout << "Time for sum by col: ";
@@ -83,7 +83,7 @@ int main()
         std::cout << std::endl;
     }
 
-    //Release the memory area
+    // Release the memory area
     for(int i = 0; i < opt::size; i++)
     {
         delete[] arr[i];
