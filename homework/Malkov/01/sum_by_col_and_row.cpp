@@ -67,7 +67,7 @@ int main()
     for(int i = 0; i < opt::size; i++)
     {
 	    for(int j = 0; j < opt::size; j++)
-        {
+	    {
             arr[i][j] = 0;
 	    }
     }
