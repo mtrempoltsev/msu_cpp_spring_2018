@@ -68,7 +68,7 @@ int main()
     {
 	    for(int j = 0; j < opt::size; j++)
 	    {
-            arr[i][j] = 0;
+            	arr[i][j] = 0;
 	    }
     }
 
