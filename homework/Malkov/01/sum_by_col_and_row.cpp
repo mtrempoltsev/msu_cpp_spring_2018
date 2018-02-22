@@ -22,7 +22,6 @@ public:
     {
         const auto finish = std::chrono::high_resolution_clock::now();
         std::cout << std::chrono::duration_cast<std::chrono::microseconds>(finish - start_).count() << " us.";
-
     }
 
 private:
@@ -67,10 +66,10 @@ int main()
     // Fill the array
     for(int i = 0; i < opt::size; i++)
     {
-	for(int j = 0; j < opt::size; j++)
+	    for(int j = 0; j < opt::size; j++)
         {
             arr[i][j] = 0;
-	}
+	    }
     }
 
     // Show benchmark results
