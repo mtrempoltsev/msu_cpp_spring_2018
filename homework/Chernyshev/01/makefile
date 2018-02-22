@@ -6,7 +6,6 @@ CPPCOMPILE = $(CPPC) $^ $(CPPFLAGS) -o $@
 %PHONY: all clean
 
 all : sum_by_rows sum_by_cols
-	@echo Compiled
 
 sum_by_rows : sum_by_rows.cpp
 	$(CPPCOMPILE)
