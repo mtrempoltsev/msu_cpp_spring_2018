@@ -28,16 +28,12 @@ int main()
 			a[i][j] = i;
 	}
 	//sum by rows
-	int num_attempts = 10;
 
 	Timer* b = new Timer;
-	for (int k = 0; k < num_attempts; k++)
-	{
-		volatile int sum = 0;
-		for (int i = 0; i < 10000; i++)
-			for (int j = 0; j < 10000; j++)
-				sum += a[i][j];
-	}
+	volatile int sum = 0;
+	for (int i = 0; i < 10000; i++)
+		for (int j = 0; j < 10000; j++)
+			sum += a[i][j];
 	delete b;
 
 	for (int i = 0; i < 10000; i++)
