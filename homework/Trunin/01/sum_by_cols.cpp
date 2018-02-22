@@ -21,6 +21,17 @@ private:
     const std::chrono::high_resolution_clock::time_point start_;
 };
 
+void sum_func(int** tdarray, int size_x, int size_y){
+	Timer t;
+	int sum = 0;
+	for(int i = 0; i < size_y; i++){
+		for(int j = 0; j < size_x; j++){
+			sum += tdarray[j][i];
+		}
+	}
+	cout << sum << endl;
+}
+
 int main(){
 	int size_y = 10000;
 	int size_x = 10000;
@@ -37,14 +48,12 @@ int main(){
 		}
 	}
 	
-	int sum = 0;
-	Timer* t = new Timer();
+	sum_func(tdarray, size_x, size_y);
+	
 	for(int i = 0; i < size_y; i++){
-		for(int j = 0; j < size_x; j++){
-			sum += tdarray[j][i];
-		}
+		delete[] tdarray[i];
 	}
-	delete t;
-	cout << sum << endl;
+	
+	delete[] tdarray;
 
 }
