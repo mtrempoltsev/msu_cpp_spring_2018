@@ -28,7 +28,7 @@ private:
     const std::chrono::high_resolution_clock::time_point start_;
 };
 
-int sum_by_col(int** arr, size_t size_col, size_t size_row)
+void sum_by_col(int** arr, size_t size_col, size_t size_row)
 {
     Timer t;
     volatile int sum = 0;
@@ -41,13 +41,13 @@ int sum_by_col(int** arr, size_t size_col, size_t size_row)
     }
 }
 
-int sum_by_row(int** arr, size_t size_col, size_t size_row)
+void sum_by_row(int** arr, size_t size_col, size_t size_row)
 {
     Timer t;
     volatile int sum = 0;
-    for(size_t i = 0; i < size_col; i++)
+    for(size_t i = 0; i < size_row; i++)
     {
-        for(size_t j = 0; j < size_row; j++)
+        for(size_t j = 0; j < size_col; j++)
         {
             sum += arr[i][j];
         }
