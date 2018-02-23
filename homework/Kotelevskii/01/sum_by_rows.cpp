@@ -19,23 +19,23 @@ private:
 };
 int main()
 {
-	const int size_t = 10000;
-	int**a = new int*[size_t];
-	for (int i = 0; i < size_t; i++)
+	const int SIZE = 10000;
+	int**a = new int*[SIZE];
+	for (int i = 0; i < SIZE; i++)
 	{
-		a[i] = new int[size_t];
-		for (int j = 0; j < size_t; j++)
+		a[i] = new int[SIZE];
+		for (int j = 0; j < SIZE; j++)
 			a[i][j] = i;
 	}
 
 	{
 		Timer t;
 		volatile int sum = 0;
-		for (int i = 0; i < size_t; i++)
-			for (int j = 0; j < size_t; j++)
+		for (int i = 0; i < SIZE; i++)
+			for (int j = 0; j < SIZE; j++)
 				sum += a[i][j];
 	}
-	for (int i = 0; i < size_t; i++)
+	for (int i = 0; i < SIZE; i++)
 		delete[] a[i];
 	delete[]a;
 }
