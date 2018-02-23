@@ -1,6 +1,7 @@
 #include <chrono>
 #include <iostream>
-#define SIZE 10000
+
+static const int SIZE = 10000;
 
 class Timer
 {
@@ -23,7 +24,7 @@ private:
 
 int main()
 {
-    volatile static int a[SIZE][SIZE];
+    volatile auto a = new int [SIZE][SIZE];
     volatile long int sum = 0;
 
     for(int i = 0; i < SIZE; ++i) {
@@ -32,13 +33,13 @@ int main()
         }
     }
     std::cout<<"rows 10000:";
-    auto t = new Timer();
-    for(int i = 0; i < SIZE; ++i) {
-        for(int j = 0; j < SIZE; ++j) {
-            sum += a[i][j];
+    {
+        Timer t;
+        for(int i = 0; i < SIZE; ++i) {
+            for(int j = 0; j < SIZE; ++j) {
+                sum += a[i][j];
+            }
         }
     }
-    delete t;
-
     return 0;
 }
