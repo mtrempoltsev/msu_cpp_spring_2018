@@ -28,6 +28,7 @@ int main() {
 				count += x[i][j];
 			}
 		}
+		std::cout << "Po strokam : ";
 	}
 	{
 		Timer t;
@@ -37,6 +38,7 @@ int main() {
 				count += x[j][i];
 			}
 		}
+		std::cout << "Po stolbcam : ";
 	}
 	
 	int in;
