@@ -19,7 +19,7 @@ private:
 };
 int main()
 {
-	const int SIZE = 10000;
+	const size_t SIZE = 10000;
 	int**a = new int*[SIZE];
 	for (int i = 0; i < SIZE; i++)
 	{
