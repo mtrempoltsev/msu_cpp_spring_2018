@@ -26,5 +26,7 @@ make clean
 
 ## Results
 Running time for summation by rows: 0,25498s
+
 Running time for summation by columns: 0,75137s
+
 As we can see, the first algorithm is 3 times faster than the second one
