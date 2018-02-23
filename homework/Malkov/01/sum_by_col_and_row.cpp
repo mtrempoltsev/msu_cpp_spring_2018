@@ -28,26 +28,26 @@ private:
     const std::chrono::high_resolution_clock::time_point start_;
 };
 
-int sum_by_col(int** arr)
+int sum_by_col(int** arr, size_t size_col, size_t size_row)
 {
     Timer t;
     volatile int sum = 0;
-    for(int i = 0; i < opt::size; i++)
+    for(size_t i = 0; i < size_row; i++)
     {
-        for(int j = 0; j < opt::size; j++)
+        for(size_t j = 0; j < size_col; j++)
         {
             sum += arr[j][i];
         }
     }
 }
 
-int sum_by_row(int** arr)
+int sum_by_row(int** arr, size_t size_col, size_t size_row)
 {
     Timer t;
     volatile int sum = 0;
-    for(int i = 0; i < opt::size; i++)
+    for(size_t i = 0; i < size_col; i++)
     {
-        for(int j = 0; j < opt::size; j++)
+        for(size_t j = 0; j < size_row; j++)
         {
             sum += arr[i][j];
         }
@@ -58,32 +58,32 @@ int main()
 {
     // Allocates memory
     int** arr = new int*[opt::size];
-    for(int i = 0; i < opt::size; i++)
+    for(size_t i = 0; i < opt::size; i++)
     {
         arr[i] = new int[opt::size];
     }
 
     // Fill the array
-    for(int i = 0; i < opt::size; i++)
+    for(size_t i = 0; i < opt::size; i++)
     {
-        for(int j = 0; j < opt::size; j++)
+        for(size_t j = 0; j < opt::size; j++)
         {
             arr[i][j] = 0;
         }
     }
 
     // Show benchmark results
-    for(int i = 0; i < opt::numb_of_iter; i++)
+    for(size_t i = 0; i < opt::numb_of_iter; i++)
     {
         std::cout << "Time for sum by col: ";
-        sum_by_col(arr);
+        sum_by_col(arr, opt::size, opt::size);
         std::cout << " and time for sum by row: ";
-        sum_by_row(arr);
+        sum_by_row(arr, opt::size, opt::size);
         std::cout << std::endl;
     }
 
     // Release the memory area
-    for(int i = 0; i < opt::size; i++)
+    for(size_t i = 0; i < opt::size; i++)
     {
         delete[] arr[i];
     }
