@@ -1,7 +1,6 @@
 #include <chrono>
 #include <iostream>
 
-using std::endl;
 
 class Timer
 {
