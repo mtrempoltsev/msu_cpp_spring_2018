@@ -30,6 +30,6 @@ int main()
     Timer t;
     for (int i = 0; i < size; ++i)
         for (int j = 0; j < size; ++j)
-            s += a[j][i];
+            s += a[i][j];
     return 0;
 }
