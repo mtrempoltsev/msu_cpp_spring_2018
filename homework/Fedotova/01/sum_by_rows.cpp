@@ -36,11 +36,13 @@ int main() {
 			a[i][j] = rand();
 	}
 
-	Timer t;
 	int sum = 0;
-	for (int i = 0; i < SIZE_r; i++)
-		for (int j = 0; j < SIZE_c; j++)
-			sum += a[i][j];
+	{
+		Timer t;
+		for (int i = 0; i < SIZE_r; i++)
+			for (int j = 0; j < SIZE_c; j++)
+				sum += a[i][j];
+	}
 	cout << sum << endl;
 
 	for (int i = 0; i < SIZE_r; i++)
