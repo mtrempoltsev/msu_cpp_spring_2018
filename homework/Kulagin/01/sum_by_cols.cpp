@@ -1,7 +1,7 @@
 #include <iostream>
 #include <chrono>
 
-const int N = 10000;
+const size_t N = 10000;
 const int MAX_ITERATIONS = 10;
 
 using namespace std;
