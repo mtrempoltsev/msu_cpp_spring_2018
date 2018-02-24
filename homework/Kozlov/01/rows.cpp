@@ -27,10 +27,11 @@ int main()
     a = (int**)malloc(sizeof(int*)*size);
     for (size_t i = 0; i < size; ++i)
         a[i] = (int*)malloc(sizeof(int)*size);
-    Timer t;
+    Timer *t = new Timer();
     for (size_t i = 0; i < size; ++i)
         for (size_t j = 0; j < size; ++j)
             s += a[i][j];
+    delete t;
     for (size_t i = 0; i < size; ++i)
         free(a[i]);
     free(a);
