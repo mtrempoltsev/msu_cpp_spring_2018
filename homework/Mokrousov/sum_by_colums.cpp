@@ -21,21 +21,21 @@ private:
 
 int main()
 {
-	Timer t;
+	
 	const int Msize = 10000;
 	int sum = 0;
 	int ** m = new int*[Msize];
 	for (int i = 0; i < Msize; i++) m[i] = new int[Msize];
-	int mas[Msize][Msize];
-
-	for (int i = 0; i < Msize; i++)
 	{
-		for (int j = 0; j < Msize; j++)
+		Timer t;
+		for (int i = 0; i < Msize; i++)
 		{
-			sum+= m[j][i];
+			for (int j = 0; j < Msize; j++)
+			{
+				sum += m[j][i];
+			}
 		}
+		std::cout << sum << "        ";
 	}
-
-	std::cout << sum << "        ";
 	return 0;
 }
