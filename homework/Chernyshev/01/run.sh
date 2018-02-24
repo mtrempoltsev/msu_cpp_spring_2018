@@ -1,27 +1,11 @@
 #!/bin/bash
 
-# Number of tests for warming up and testing
-num_tests_warm_up=2
-num_tests=5
+# Build project
+make --silent clean
+make --silent
 
-# Start testing for each argument
-for file
-do
-    sum=0
+# Run testing
+./run_tests.sh sum_by_rows sum_by_cols
 
-    # Warming up
-    for i in {1..num_tests_warm_up}
-    do
-        ./"$file" &> /dev/null
-    done
-
-    # Testing
-    for i in {1..num_tests}
-    do
-        cur=$( ./"$file" 2> /dev/null )
-        sum=$(( sum + cur ))
-    done
-
-    # Print results
-    echo "Time for $file: "$(( sum / num_tests ))"ms"
-done
+# Delete compiled programms
+make --silent clean

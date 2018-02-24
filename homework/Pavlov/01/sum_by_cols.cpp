@@ -1,7 +1,6 @@
 #include <chrono>
 #include <iostream>
-
-static const int SIZE = 10000;
+#define SIZE 10000
 
 class Timer
 {
@@ -24,7 +23,9 @@ private:
 
 int main()
 {
-    volatile auto a = new int [SIZE][SIZE];
+    int** a = new int*[SIZE];
+    for(int i = 0; i < SIZE; ++i)
+        a[i] = new int[SIZE];
     volatile long int sum = 0;
 
     for(int i = 0; i < SIZE; ++i) {
@@ -41,5 +42,10 @@ int main()
             }
         }
     }
+    for(int i = 0; i < SIZE; ++i) {
+        delete [] a[i];
+    }
+    delete [] a;
+    
     return 0;
 }
