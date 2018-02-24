@@ -1,7 +1,6 @@
 #include <chrono>
 #include <iostream>
 
-using std::endl;
 
 class Timer
 {
@@ -26,11 +25,11 @@ int main(){
 	const size_t size = 10000;
 	int **matrix = new int *[size];
 
-	for(int i = 0; i < size; ++i){
+	for(size_t i = 0; i < size; ++i){
 		matrix[i] = new int [size];
 	}
-	for(int i = 0; i < size; ++i){
-		for(int j = 0; j < size; ++j){
+	for(size_t i = 0; i < size; ++i){
+		for(size_t j = 0; j < size; ++j){
 			matrix[i][j] = i + j;
 		}
 	}
@@ -38,14 +37,14 @@ int main(){
 	volatile long int sum = 0;
 	{
 		Timer t_rows;
-		for(int i = 0; i < size; ++i){
-			for(int j = 0; j < size; ++j){
+		for(size_t i = 0; i < size; ++i){
+			for(size_t j = 0; j < size; ++j){
 				sum += matrix[i][j];
 			}
 		}
 	}
 
-	for(int i = 0; i < size; ++i){
+	for(size_t i = 0; i < size; ++i){
 		delete[] matrix[i];
 	}
 	delete[] matrix;

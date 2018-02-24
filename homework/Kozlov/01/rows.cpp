@@ -25,11 +25,15 @@ int main()
     volatile int s;
     int **a;
     a = (int**)malloc(sizeof(int*)*size);
-    for (int i = 0; i < size; ++i)
+    for (size_t i = 0; i < size; ++i)
         a[i] = (int*)malloc(sizeof(int)*size);
-    Timer t;
-    for (int i = 0; i < size; ++i)
-        for (int j = 0; j < size; ++j)
+    Timer *t = new Timer();
+    for (size_t i = 0; i < size; ++i)
+        for (size_t j = 0; j < size; ++j)
             s += a[i][j];
+    delete t;
+    for (size_t i = 0; i < size; ++i)
+        free(a[i]);
+    free(a);
     return 0;
 }
