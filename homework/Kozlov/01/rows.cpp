@@ -21,13 +21,15 @@ private:
 
 int main()
 {
+    const size_t size = 10000;
     volatile int s;
-    int *a[10000];
-    for (int i = 0; i < 10000; ++i)
-        a[i] = (int*)malloc(sizeof(int)*10000);
+    int **a;
+    a = (int**)malloc(sizeof(int*)*size);
+    for (int i = 0; i < size; ++i)
+        a[i] = (int*)malloc(sizeof(int)*size);
     Timer t;
-    for (int i = 0; i < 10000; ++i)
-        for (int j = 0; j < 10000; ++j)
-            s += a[i][j];
+    for (int i = 0; i < size; ++i)
+        for (int j = 0; j < size; ++j)
+            s += a[j][i];
     return 0;
 }
