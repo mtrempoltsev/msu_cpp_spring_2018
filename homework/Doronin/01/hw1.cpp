@@ -124,9 +124,10 @@ int main(){
     free(vector_2d);
     
     cout<<endl;
-    int* vector = alloc_vector(N);
+    int* vector;
+    vector = alloc_vector(N);
     count_vector(vector, N);
-    free(vector);
+    delete[] vector;
 
 
     return 0;
