@@ -2,7 +2,7 @@
 #include <chrono>
 
 const int N = 10000;
-const int MAX_ITERATIONS = 1;
+const int MAX_ITERATIONS = 10;
 
 using namespace std;
 
