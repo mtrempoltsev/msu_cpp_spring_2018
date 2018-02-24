@@ -2,22 +2,25 @@
 
 int main()
 {
-    volatile int **data;
-    data = new volatile int*[10000];
-    for (int i = 0; i < 10000; i++)
-	data[i] = new volatile int[10000];
+    size_t SIZE = 10000;
 
-    for (int i = 0; i < 10000; i++)
-	for (int j = 0; j < 10000; j++)
-	    data[i][j] = 10;
+    int **data = new int*[SIZE];
+    for (int i = 0; i < SIZE; i++)
+	data[i] = new int[SIZE];
+
+    for (int i = 0; i < SIZE; i++)
+	for (int j = 0; j < SIZE; j++)
+	    data[i][j] = 1;
 
     volatile int sum = 0;
     
     Timer t;
-    for (int i = 0; i < 10000; i++)
-	for (int j = 0; j < 10000; j++)
+    for (int i = 0; i < SIZE; i++)
+	for (int j = 0; j < SIZE; j++)
 	    sum += data[j][i];
 
+    for (int i = 0; i < SIZE; i++)
+	delete data[i];
     delete[] data;
 
     return 0;
