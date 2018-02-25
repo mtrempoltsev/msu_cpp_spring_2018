@@ -89,12 +89,17 @@ int main()
     const size_t mat_size = 10000;
     const int iter_max = 2;
     warm_up();
+    try
     {
         My_mat g(mat_size, iter_max);
         std::cout<<"\nslow_sum(): spent time = ";
         g.slow_sum();
         std::cout<<"\nquick_sum(): spent time = ";
         g.quick_sum();
+    }
+    catch(my_exception ups) {
+            std::cout<<ups.get_report();
+            return ups.get_code();
     }
     std::cout<<"\n";
     return 0;

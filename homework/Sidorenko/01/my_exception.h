@@ -17,4 +17,8 @@ public:
     {
         return code;
     }
+    const std::string &get_report() 
+    {
+        return report;
+    }
 };
