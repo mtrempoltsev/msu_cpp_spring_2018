@@ -5,6 +5,26 @@
 
 using namespace std;
 
+
+class Timer
+{
+public:
+    Timer()
+    : start_(std::chrono::high_resolution_clock::now())
+    {
+    }
+    
+    ~Timer()
+    {
+        const auto finish = std::chrono::high_resolution_clock::now();
+        std::cout << std::chrono::duration_cast<std::chrono::microseconds>(finish - start_).count() << " us" << std::endl;
+    }
+    
+private:
+    const std::chrono::high_resolution_clock::time_point start_;
+};
+
+
 int main() {
     srand(time(0));
     int sum = 0;
@@ -20,14 +40,16 @@ int main() {
             array[i][j] = rand() % 100;
         }
     }
-    unsigned int start = clock();
+    Timer t;
     for(int i = 0; i < size; ++i) {
         for(int j = 0; j < size; ++j) {
             sum += array[i][j];
         }
     }
-    unsigned int end = clock();
-    cout << (end - start) / 1000.0 << endl;
+    for (int i = 0; i < size; i++)
+        delete[] array[i];
+    delete[] array;
+    
     return 0;
 }
 
