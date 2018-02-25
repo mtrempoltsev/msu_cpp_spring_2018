@@ -7,25 +7,23 @@
 class My_mat
 {
     int **dat;
-    size_t size;
-    int iter_max;
+    const size_t size;
+    const int iter_max;
 public:
-    My_mat(int _size, int _iter_max)
+    My_mat(int _size, int _iter_max): size(_size), iter_max(_iter_max)
     {
-        size = _size;
-        iter_max = _iter_max;
         
         dat = new int* [size];
         if(dat == nullptr) 
         {
-            throw my_exception(MEMORY_ERROR, "Memory error");
+            throw my_exception(error_codes::mem_err, "Memory error");
         }
         for(size_t i = 0; i<size; i++) 
         {
             dat[i] = new int [size];
             if(dat[i] == nullptr)
             {
-                throw my_exception(MEMORY_ERROR, "Memory error");
+                throw my_exception(error_codes::mem_err, "Memory error");
 
             }
         }
@@ -40,7 +38,7 @@ public:
     }
     ~My_mat()
     {
-        for(size_t i = 0; i<size; i++) delete [] dat[i];
+        for(size_t i = 0; i<size; i++) delete dat[i];
         delete [] dat;
     }
     
