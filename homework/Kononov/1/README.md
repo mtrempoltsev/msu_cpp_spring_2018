@@ -12,7 +12,7 @@ g++ sum1.cpp -o sum1
 
 g++ sum2.cpp -o sum2
 
-./sum1 && sum2
+./sum1 && ./sum2
 
 ### Необходимое ПО
 Компилятор g++
