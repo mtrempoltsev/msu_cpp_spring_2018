@@ -88,7 +88,7 @@ void warm_up()
 int main() 
 {
     const int mat_size = 10000;
-    const int iter_max = 1;
+    const int iter_max = 2;
     warm_up();
     {
         My_mat g(mat_size, iter_max);
