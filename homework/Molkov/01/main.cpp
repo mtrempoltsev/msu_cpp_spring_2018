@@ -37,6 +37,7 @@ int main() {
 	// sum by rows
 	long long res = 0;
 	{
+		std::cout << "time - sum by rows: " << "\n";
 		Timer time;
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < col; j++) {
@@ -49,6 +50,7 @@ int main() {
 	// sum by col
 	{
 		res = 0;
+		std::cout << "time - sum by columns: " << "\n";
 		Timer time;
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < col; j++) {
@@ -63,6 +65,6 @@ int main() {
 	}
 	free(arr);
 
-	system("pause");
+	//system("pause");
 	return 0;
 }
