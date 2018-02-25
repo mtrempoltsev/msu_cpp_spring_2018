@@ -34,8 +34,8 @@ int** init_matrix(int n, int m)
 
 int main()
 {
-        const int ROW_NUM = 10000; // Кол-во строк
-        const int COLUMN_NUM = 10000; // Кол-во столбцов
+        const size_t ROW_NUM = 10001; // Кол-во строк
+        const size_t COLUMN_NUM = 10000; // Кол-во столбцов
         long long sum = 0;
 
         int **matrix = init_matrix(ROW_NUM, COLUMN_NUM);
