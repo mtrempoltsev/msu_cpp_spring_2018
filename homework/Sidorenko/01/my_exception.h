@@ -1,16 +1,14 @@
 #include<string>
-#define MEMORY_ERROR -111
+
+const int MEMORY_ERROR = -112;
 
 class my_exception 
 {
-private:
     int code;
     std::string report;
 public:
-    my_exception(int _code, std::string _report)
+    my_exception(int _code, const std::string &_report): code(_code), report(_report)
     {
-        code = _code;
-        report = _report;
     }
     int get_code()
     {
