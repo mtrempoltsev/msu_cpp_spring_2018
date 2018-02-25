@@ -19,14 +19,17 @@ private:
 };
 
 int main() {
+    const uint64_t numberOfStarts = 500; 
+    Timer timer(numberOfStarts);
+
     const uint64_t numberOfRows = 500;
     const uint64_t numberOfColumns = 500;
-    volatile int* dataA = new int[numberOfRows * numberOfColumns];
-    volatile int* dataB = new int[numberOfRows * numberOfColumns];
-    volatile int* dataC = new int[numberOfRows * numberOfColumns];
-    volatile int** a = new volatile int*[numberOfRows];
-    volatile int** b = new volatile int*[numberOfRows];
-    volatile int** c = new volatile int*[numberOfRows];
+    int* dataA = new int[numberOfRows * numberOfColumns];
+    int* dataB = new int[numberOfRows * numberOfColumns];
+    int* dataC = new int[numberOfRows * numberOfColumns];
+    int** a = new int*[numberOfRows];
+    int** b = new int*[numberOfRows];
+    int** c = new int*[numberOfRows];
     for (auto i = 0; i < numberOfRows; ++i) {
         a[i] = &dataA[i * numberOfColumns];
         b[i] = &dataB[i * numberOfColumns];
@@ -37,8 +40,6 @@ int main() {
         }
     }
 
-    const uint64_t numberOfStarts = 500; 
-    Timer* timer = new Timer(numberOfStarts);
     for (auto t = 0; t < numberOfStarts; ++t) {
         for (auto i = 0; i < numberOfRows; ++i) {
             for (auto j = 0; j < numberOfColumns; ++j) {
@@ -46,7 +47,6 @@ int main() {
             }
         }
     }
-    delete timer;
     delete a;
     delete b;
     delete c;
