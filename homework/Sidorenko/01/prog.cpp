@@ -1,67 +1,54 @@
 #include<iostream>
-#include<chrono>
 #include<cstdlib>
-
-class Timer
-{
-public:
-    Timer()
-        : start_(std::chrono::high_resolution_clock::now())
-    {
-    }
-
-    ~Timer()
-    {
-        const auto finish = std::chrono::high_resolution_clock::now();
-        std::cout << std::chrono::duration_cast<std::chrono::microseconds>(finish - start_).count() << " us" << std::endl;
-    }
-
-private:
-    const std::chrono::high_resolution_clock::time_point start_;
-};
-
+#include"Timer.h"
+#include"my_exception.h"
+#include<new>
 
 class My_mat
 {
 private:
     int **dat;
     size_t size;
+    int iter_max;
 public:
-    My_mat(int _size)
+    My_mat(int _size, int _iter_max)
     {
         size = _size;
-        dat = (int**)malloc(sizeof(int*)*size);
+        iter_max = _iter_max;
+        
+        dat = new int* [size];
         if(dat == nullptr) 
         {
-            throw "Memory error";
+            throw my_exception(MEMORY_ERROR, "Memory error");
         }
         for(size_t i = 0; i<size; i++) 
         {
-            dat[i] = (int*)malloc(sizeof(int)*size);
+            dat[i] = new int [size];
             if(dat[i] == nullptr)
             {
-                throw "Memory error";
+                throw my_exception(MEMORY_ERROR, "Memory error");
+
             }
         }
         for(size_t i = 0; i<size; i++) 
         {
             for(size_t j = 0; j<size; j++) 
             {
-                dat[i][j] = 0;
+                dat[i][j] = 1;
             }
         }
         
     }
     ~My_mat()
     {
-        for(size_t i = 0; i<size; i++) free(dat[i]);
-        free(dat);
+        for(size_t i = 0; i<size; i++) delete [] dat[i];
+        delete [] dat;
     }
     
     void quick_sum()
     {
         Timer t;
-        for(int iter = 0; iter < 1000; iter++) {
+        for(int iter = 0; iter < iter_max; iter++) {
             volatile int sum = 0;
             for(size_t i = 0; i<size; i++)
             {
@@ -77,7 +64,7 @@ public:
     {
         
         Timer t;
-        for(int iter = 0; iter < 1000; iter++) {
+        for(int iter = 0; iter < iter_max; iter++) {
             volatile int sum = 0;
             for(size_t i = 0; i<size; i++)
             {
@@ -93,7 +80,8 @@ public:
 
 void warm_up() 
 {
-    for(int i = 0; i<1000*1000; i++)
+    const int warming_iters = 1000*1000;
+    for(int i = 0; i<warming_iters; i++)
     {
         volatile int a = i/3;
     }
@@ -101,14 +89,17 @@ void warm_up()
 
 int main() 
 {
+    const int mat_size = 10000;
+    const int iter_max = 1;
     warm_up();
-    My_mat g(1000);
-    std::cout<<"\nslow_sum(): spent time = ";
-    g.slow_sum();
-    std::cout<<"\nquick_sum(): spent_time = ";
-    g.quick_sum();
+    {
+        My_mat g(mat_size, iter_max);
+        std::cout<<"\nslow_sum(): spent time = ";
+        g.slow_sum();
+        std::cout<<"\nquick_sum(): spent time = ";
+        g.quick_sum();
+    }
     std::cout<<"\n";
-    
     return 0;
 }
 
