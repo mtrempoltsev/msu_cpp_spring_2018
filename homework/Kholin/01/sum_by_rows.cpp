@@ -18,9 +18,22 @@ private:
     const uint64_t numberOfStarts_;
 };
 
+int sum(int** a, const uint64_t numberOfStarts, const uint64_t numberOfRows, const uint64_t numberOfColumns) {
+    Timer timer(numberOfStarts);
+    int answer;
+    for (auto t = 0; t < numberOfStarts; ++t) {
+        answer = 0;
+        for (auto j = 0; j < numberOfColumns; ++j) {
+            for (auto i = 0; i < numberOfRows; ++i) {
+                answer += a[i][j];
+            }
+        }
+    }
+    return answer;
+}
+
 int main() {
     const uint64_t numberOfStarts = 500; 
-    Timer timer(numberOfStarts);
 
     const uint64_t numberOfRows = 500;
     const uint64_t numberOfColumns = 500;
@@ -33,18 +46,10 @@ int main() {
         }
     }
 
-    int answer;
-    for (auto t = 0; t < numberOfStarts; ++t) {
-        answer = 0;
-        for (auto j = 0; j < numberOfColumns; ++j) {
-            for (auto i = 0; i < numberOfRows; ++i) {
-                answer += a[i][j];
-            }
-        }
-    }
+    std::cout << sum(a, numberOfStarts, numberOfRows, numberOfColumns) << std::endl;
+
     delete a;
     delete data;
-    std::cout << answer << std::endl;
 
     return 0;
 }
