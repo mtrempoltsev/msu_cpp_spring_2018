@@ -21,8 +21,16 @@ private:
 int main() {
     const uint64_t numberOfRows = 500;
     const uint64_t numberOfColumns = 500;
-    volatile int a[numberOfRows][numberOfColumns], b[numberOfRows][numberOfColumns], c[numberOfRows][numberOfColumns];
+    volatile int* dataA = new int[numberOfRows * numberOfColumns];
+    volatile int* dataB = new int[numberOfRows * numberOfColumns];
+    volatile int* dataC = new int[numberOfRows * numberOfColumns];
+    volatile int** a = new volatile int*[numberOfRows];
+    volatile int** b = new volatile int*[numberOfRows];
+    volatile int** c = new volatile int*[numberOfRows];
     for (auto i = 0; i < numberOfRows; ++i) {
+        a[i] = &dataA[i * numberOfColumns];
+        b[i] = &dataB[i * numberOfColumns];
+        c[i] = &dataC[i * numberOfColumns];
         for (auto j = 0; j < numberOfColumns; ++j) {
             a[i][j] = i * j;
             b[i][j] = i + j;
@@ -39,4 +47,12 @@ int main() {
         }
     }
     delete timer;
+    delete a;
+    delete b;
+    delete c;
+    delete dataA;
+    delete dataB;
+    delete dataC;
+
+    return 0;
 }
