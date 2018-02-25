@@ -1,7 +1,7 @@
 #include <chrono>
 #include <iostream>
 #include <chrono>
-#include<ctime>
+#include <ctime>
 
 using namespace std;
 
@@ -31,25 +31,27 @@ int main() {
     const unsigned int size = 10000;
     int **array;
     array = new int * [size];
-    for(int i = 0; i < size; ++i){
+    for(unsigned int i = 0; i < size; ++i){
         array[i] = new int[size];
     }
     
-    for(int i = 0; i < size; ++i) {
-        for(int j = 0; j < size; ++j) {
-            array[i][j] = rand() % 100;
+    for(unsigned int i = 0; i < size; ++i) {
+        for(unsigned int j = 0; j < size; ++j) {
+            array[i][j] = rand();
         }
     }
-    Timer t;
-    for(int i = 0; i < size; ++i) {
-        for(int j = 0; j < size; ++j) {
-            sum += array[i][j];
+    {
+        Timer t;
+        for(unsigned int i = 0; i < size; ++i) {
+            for(unsigned int j = 0; j < size; ++j) {
+                sum += array[i][j];
+            }
         }
+        
     }
-    for (int i = 0; i < size; i++)
+    for (unsigned int i = 0; i < size; i++)
         delete[] array[i];
     delete[] array;
-    
     return 0;
 }
 

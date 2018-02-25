@@ -18,25 +18,38 @@ private:
     const uint64_t numberOfStarts_;
 };
 
-int main() {
-    const uint64_t numberOfRows = 500;
-    const uint64_t numberOfColumns = 500;
-    volatile int a[numberOfRows][numberOfColumns], b[numberOfRows][numberOfColumns], c[numberOfRows][numberOfColumns];
-    for (auto i = 0; i < numberOfRows; ++i) {
-        for (auto j = 0; j < numberOfColumns; ++j) {
-            a[i][j] = i * j;
-            b[i][j] = i + j;
-        }
-    }
-
-    const uint64_t numberOfStarts = 500; 
-    Timer* timer = new Timer(numberOfStarts);
+int sum(int** a, const uint64_t numberOfStarts, const uint64_t numberOfRows, const uint64_t numberOfColumns) {
+    Timer timer(numberOfStarts);
+    int answer;
     for (auto t = 0; t < numberOfStarts; ++t) {
-        for (auto i = 0; i < numberOfRows; ++i) {
-            for (auto j = 0; j < numberOfColumns; ++j) {
-                c[i][j] = a[i][j] + b[i][j];
+        answer = 0;
+        for (auto j = 0; j < numberOfColumns; ++j) {
+            for (auto i = 0; i < numberOfRows; ++i) {
+                answer += a[i][j];
             }
         }
     }
-    delete timer;
+    return answer;
+}
+
+int main() {
+    const uint64_t numberOfStarts = 500; 
+
+    const uint64_t numberOfRows = 500;
+    const uint64_t numberOfColumns = 500;
+    int* data = new int[numberOfRows * numberOfColumns];
+    int** a = new int*[numberOfRows];
+    for (auto i = 0; i < numberOfRows; ++i) {
+        a[i] = &data[i * numberOfColumns];
+        for (auto j = 0; j < numberOfColumns; ++j) {
+            a[i][j] = i + j;
+        }
+    }
+
+    std::cout << sum(a, numberOfStarts, numberOfRows, numberOfColumns) << std::endl;
+
+    delete a;
+    delete data;
+
+    return 0;
 }
