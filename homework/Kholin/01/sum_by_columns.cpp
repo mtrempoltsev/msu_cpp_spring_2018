@@ -24,35 +24,27 @@ int main() {
 
     const uint64_t numberOfRows = 500;
     const uint64_t numberOfColumns = 500;
-    int* dataA = new int[numberOfRows * numberOfColumns];
-    int* dataB = new int[numberOfRows * numberOfColumns];
-    int* dataC = new int[numberOfRows * numberOfColumns];
+    int* data = new int[numberOfRows * numberOfColumns];
     int** a = new int*[numberOfRows];
-    int** b = new int*[numberOfRows];
-    int** c = new int*[numberOfRows];
     for (auto i = 0; i < numberOfRows; ++i) {
-        a[i] = &dataA[i * numberOfColumns];
-        b[i] = &dataB[i * numberOfColumns];
-        c[i] = &dataC[i * numberOfColumns];
+        a[i] = &data[i * numberOfColumns];
         for (auto j = 0; j < numberOfColumns; ++j) {
-            a[i][j] = i * j;
-            b[i][j] = i + j;
+            a[i][j] = i + j;
         }
     }
 
+    int answer;
     for (auto t = 0; t < numberOfStarts; ++t) {
+        answer = 0;
         for (auto i = 0; i < numberOfRows; ++i) {
             for (auto j = 0; j < numberOfColumns; ++j) {
-                c[i][j] = a[i][j] + b[i][j];
+                answer += a[i][j];
             }
         }
     }
     delete a;
-    delete b;
-    delete c;
-    delete dataA;
-    delete dataB;
-    delete dataC;
+    delete data;
+    std::cout << answer << std::endl;
 
     return 0;
 }
