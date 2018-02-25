@@ -38,7 +38,7 @@ public:
     }
     ~My_mat()
     {
-        for(size_t i = 0; i<size; i++) delete dat[i];
+        for(size_t i = 0; i<size; i++) delete [] dat[i];
         delete [] dat;
     }
     
