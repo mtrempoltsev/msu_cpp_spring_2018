@@ -1,5 +1,6 @@
-#include<iostream>
 #include <chrono>
+#include <iostream>
+
 class Timer
 {
 public:
@@ -17,25 +18,24 @@ public:
 private:
 	const std::chrono::high_resolution_clock::time_point start_;
 };
+
 int main()
 {
-	const std::size_t SIZE = 10000;
-	int**a = new int*[SIZE];
-	for (std::size_t i = 0; i < SIZE; i++)
-	{
-		a[i] = new int[SIZE];
-		for (std::size_t j = 0; j < SIZE; j++)
-			a[i][j] = i;
-	}
 
+	const int Msize = 10000;
+	int sum = 0;
+	int ** m = new int*[Msize];
+	for (int i = 0; i < Msize; i++) m[i] = new int[Msize];
 	{
 		Timer t;
-		volatile int sum = 0;
-		for (std::size_t i = 0; i < SIZE; i++)
-			for (std::size_t j = 0; j < SIZE; j++)
-				sum += a[j][i];
+		for (int i = 0; i < Msize; i++)
+		{
+			for (int j = 0; j < Msize; j++)
+			{
+				sum += m[i][j];
+			}
+		}
+		std::cout << sum << "        ";
 	}
-	for (std::size_t i = 0; i < SIZE; i++)
-		delete[] a[i];
-	delete[]a;
+	return 0;
 }
