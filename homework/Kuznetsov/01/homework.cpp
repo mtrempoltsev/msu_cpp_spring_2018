@@ -21,15 +21,14 @@ private:
 const size_t RANGE = 10000;
 int main() {
 	int **x = new int*[RANGE];
-	int *y = new int[1];
-	for (int i = 0; i < RANGE; i++) {
+	for (size_t i = 0; i < RANGE; i++) {
 		x[i] = new int[RANGE];
 	}
 	{
 		Timer t;
-		int count = 0;
-		for (int i = 0; i < RANGE; i++) {
-			for (int j = 0; j < RANGE; j++) {
+		volatile int count = 0;
+		for (size_t i = 0; i < RANGE; i++) {
+			for (size_t j = 0; j < RANGE; j++) {
 				count += x[i][j];
 			}
 		}
@@ -38,17 +37,18 @@ int main() {
 	{
 		Timer t;
 		volatile int count = 0;
-		for (int i = 0; i < RANGE; i++) {
-			for (int j = 0; j < RANGE; j++) {
+		for (size_t i = 0; i < RANGE; i++) {
+			for (size_t j = 0; j < RANGE; j++) {
 				count += x[j][i];
 			}
 		}
 		std::cout << "Po stolbcam : ";
 	}
 
-	for (int i = 0; i < RANGE; i++) {
+	for (size_t i = 0; i < RANGE; i++) {
 		delete[] x[i];
 	}
 	delete[] x;
+
 	return 0;
 }
