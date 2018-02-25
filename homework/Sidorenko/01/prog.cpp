@@ -6,13 +6,14 @@
 
 class My_mat
 {
-private:
     int **dat;
     size_t size;
     int iter_max;
 public:
-    My_mat(int _size, int _iter_max): size(_size), iter_max(_iter_max)
+    My_mat(int _size, int _iter_max)
     {
+        size = _size;
+        iter_max = _iter_max;
         
         dat = new int* [size];
         if(dat == nullptr) 
@@ -87,7 +88,7 @@ void warm_up()
 
 int main() 
 {
-    const int mat_size = 10000;
+    const size_t mat_size = 10000;
     const int iter_max = 2;
     warm_up();
     {
