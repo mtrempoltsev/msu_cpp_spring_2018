@@ -23,8 +23,8 @@ int sum(int** a, const uint64_t numberOfStarts, const uint64_t numberOfRows, con
     int answer;
     for (auto t = 0; t < numberOfStarts; ++t) {
         answer = 0;
-        for (auto i = 0; i < numberOfRows; ++i) {
-            for (auto j = 0; j < numberOfColumns; ++j) {
+        for (auto j = 0; j < numberOfColumns; ++j) {
+            for (auto i = 0; i < numberOfRows; ++i) {
                 answer += a[i][j];
             }
         }
