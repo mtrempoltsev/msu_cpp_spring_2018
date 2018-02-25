@@ -37,5 +37,7 @@ int main()
 		}
 		std::cout << sum << "        ";
 	}
+	for (int i = 0; i < Msize; i++) delete m[i];
+	delete m;
 	return 0;
 }
