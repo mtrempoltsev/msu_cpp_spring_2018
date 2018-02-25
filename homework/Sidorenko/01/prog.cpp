@@ -11,10 +11,8 @@ private:
     size_t size;
     int iter_max;
 public:
-    My_mat(int _size, int _iter_max)
+    My_mat(int _size, int _iter_max): size(_size), iter_max(_iter_max)
     {
-        size = _size;
-        iter_max = _iter_max;
         
         dat = new int* [size];
         if(dat == nullptr) 
@@ -90,7 +88,7 @@ void warm_up()
 int main() 
 {
     const int mat_size = 10000;
-    const int iter_max = 10;
+    const int iter_max = 1;
     warm_up();
     {
         My_mat g(mat_size, iter_max);
