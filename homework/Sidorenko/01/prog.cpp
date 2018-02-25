@@ -23,6 +23,10 @@ public:
             dat[i] = new int [size];
             if(dat[i] == nullptr)
             {
+                for(int j = 0; j<i; j++) {
+                    delete [] dat[j];
+                }
+                delete [] dat;
                 throw my_exception(error_codes::mem_err, "Memory error");
 
             }
@@ -97,7 +101,7 @@ int main()
         std::cout<<"\nquick_sum(): spent time = ";
         g.quick_sum();
     }
-    catch(my_exception ups) {
+    catch(my_exception &ups) {
             std::cout<<ups.get_report();
             return ups.get_code();
     }
