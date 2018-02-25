@@ -2,7 +2,7 @@
 #include <iostream>
 #include <chrono>
 #include <random>
-#include <ctime>
+
 
 // Constants for matrix sizes
 namespace Sizes
@@ -19,6 +19,7 @@ namespace Random
     constexpr int max_value = 10'000;
 }
 
+
 // Timer class
 class Timer
 {
@@ -28,23 +29,16 @@ public:
     {
     }
 
-    friend std::ostream &operator << (std::ostream &out, const Timer &timer);
-
-private:
-    auto get_time() const
+    ~Timer()
     {
         const auto finish = std::chrono::high_resolution_clock::now();
-        return std::chrono::duration_cast<std::chrono::microseconds>(finish - start_).count();
+        std::cout << std::chrono::duration_cast<std::chrono::microseconds>(finish - start_).count() << std::endl;
     }
 
+private:
     const std::chrono::high_resolution_clock::time_point start_;
 };
 
-std::ostream &operator << (std::ostream &out, const Timer &timer)
-{
-    out << timer.get_time() << std::endl;
-    return out;
-}
 
 int main()
 {
@@ -56,28 +50,29 @@ int main()
     auto *data = new int[rows * cols];
     auto **matrix = new int *[rows];
 
-    for (int r = 0; r < rows; ++r) {
+    for (decltype(rows) r = 0; r < rows; ++r) {
         matrix[r] = data + r * cols;
     }
 
     // Matrix filling
     std::mt19937 gen(Random::seed);
     std::uniform_int_distribution<int> uid(Random::min_value, Random::max_value);
-    for (int r = 0; r < rows; ++r) {
-        for (int c = 0; c < cols; ++c) {
+    for (decltype(rows) r = 0; r < rows; ++r) {
+        for (decltype(cols) c = 0; c < cols; ++c) {
             matrix[r][c] = uid(gen) + r + c;
         }
     }
 
     // Testing
-    Timer timer;
-    volatile int sum = 0;
-    for (int r = 0; r < rows; ++r) {
-        for (int c = 0; c < cols; ++c) {
-            sum += matrix[r][c];
+    {
+        Timer timer;
+        volatile int sum = 0;
+        for (decltype(rows) r = 0; r < rows; ++r) {
+            for (decltype(cols) c = 0; c < cols; ++c) {
+                sum += matrix[r][c];
+            }
         }
     }
-    std::cout << timer << std::endl;
 
     // Free memory
     delete[] matrix;
