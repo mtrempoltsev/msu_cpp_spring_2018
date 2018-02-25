@@ -5,19 +5,19 @@
 
 
 // Constants for matrix sizes
-namespace Sizes
+enum class Sizes : size_t
 {
-    constexpr size_t max_rows = 10'000;
-    constexpr size_t max_cols = max_rows;
-}
+    max_rows = 10'000,
+    max_cols = 10'000,
+};
 
 // Constants for random generator
-namespace Random
+enum class Random
 {
-    constexpr unsigned int seed = 0xbadf00d;
-    constexpr int min_value = -10'000;
-    constexpr int max_value = 10'000;
-}
+    seed = 0xbadf00d,
+    min_value = -10'000,
+    max_value = 10'000,
+};
 
 
 // Timer class
@@ -43,22 +43,22 @@ private:
 int main()
 {
     // Setting sizes of matrix
-    auto rows = Sizes::max_rows;
-    auto cols = Sizes::max_cols;
+    size_t rows = static_cast<size_t>(Sizes::max_rows);
+    size_t cols = static_cast<size_t>(Sizes::max_cols);
 
     // Memory allocating
     auto *data = new int[rows * cols];
     auto **matrix = new int *[rows];
 
-    for (decltype(rows) r = 0; r < rows; ++r) {
+    for (size_t r = 0; r < rows; ++r) {
         matrix[r] = data + r * cols;
     }
 
     // Matrix filling
-    std::mt19937 gen(Random::seed);
-    std::uniform_int_distribution<int> uid(Random::min_value, Random::max_value);
-    for (decltype(rows) r = 0; r < rows; ++r) {
-        for (decltype(cols) c = 0; c < cols; ++c) {
+    std::mt19937 gen(static_cast<unsigned>(Random::seed));
+    std::uniform_int_distribution<int> uid(static_cast<int>(Random::min_value), static_cast<int>(Random::max_value));
+    for (size_t r = 0; r < rows; ++r) {
+        for (size_t c = 0; c < cols; ++c) {
             matrix[r][c] = uid(gen) + r + c;
         }
     }
@@ -67,8 +67,8 @@ int main()
     {
         Timer timer;
         volatile int sum = 0;
-        for (decltype(cols) c = 0; c < cols; ++c) {
-            for (decltype(rows) r = 0; r < rows; ++r) {
+        for (size_t c = 0; c < cols; ++c) {
+            for (size_t r = 0; r < rows; ++r) {
                 sum += matrix[r][c];
             }
         }
