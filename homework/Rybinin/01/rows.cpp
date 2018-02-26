@@ -1,6 +1,8 @@
 #include <chrono>
 #include <iostream>
 
+const int SIZE = 10000;
+
 class Timer
 {
 public:
@@ -21,11 +23,15 @@ private:
 
 int main()
 {
-    int a[10000][10000]={0,}
+    int **a = new int*[SIZE];
+    for(int i = 0; i < SIZE; ++i)
+        a[i] = new int[SIZE];
+    
     Timer t;
     int sum;
-    for(int i = 0; i < 10000; ++i)
-        for(int j = 0; j < 10000; ++j)
-            sum += a[i][j];
+    for(int i = 0; i < SIZE; ++i)
+        for(int j = 0; j < SIZE; ++j)
+            sum += a[j][i];
+    
     printf("%d", sum);
 }
