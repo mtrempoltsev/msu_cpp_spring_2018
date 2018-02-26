@@ -52,7 +52,7 @@ int main()
         }
     }
     
-    std::cout << sum_by_rows << std::endl << std::endl <<
+    std::cout << "Sum: " << sum_by_rows << std::endl << std::endl <<
         "Time for sum by columns:" << std::endl;
     int sum_by_cols = 0;
     {
@@ -63,7 +63,7 @@ int main()
             }
         }
     }
-    std::cout << sum_by_cols << std::endl;
+    std::cout << "Sum: " << sum_by_cols << std::endl;
     
     for (size_t i = 0; i < N; i++) {
         delete [] arr[i];
