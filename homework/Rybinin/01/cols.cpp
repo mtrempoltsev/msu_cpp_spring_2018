@@ -33,4 +33,7 @@ int main()
         for(int j = 0; j < SIZE; ++j)
             sum += a[j][i];
     }
+    for(int i = 0; i < SIZE; ++i)
+        delete[] a[i];
+    delete[] a;
 }
