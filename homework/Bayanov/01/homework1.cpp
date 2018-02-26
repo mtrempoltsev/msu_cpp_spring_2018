@@ -63,7 +63,7 @@ public:
     }
 
     void fill_matrix_random_values() {
-        srand(time(0));
+        srand(time(nullptr));
         for (size_t row = 0; row < row_size; ++row) {
             for (size_t column = 0; column < column_size; ++column) {
                 matrix[row][column] = rand() % 100;
