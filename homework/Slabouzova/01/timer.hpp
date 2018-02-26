@@ -17,7 +17,8 @@ public:
     ~Timer()
     {   // output in seconds
         const auto finish = std::chrono::high_resolution_clock::now();
-        std::cout << std::chrono::duration_cast<std::chrono::microseconds>(finish - start_).count() / n_iters / pow(10,6) << " s" << std::endl;
+        std::cout << std::chrono::duration_cast<std::chrono::seconds>(finish - start_).count() / 
+                                                    static_cast<double>(n_iters) << " s" << std::endl;
     }
 
 private:

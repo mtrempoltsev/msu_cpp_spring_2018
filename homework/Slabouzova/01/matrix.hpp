@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
 
 class Matrix
 {
@@ -13,6 +14,7 @@ public:
         for (int i = 0; i < n; i++) {
             arr[i] = new int [n];
         }
+        initMatrix();
     }
 
     void initMatrix()
