@@ -19,14 +19,13 @@ public:
         const auto finish = std::chrono::high_resolution_clock::now();
         std::cout << std::chrono::duration_cast<std::chrono::microseconds>(finish - start_).count() << " us" << std::endl;
     }
-    
 private:
     const std::chrono::high_resolution_clock::time_point start_;
 };
 
 
 int main() {
-    srand(time(0));
+    srand(time(nullptr));
     int sum = 0;
     const unsigned int size = 10000;
     int **array;

@@ -26,7 +26,7 @@ private:
 
 
 int main() {
-    srand(time(0));
+    srand(time(nullptr));
     int sum = 0;
     const unsigned int size = 10000;
     int **array;
