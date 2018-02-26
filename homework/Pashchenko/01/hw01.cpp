@@ -20,9 +20,9 @@ private:
     const std::chrono::high_resolution_clock::time_point start_;
 };
 
-void rows(void)
+void rows(int **ptrarray)
 {
-    float **ptrarray = new float* [10000]; //строки
+    /*float **ptrarray = new float* [10000]; //строки
     for (int count = 0; count < 10000; count++)
         ptrarray[count] = new float [10000]; //столбцы
 
@@ -30,7 +30,7 @@ void rows(void)
     {
         for(int col = 0; col < 10000; col++)
             ptrarray[row][col] = (rand() % 10 + 1) / float((rand() % 10 + 1));
-    }
+    }*/
 
     int sum1 = 0;
     Timer obj1;
@@ -43,9 +43,9 @@ void rows(void)
     cout << "rows method: " << sum1 << "\ntime: " << endl;
 }
 
-void cols(void)
+void cols(int **ptrarray)
 {
-    float **ptrarray = new float* [10000]; //строки
+    /*float **ptrarray = new float* [10000]; //строки
     for (int count = 0; count < 10000; count++)
         ptrarray[count] = new float [10000]; //столбцы
 
@@ -53,7 +53,7 @@ void cols(void)
     {
         for(int col = 0; col < 10000; col++)
             ptrarray[row][col] = (rand() % 10 + 1) / float((rand() % 10 + 1));
-    }
+    }*/
 
     int sum2 = 0;
     Timer obj2;
@@ -69,7 +69,17 @@ void cols(void)
 
 int main(void)
 {
-    rows();
-    cols();
+    int **ptrarray = new int* [10000]; //строки
+    for (int count = 0; count < 10000; count++)
+        ptrarray[count] = new int [10000]; //столбцы
+
+    for(int row = 0; row < 10000; row++)
+    {
+        for(int col = 0; col < 10000; col++)
+            ptrarray[row][col] = (rand() % 10 + 1) / int((rand() % 10 + 1));
+    }
+
+    rows(ptrarray);
+    cols(ptrarray);
     return 0;
 }
