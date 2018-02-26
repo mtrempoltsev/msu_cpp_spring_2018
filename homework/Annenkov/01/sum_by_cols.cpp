@@ -9,14 +9,14 @@ int main()
     for(int i = 0; i < ROWS; ++i)
         a[i] = new int[COLS];
 
-    Timer *t = new Timer;
+    {
+        Timer t;
     
-    volatile long sum = 0;
-    for(int i = 0; i < COLS; ++i)
-        for(int j = 0; j < ROWS; ++j)
-            sum += a[j][i];
-
-    delete t;
+        volatile long sum = 0;
+        for(int i = 0; i < COLS; ++i)
+            for(int j = 0; j < ROWS; ++j)
+                sum += a[j][i];
+    }
 
     for(int i = 0; i < ROWS; ++i)
         delete[] a[i];
