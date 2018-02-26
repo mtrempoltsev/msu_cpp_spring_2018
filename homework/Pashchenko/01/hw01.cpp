@@ -20,7 +20,7 @@ private:
     const std::chrono::high_resolution_clock::time_point start_;
 };
 
-int main(void)
+void rows(void)
 {
     float **ptrarray = new float* [10000]; //строки
     for (int count = 0; count < 10000; count++)
@@ -40,7 +40,20 @@ int main(void)
         for(int j = 0; j < 10000; j++)
             sum1 += ptrarray[i][j];
     }
-    cout << "h:" << sum1 << endl;
+    cout << "rows method: " << sum1 << "\ntime: " << endl;
+}
+
+void cols(void)
+{
+    float **ptrarray = new float* [10000]; //строки
+    for (int count = 0; count < 10000; count++)
+        ptrarray[count] = new float [10000]; //столбцы
+
+    for(int row = 0; row < 10000; row++)
+    {
+        for(int col = 0; col < 10000; col++)
+            ptrarray[row][col] = (rand() % 10 + 1) / float((rand() % 10 + 1));
+    }
 
     int sum2 = 0;
     Timer obj2;
@@ -50,6 +63,13 @@ int main(void)
         for(int j = 0; j < 10000; j++)
             sum2 += ptrarray[j][i];
     }
-    cout << "v:" << sum2 << endl;
+    cout << "columns method: " << sum2 << "\ntime: "<< endl;
 
+}
+
+int main(void)
+{
+    rows();
+    cols();
+    return 0;
 }
