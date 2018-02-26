@@ -26,12 +26,11 @@ int main()
     int **a = new int*[SIZE];
     for(int i = 0; i < SIZE; ++i)
         a[i] = new int[SIZE];
-    
+    volatile int sum;
+    {
     Timer t;
-    int sum;
     for(int i = 0; i < SIZE; ++i)
         for(int j = 0; j < SIZE; ++j)
             sum += a[j][i];
-    
-    printf("%d", sum);
+    }
 }
