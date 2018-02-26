@@ -13,14 +13,14 @@ public:
     My_mat(int _size, int _iter_max): size(_size), iter_max(_iter_max)
     {
         
-        dat = new int* [size];
+        dat = new(std::nothrow) int* [size];
         if(dat == nullptr) 
         {
             throw my_exception(error_codes::mem_err, "Memory error");
         }
         for(size_t i = 0; i<size; i++) 
         {
-            dat[i] = new int [size];
+            dat[i] = new(std::nothrow) int [size];
             if(dat[i] == nullptr)
             {
                 for(int j = 0; j<i; j++) {
