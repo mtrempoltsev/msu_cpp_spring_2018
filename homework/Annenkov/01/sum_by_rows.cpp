@@ -1,26 +1,7 @@
-#include <chrono>
-#include <iostream>
+#include "timer.h"
 
 #define ROWS 1000
 #define COLS 1000
-
-class Timer
-{
-public:
-    Timer()
-        : start_(std::chrono::high_resolution_clock::now())
-    {
-    }
-
-    ~Timer()
-    {
-        const auto finish = std::chrono::high_resolution_clock::now();
-        std::cout << std::chrono::duration_cast<std::chrono::microseconds>(finish - start_).count() << " us" << std::endl;
-    }
-
-private:
-    const std::chrono::high_resolution_clock::time_point start_;
-};
 
 int main()
 {
@@ -35,6 +16,11 @@ int main()
             sum += a[i][j];
 
     long s2 = sum*2;
+
+    for(int i = 0; i < ROWS; ++i)
+        delete[] a[i];
+
+    delete[] a;
 
     return 0;
 }
