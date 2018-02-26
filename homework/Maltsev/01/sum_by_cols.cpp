@@ -30,9 +30,9 @@ int64_t sum_col_matrix(int m, int n) {
 }
 int main() {
     int n = 10000,
-            m = 10000;
+            m = 20000;
     std::cout <<"sum_col_matrix(m, n) = "
-         << sum_col_matrix(n, m)
+         << sum_col_matrix(m, n)
          << std::endl;
     return 0;
 }
