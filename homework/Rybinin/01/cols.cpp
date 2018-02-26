@@ -1,6 +1,8 @@
 #include <chrono>
 #include <iostream>
 
+using namespace std;
+
 const int SIZE = 10000;
 
 class Timer
