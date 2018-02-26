@@ -1,4 +1,3 @@
-#include <iostream>
 #include "timer.h"
 
 int** malloc_matrix(int m, int n) {
@@ -9,20 +8,20 @@ int** malloc_matrix(int m, int n) {
     }
     return matrix;
 }
-void matrix_init(int** matrix, int n, int  m) {
-    for(int i = 0; i < n; ++i) {
-        for(int j = 0; j < m; ++j) {
+void matrix_init(int** matrix, int m, int  n) {
+    for(int i = 0; i < m; ++i) {
+        for(int j = 0; j < n; ++j) {
             matrix[i][j] = 2;
         }
     }
 }
-int64_t sum_row_matrix(int n, int m) {
-    int** matrix = malloc_matrix(n, m);
-    matrix_init(matrix, n, m);
+int64_t sum_row_matrix(int m, int n) {
+    int** matrix = malloc_matrix(m, n);
+    matrix_init(matrix, m, n);
     int64_t sum_matrix = 0;
-    Timer t("sum_row_matrix");
-    for(int i = 0; i < n; ++i) {
-        for(int j = 0; j < m; ++j) {
+    Timer t;
+    for(int i = 0; i < m; ++i) {
+        for(int j = 0; j < n; ++j) {
             sum_matrix += matrix[i][j];
         }
     }
@@ -32,8 +31,8 @@ int64_t sum_row_matrix(int n, int m) {
 int main() {
     int n = 10000,
             m = 10000;
-    cout <<"sum_row_matrix(n, m) = "
+    std::cout <<"sum_row_matrix(m, n) = "
          << sum_row_matrix(n, m)
-         << endl;
+         << std::endl;
     return 0;
 }
