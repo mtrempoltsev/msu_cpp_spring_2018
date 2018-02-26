@@ -22,34 +22,35 @@ private:
 
 int** init_matrix(int n, int m)
 {
-  int **matrix = new int*[n];
-  for (size_t i = 0; i < n; i++) {
-    matrix[i] = new int[m];
-    for (size_t j = 0; j < m; j++) {
-      matrix[i][j] = 1;
-    }
-  }
-  return matrix;
+        int **matrix = new int*[n];
+        for (size_t i = 0; i < n; i++) {
+                matrix[i] = new int[m];
+                for (size_t j = 0; j < m; j++) {
+                        matrix[i][j] = 1;
+                }
+        }
+        return matrix;
 }
 
 int main()
 {
-  const int ROW_NUM = 10000; // Кол-во строк
-  const int COLUMN_NUM = 10000; // Кол-во столбцов
-  long long sum = 0;
+        const size_t ROW_NUM = 10001; // Кол-во строк
+        const size_t COLUMN_NUM = 10000; // Кол-во столбцов
+        long long sum = 0;
 
-  int **matrix = init_matrix(ROW_NUM, COLUMN_NUM);
-  Timer* t = new Timer();
-  for (size_t i = 0; i < ROW_NUM; i++) {
-    for (size_t j = 0; j < COLUMN_NUM; j++) {
-      sum += matrix[i][j];
-    }
-  }
-  delete t;
-  std::cout << "Sum by columns: " + std::to_string(sum) << std::endl;
-  for (size_t i = 0; i < ROW_NUM; i++) {
-    delete [] matrix[i];
-  }
-  delete [] matrix;
-  return 0;
+        int **matrix = init_matrix(ROW_NUM, COLUMN_NUM);
+        {
+                Timer t;
+                for (size_t i = 0; i < COLUMN_NUM; i++) {
+                        for (size_t j = 0; j < ROW_NUM; j++) {
+                                sum += matrix[j][i];
+                        }
+                }
+        }
+        std::cout << "Sum by columns: " << sum << std::endl;
+        for (size_t i = 0; i < ROW_NUM; i++) {
+                delete [] matrix[i];
+        }
+        delete [] matrix;
+        return 0;
 }
