@@ -99,6 +99,11 @@ int main(){
     sum_b_cols_s(test_s, n);
     sum_b_rows_s(test_s, n);
 
+    for (size_t i = 0; i < N; i++){
+        delete []test[i];
+    }
+    
+    delete [] test;
     
     return 0;
 
