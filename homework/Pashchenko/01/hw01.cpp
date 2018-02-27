@@ -1,5 +1,6 @@
 #include <chrono>
 #include <iostream>
+#include <stdlib.h>
 using namespace std;
 
 class Timer
@@ -20,47 +21,27 @@ private:
     const std::chrono::high_resolution_clock::time_point start_;
 };
 
-void rows(int **ptrarray)
+void rows(int **ptrarray, int N)
 {
-    /*float **ptrarray = new float* [10000]; //строки
-    for (int count = 0; count < 10000; count++)
-        ptrarray[count] = new float [10000]; //столбцы
-
-    for(int row = 0; row < 10000; row++)
-    {
-        for(int col = 0; col < 10000; col++)
-            ptrarray[row][col] = (rand() % 10 + 1) / float((rand() % 10 + 1));
-    }*/
-
     int sum1 = 0;
     Timer obj1;
 
-    for(int i = 0; i < 10000; i++)
+    for(int i = 0; i < N; i++)
     {
-        for(int j = 0; j < 10000; j++)
+        for(int j = 0; j < N; j++)
             sum1 += ptrarray[i][j];
     }
     cout << "rows method: " << sum1 << "\ntime: " << endl;
 }
 
-void cols(int **ptrarray)
+void cols(int **ptrarray, int N)
 {
-    /*float **ptrarray = new float* [10000]; //строки
-    for (int count = 0; count < 10000; count++)
-        ptrarray[count] = new float [10000]; //столбцы
-
-    for(int row = 0; row < 10000; row++)
-    {
-        for(int col = 0; col < 10000; col++)
-            ptrarray[row][col] = (rand() % 10 + 1) / float((rand() % 10 + 1));
-    }*/
-
     int sum2 = 0;
     Timer obj2;
 
-    for(int i = 0; i < 10000; i++)
+    for(int i = 0; i < N; i++)
     {
-        for(int j = 0; j < 10000; j++)
+        for(int j = 0; j < N; j++)
             sum2 += ptrarray[j][i];
     }
     cout << "columns method: " << sum2 << "\ntime: "<< endl;
@@ -69,17 +50,25 @@ void cols(int **ptrarray)
 
 int main(void)
 {
-    int **ptrarray = new int* [10000]; //строки
-    for (int count = 0; count < 10000; count++)
-        ptrarray[count] = new int [10000]; //столбцы
+    const int N = 10000;
 
-    for(int row = 0; row < 10000; row++)
+    int **ptrarray = new int* [N]; //строки
+    for (int count = 0; count < N; count++)
+        ptrarray[count] = new int [N]; //столбцы
+
+    for(int row = 0; row < N; row++)
     {
-        for(int col = 0; col < 10000; col++)
+        for(int col = 0; col < N; col++)
             ptrarray[row][col] = (rand() % 10 + 1) / int((rand() % 10 + 1));
     }
 
-    rows(ptrarray);
-    cols(ptrarray);
+    rows(ptrarray, N);
+    cols(ptrarray, N);
+
+    for (int i = 0; i < N; i++)
+        delete []ptrarray[i];
+
+    delete []ptrarray;
+
     return 0;
 }
