@@ -46,5 +46,10 @@ int main()
 				tmp += A[j][i]; 
 	}
 
+	for (int i = 0; i < N; i++)
+		free(A[i]);
+
+	free(A);
+
 	return 0;
 }
