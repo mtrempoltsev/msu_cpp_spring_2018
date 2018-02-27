@@ -23,7 +23,7 @@ public:
 
 int sum_by_rows(int ** arr)
 {
-	int res = 0;
+	volatile int res = 0;
 	Timer t;
 	for(int i = 0; i < arrSize; i++)
 		for(int j = 0; j < arrSize; j++)
@@ -33,7 +33,7 @@ int sum_by_rows(int ** arr)
 
 int sum_by_cols(int ** arr)
 {
-	int res = 0;
+	volatile int res = 0;
 	Timer t;
 	for(int j = 0; j < arrSize; ++j)
 		for(int i = 0; i < arrSize; ++i)
@@ -43,7 +43,7 @@ int sum_by_cols(int ** arr)
 
 int v_sum_by_rows(const std::vector< std::vector<int> >& arr)
 {
-	int res = 0;
+	volatile int res = 0;
 	Timer t;
 	for(int i = 0; i < arrSize; i++)
 		for(auto x:arr[i])
@@ -53,7 +53,7 @@ int v_sum_by_rows(const std::vector< std::vector<int> >& arr)
 
 int v_sum_by_cols(const std::vector< std::vector<int> >& arr)
 {
-	int res = 0;
+	volatile int res = 0;
 	Timer t;
 	for(int j = 0; j < arrSize; j++)
 		for(int i = 0; i < arrSize; i++)
