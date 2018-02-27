@@ -30,26 +30,28 @@ int main()
 {
 	//Memory allocation
 	int** matrix = new int*[options::numberOfRows];
-	for (int i = 0; i < options::numberOfRows; i++)
+	for (size_t i = 0; i < options::numberOfRows; i++)
 		matrix[i] = new int[options::numberOfColumns];
 	int sum = 0;
 	//By Rows
-	std::cout << "By rows: ";
-	Timer * time = new Timer();
-	for (int i = 0; i < options::numberOfRows; i++)
-		for (int j = 0; j < options::numberOfColumns; j++)
-			sum += matrix[i][j];
-	delete time;
-	//By Columns
+	{
+		std::cout << "By rows: ";
+		Timer t;
+		for (size_t i = 0; i < options::numberOfRows; i++)
+			for (size_t j = 0; j < options::numberOfColumns; j++)
+				sum += matrix[i][j];
+	}
 	sum = 0;
-	std::cout << "By columns: ";
-	Timer * time1 = new Timer();
-	for (int j = 0; j < options::numberOfColumns; j++)
-		for (int i = 0; i < options::numberOfRows; i++)
-			sum += matrix[i][j];
-	delete time1;
+	//By Columns
+	{
+		std::cout << "By columns: ";
+		Timer t;
+		for (size_t j = 0; j < options::numberOfColumns; j++)
+			for (size_t i = 0; i < options::numberOfRows; i++)
+				sum += matrix[i][j];
+	}
 	//Memory cleaning
-	for (int i = 0; i < options::numberOfRows; i++)
+	for (size_t i = 0; i < options::numberOfRows; i++)
 		delete[] matrix[i];
 	delete[] matrix;
 	return 0;

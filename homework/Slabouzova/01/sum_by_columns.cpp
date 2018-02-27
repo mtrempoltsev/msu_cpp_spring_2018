@@ -9,8 +9,6 @@ int  main()
 	
 	Matrix m(n);
 	
-	m.initMatrix();
-
 	long long sum = 0;
 	int n_iters = 200;
 	Timer t(n_iters);
