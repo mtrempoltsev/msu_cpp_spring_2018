@@ -19,7 +19,7 @@ public:
 
     void initMatrix()
     {
-        srand(time(NULL));
+        srand(time(nullptr));
         int low = -1000;
         int high = 1000;
         for (int i = 0; i < n; i++) {

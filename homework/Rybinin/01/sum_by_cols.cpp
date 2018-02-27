@@ -1,6 +1,10 @@
 #include <chrono>
 #include <iostream>
 
+using namespace std;
+
+const int SIZE = 10000;
+
 class Timer
 {
 public:
@@ -21,11 +25,17 @@ private:
 
 int main()
 {
-    int a[10000][10000]={0,}
+    int **a = new int*[SIZE];
+    for(int i = 0; i < SIZE; ++i)
+        a[i] = new int[SIZE];
+    volatile int sum;
+    {
     Timer t;
-    int sum;
-    for(int i = 0; i < 10000; ++i)
-        for(int j = 0; j < 10000; ++j)
-            sum += a[i][j];
-    printf("%d", sum);
+    for(int i = 0; i < SIZE; ++i)
+        for(int j = 0; j < SIZE; ++j)
+            sum += a[j][i];
+    }
+    for(int i = 0; i < SIZE; ++i)
+        delete[] a[i];
+    delete[] a;
 }
