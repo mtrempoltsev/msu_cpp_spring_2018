@@ -21,16 +21,7 @@ private:
 
 const size_t N = 1000;
 
-void initArray(int** arr)
-{
-    for (size_t i = 0; i < N; i++) {
-        for (size_t j = 0; j < N; j++) {
-            arr[i][j] = i^2 + j;
-        }
-    }
-}
-
-int main()
+int** initArray(const size_t N)
 {
     int** arr = new int*[N];
     
@@ -38,8 +29,18 @@ int main()
         arr[i] = new int[N];
     }
     
-    initArray(arr);
+    for (size_t i = 0; i < N; i++) {
+        for (size_t j = 0; j < N; j++) {
+            arr[i][j] = i^2 + j;
+        }
+    }
     
+    return arr;
+}
+
+int main()
+{
+    int** arr = initArray(N);
     
     std::cout << "Time for sum by rows:" << std::endl;
     int sum_by_rows = 0;
@@ -52,8 +53,8 @@ int main()
         }
     }
     
-    std::cout << "Sum: " << sum_by_rows << std::endl << std::endl <<
-        "Time for sum by columns:" << std::endl;
+    std::cout << "Sum: " << sum_by_rows <<
+    "\n\nTime for sum by columns:" << std::endl;
     int sum_by_cols = 0;
     {
         Timer t_sum_by_cols;
