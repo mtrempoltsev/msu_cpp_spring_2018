@@ -21,6 +21,7 @@ private:
 
 int sum_by_col(int **a, int n, int m)
 {
+	Timer t;
 	int sum = 0, i, j;
 	for (j = 0; j < n; j ++)
 		for (i = 0; i < m; i ++)
@@ -31,7 +32,6 @@ int sum_by_col(int **a, int n, int m)
 
 int main()
 {
-	Timer t;
 	int n = 10000;
 	int m = 10000;
 
