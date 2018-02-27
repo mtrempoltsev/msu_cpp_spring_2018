@@ -21,6 +21,7 @@ private:
 
 int sum_by_rows(int **a, int n, int m)
 {
+	Timer t;
 	int sum = 0, i, j;
 	for (i = 0; i < n; i ++)
 		for (j = 0; j < m; j ++)
@@ -31,7 +32,6 @@ int sum_by_rows(int **a, int n, int m)
 
 int main()
 {
-	Timer t;
 	int n = 10000;
 	int m = 10000;
 
