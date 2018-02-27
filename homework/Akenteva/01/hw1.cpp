@@ -1,16 +1,10 @@
 #include <chrono>
 #include <iostream>
 
-static int ** int_alloc_2D(size_t row, size_t col);
-static void int_del_2D(int ** ptr, size_t row, size_t col);
-
 class Timer
 {
 public:
-    Timer(const char *message): start_(std::chrono::high_resolution_clock::now())
-    {
-        str = message;
-    }
+    Timer(const char *message): str(message), start_(std::chrono::high_resolution_clock::now()) {}
 
     ~Timer()
     {
@@ -83,16 +77,13 @@ int main()
     size_t const NUM_ROWS = 10000;
     size_t const NUM_COLS = 10000;
     int_2d_array a(NUM_ROWS, NUM_COLS);
-    if(true)
     {
-        Timer timer("BY ROWS:");
+        Timer timer("BY ROWS   :");
         a.sum_by_rows();
     }
 
-    int_2d_array b(NUM_ROWS, NUM_COLS);
-    if(true)
     {
         Timer timer("BY COLUMNS:");
-        b.sum_by_cols();
+        a.sum_by_cols();
     }
 }
