@@ -46,8 +46,8 @@ int v_sum_by_rows(const std::vector< std::vector<int> >& arr)
 	volatile int res = 0;
 	Timer t;
 	for(int i = 0; i < arrSize; i++)
-		for(auto x:arr[i])
-			res += x;
+		for(int j = 0; j < arrSize; i++)
+			res += arr[i][j];
 	return res;
 }
 
