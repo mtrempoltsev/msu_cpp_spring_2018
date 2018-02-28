@@ -16,7 +16,7 @@ const int PossiblePrimes[] = {
     127,	131,	137,	139,	149,	151,	157,	163,	167,	173,
     179,	181,	191,	193,	197,	199,	211,	223,	227,	229,
     233,	239,	241,	251,	257,	263,	269,	271,	277,	281,
-    283,	293,	307,	311,	313};
+    283,	293,	307,	311,	313 };
 const int PossiblePrimesSize = sizeof(PossiblePrimes) / sizeof(PossiblePrimes[0]);
 
 int
@@ -55,9 +55,7 @@ main(int argc, char *argv[])
                 /* widening the interval */
                 s_pos = find_alike(Data, Size, s_pos, -1);
                 f_pos = find_alike(Data, Size, f_pos, 1);
-                if((s_pos == -1) || (f_pos == -1))
-                    printf("ERROR: you probably passed wrong args to find_alike()\n");
-                count_primes(Data, Size, s_pos, f_pos);
+                printf("%d\n", count_primes(Data, Size, s_pos, f_pos));
             }
         }
         return 0;
@@ -66,11 +64,9 @@ main(int argc, char *argv[])
         return -1;
 }
 
-/* ========================OK========================
- * Binary search.
+/* binary_search()
  * Returns needed element's index in arr.
  * If doesn't find needed element, returns -1.
- * 
  * Takes - 1D sorted array(arr[]) + its size(arr_sz),
  *       - search borders(low, high),
  *       - number to search(needed).
@@ -94,12 +90,10 @@ binary_search(int const arr[], int arr_sz, int needed_num)
     }
 }
 
-/* ========================OK========================
- * If dir  =  1, finds last element
- * equal to arr[pos] in arr[] and returns its index.
- * If dir  = -1, finds the first element
- * equal to arr[pos] in arr[] and returns its index.
- * arr[] must be a sorted array.
+/* find_alike()
+ * If dir  =  1, finds LAST element equal to arr[pos]
+ * If dir  = -1, finds FIRST element equal to arr[pos]
+ * in 1D sorted array arr[] and returns its index.
  */
 int
 find_alike(int const arr[], int arr_sz, int pos, int dir)
@@ -113,9 +107,8 @@ find_alike(int const arr[], int arr_sz, int pos, int dir)
     return (pos - dir);
 }
 
-/* ========================OK========================
+/* is_a_prime()
  * Returns 1 if num is prime, 0 if num is NOT prime.
- * If num < 0, we consider it not prime and return 0.
  */
 int
 is_a_prime(int num)
@@ -128,42 +121,26 @@ is_a_prime(int num)
     return 1;
 }
 
-/* ======================UNUSED======================
- * Returns 1 if num is prime, 0 if num is NOT prime.
- * (checks from 2 to sqrt(num))
- */
-int
-is_a_prime_old(int num)
-{
-    if(num < 2)
-        return 0;
-    for(int i = 2; i*i <= num; i++)
-       if(num % i == 0)
-          return 0;
-    return 1;
-}
-
-/* ========================OK========================
+/* count_primes()
  * Returns number of primes in interval of indexes
- * [low_i, high_i] for array arr[] of size arr_sz.
+ * [left_pos, right_pos] for array arr[] of size arr_sz.
  */
 int
-count_primes(int const arr[], int arr_sz, int low_i, int high_i)
+count_primes(int const arr[], int arr_sz, int left_pos, int right_pos)
 {
     int rez = 0;
-    int curr = -1;
+    int curr_num = -1;
     int curr_is_prime;
 
-    for(int i = low_i; i <= high_i; i++)
+    for(int i = left_pos; i <= right_pos; i++)
     {
         /* if haven't seen this number before, do prime check */
-        if(arr[i] != curr)
+        if(arr[i] != curr_num)
         {
-            curr = arr[i];
-            curr_is_prime = is_a_prime(curr);
+            curr_num = arr[i];
+            curr_is_prime = is_a_prime(curr_num);
         }
         rez += curr_is_prime;
     }
-    printf("%d\n", rez);
     return rez;
 }
