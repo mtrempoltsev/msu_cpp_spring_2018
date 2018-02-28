@@ -55,10 +55,10 @@ int main(int argc, char* argv[])
 		int right_index = binarySearch(right[n], Data, 0, Size - 1);
 		if (left_index == -1 || right_index == -1)
 			return 0;
-		while (left_index < Size - 1 && Data[left_index + 1] == left[n])
-			left_index++;
-		while (right_index > 0 && Data[right_index - 1] == right[n])
-			right_index--;
+		while (left_index > 0 && Data[left_index - 1] == left[n])
+			left_index--;
+		while (right_index < Size - 1 && Data[right_index + 1] == right[n])
+			right_index++;
 		int count = 0;
 		for (int i = left_index; i <= right_index; i++)
 		{
