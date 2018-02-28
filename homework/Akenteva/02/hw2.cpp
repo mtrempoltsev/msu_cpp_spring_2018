@@ -22,29 +22,30 @@ main(int argc, char *argv[])
 
     if(argc % 2) /* we require even number of arguments */
     {
-        for (int i = 1; i < argc; ++i)
+        for (int i = 1; i < argc; i += 2)
         {
-            int v = std::atoi(argv[i]);
-            std::cout << v << std::endl;
+            start_num  = std::atoi(argv[i]);
+            finish_num = std::atoi(argv[i + 1]);
+            s_pos = binary_search(Data, Size, start_num);
+            f_pos = binary_search(Data, Size, finish_num);
+
+            if((s_pos == -1) || (f_pos == -1))
+                printf("0: couldn't find one of specified numbers in array\n");
+            else
+            {
+                s_pos = find_alike(Data, Size, s_pos, -1);
+                f_pos = find_alike(Data, Size, f_pos, 1);
+                if((s_pos == -1) || (f_pos == -1))
+                    printf("ERROR: couldnt find alike (shouldnt see this error, probs wrong args)\n");
+                else
+                    count_primes(Data, Size, s_pos, f_pos);
+            }
         }
     }
     else
         printf("-1: Wrong number of arguments\n");
     
-    s_pos = binary_search(Data, Size, start_num);
-    f_pos = binary_search(Data, Size, finish_num);
 
-    if((s_pos == -1) || (f_pos == -1))
-        printf("0: couldnt find one of specified numbers in array\n");
-    else
-    {
-        s_pos = find_alike(Data, Size, s_pos, -1);
-        f_pos = find_alike(Data, Size, f_pos, 1);
-        if((s_pos == -1) || (f_pos == -1))
-            printf("ERROR: couldnt find alike (shouldnt see this error, probs wrong args)\n");
-        else
-            count_primes(Data, Size, s_pos, f_pos);
-    }
 /*
     size_t const NUM_ROWS = 100;
     int arr[NUM_ROWS];
@@ -149,8 +150,8 @@ count_primes(int const arr[], int arr_sz, int low_i, int high_i)
             curr_is_prime = is_a_prime(curr);
         }
         rez += curr_is_prime;
-        if(curr_is_prime)
-            std::cout << arr[i] << std::endl;
+        //if(curr_is_prime)
+            //std::cout << arr[i] << std::endl;
     }
     printf("TOTAL: %d\n", rez);
     return rez;
