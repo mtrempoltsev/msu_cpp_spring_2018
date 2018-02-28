@@ -2,10 +2,10 @@
 #include <ctime>
 #include "numbers.dat"
 
-int binary_search(int const arr[], int arr_sz, int needed);
+int binary_search(int const arr[], int arr_sz, int needed_num);
 int find_alike(int const arr[], int arr_sz, int pos, int dir);
 int is_a_prime(int num);
-int count_primes(int const arr[], int arr_sz, int low_i, int high_i);
+int count_primes(int const arr[], int arr_sz, int left_pos, int right_pos);
 
 /* As we know that numbers in that array can't go higher than 100 000, we can
    use a list of primes from 2 to sqrt (100 000) for quicker prime checks */
@@ -25,7 +25,6 @@ main(int argc, char *argv[])
     /* Note: Data[] and Size loaded from "numbers.dat" */
     int start_num,  s_pos;
     int finish_num, f_pos;
-
 
     /* we require an even number of arguments */
     if((argc % 2) && (argc > 1))
