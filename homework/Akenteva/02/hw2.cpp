@@ -20,44 +20,39 @@ main(int argc, char *argv[])
     int start_num,  s_pos;
     int finish_num, f_pos;
 
-    if(argc % 2) /* we require even number of arguments */
+
+    /* we require even number of arguments */
+    if((argc % 2) && (argc > 1))
     {
+        /* looping through pairs of arguments */
         for (int i = 1; i < argc; i += 2)
         {
             start_num  = std::atoi(argv[i]);
             finish_num = std::atoi(argv[i + 1]);
+            if(start_num > finish_num)
+            {
+                printf("0\n");
+                continue;
+            }
+            
             s_pos = binary_search(Data, Size, start_num);
             f_pos = binary_search(Data, Size, finish_num);
 
-            if((s_pos == -1) || (f_pos == -1))
-                printf("0: couldn't find one of specified numbers in array\n");
+            if((f_pos >= Size) || (s_pos > f_pos) || (s_pos < 0))
+                printf("0\n");
             else
             {
                 s_pos = find_alike(Data, Size, s_pos, -1);
                 f_pos = find_alike(Data, Size, f_pos, 1);
                 if((s_pos == -1) || (f_pos == -1))
                     printf("ERROR: couldnt find alike (shouldnt see this error, probs wrong args)\n");
-                else
-                    count_primes(Data, Size, s_pos, f_pos);
+                count_primes(Data, Size, s_pos, f_pos);
             }
         }
+        return 0;
     }
     else
-        printf("-1: Wrong number of arguments\n");
-    
-
-/*
-    size_t const NUM_ROWS = 100;
-    int arr[NUM_ROWS];
-    for (int i = 1; i < NUM_ROWS; i++)
-        arr[i] = arr[i-1] + rand() % 5;
-
-
-
-
-    for (int i=2; i<=1000; i++)
-        if(is_a_prime(i)) std::cout << i << std::endl;*/
-    return 0;
+        return -1;
 }
 
 
@@ -137,10 +132,6 @@ count_primes(int const arr[], int arr_sz, int low_i, int high_i)
     int rez = 0;
     int curr = -1;
     int curr_is_prime;
-    if((high_i >= arr_sz) || (low_i > high_i) || (low_i < 0)) {
-        printf("ERROR in indexes: 0 <= %d <= %d < %d\n", low_i, high_i, arr_sz);
-        return -1;
-    }
 
     for(int i = low_i; i <= high_i; i++)
     {
@@ -153,6 +144,6 @@ count_primes(int const arr[], int arr_sz, int low_i, int high_i)
         //if(curr_is_prime)
             //std::cout << arr[i] << std::endl;
     }
-    printf("TOTAL: %d\n", rez);
+    printf("%d\n", rez);
     return rez;
 }
