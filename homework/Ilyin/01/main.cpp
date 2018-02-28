@@ -43,31 +43,6 @@ void sum_b_rows(int** test, size_t N){
 
 }
 
-
-void sum_b_cols_s(int test[][500], const size_t N){
-    Timer t;
-    int res = 0;
-
-    for (size_t i = 0; i < N; i++){
-        for (size_t j = 0; j < N; j++){
-        res += test[i][j];
-        }
-    }
-}
-
-void sum_b_rows_s(int test[][500], const size_t N){
-    Timer t;
-    int res = 0;
-
-    for (size_t i = 0; i < N; i++){
-        for (size_t j = 0; j < N; j++){
-        res += test[j][i];
-        }
-    }
-
-}
-
-
 int main(){
 
     size_t N = 500;
@@ -85,18 +60,6 @@ int main(){
 
     sum_b_cols(test, N);
     sum_b_rows(test, N);
-
-    const size_t n = 500;
-
-    int test_s[n][n];
-
-    for (size_t i = 0; i < n; i++){
-        for (size_t j = 0; j < n; j++){
-        test_s[i][j] = rand() % n;
-        }
-    }
-
-    sum_b_cols_s(test_s, n);
     sum_b_rows_s(test_s, n);
 
     for (size_t i = 0; i < N; i++){
