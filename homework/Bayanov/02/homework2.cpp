@@ -45,8 +45,6 @@ int main(int argc, char* argv[]) {
         for (size_t ind = 0; ind < Size; ++ind) {
             if (left_bound <= Data[ind] and Data[ind] <= right_bound) {
                 primes_counter += (min_prime_div[Data[ind]] == Data[ind]);
-                if (min_prime_div[Data[ind]] == Data[ind] && Data[ind] == left_bound)
-                    primes_counter -= left_is_here;
             }
             left_is_here |= left_bound == Data[ind];
             right_is_here |= right_bound == Data[ind];
