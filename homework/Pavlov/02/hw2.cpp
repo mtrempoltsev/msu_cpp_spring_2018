@@ -27,14 +27,14 @@
 		if (!(argc & 1) || argc == 1) return -1;
 
 		bool a[Data[Size-1]];
-
 		a[0] = false;
 		a[1] = false;
-	    for(int i = 2; i < Data[Size-1]; i++) {
-	        a[i] = true;
+
+		for(int i = 2; i < Data[Size-1]; i++) {
+			a[i] = true;
 	    }
 
-	    for(int i = 2; i*i <= Data[Size-1]; i++) {
+		for(int i = 2; i*i <= Data[Size-1]; i++) {
 	        if(a[i] == true) {
 	            for(int j = i*i; j < Data[Size-1]; j = j + i)
 	            {
@@ -45,19 +45,20 @@
 
 		for (int i = 1; i < argc; i += 2) {
 
-	    	int b = std::atoi(argv[i]);
-	    	int c = std::atoi(argv[i+1]);
-	    	int p = 0;
+			int b = std::atoi(argv[i]);
+			int c = std::atoi(argv[i+1]);
+			int p = 0;
 
-	    	b = Search_Binary(Data, 0, Size, b);
-	    	c = Search_Binary(Data, b, Size, c);
-	    	for(int i = b; i <= c; i++) {
-	        	if(a[Data[i]]) {
+			b = Search_Binary(Data, 0, Size, b);
+			c = Search_Binary(Data, b, Size, c);
+
+			for(int i = b; i <= c; i++) {
+				if(a[Data[i]]) {
 					p++;
-	        	}
-	    	}
+				}
+			}
 
-	    	std::cout<<p<<"\n";
+			std::cout<<p<<"\n";
 		}
 	    return 0;
 	}
