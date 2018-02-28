@@ -66,10 +66,7 @@ main(int argc, char *argv[])
         return -1;
 }
 
-
-
-
-/* ========================OK=======================
+/* ========================OK========================
  * Binary search.
  * Returns needed element's index in arr.
  * If doesn't find needed element, returns -1.
@@ -97,8 +94,7 @@ binary_search(int const arr[], int arr_sz, int needed_num)
     }
 }
 
-
-/* ========================OK=======================
+/* ========================OK========================
  * If dir  =  1, finds last element
  * equal to arr[pos] in arr[] and returns its index.
  * If dir  = -1, finds the first element
@@ -108,17 +104,18 @@ binary_search(int const arr[], int arr_sz, int needed_num)
 int
 find_alike(int const arr[], int arr_sz, int pos, int dir)
 {
-    int needed = arr[pos];
-    if(pos >= arr_sz) return -1;
-    do
-        pos += dir;
-    while ((pos < arr_sz) && (pos >= 0) && (arr[pos] == needed));
+    if((pos >= arr_sz) || (pos < 0))
+        return -1;
+
+    int needed_num = arr[pos];
+    do pos += dir;
+    while ((pos < arr_sz) && (pos >= 0) && (arr[pos] == needed_num));
     return (pos - dir);
 }
 
-/* 
+/* ========================OK========================
  * Returns 1 if num is prime, 0 if num is NOT prime.
- * (checks from 2 to sqrt(num))
+ * If num < 0, we consider it not prime and return 0.
  */
 int
 is_a_prime(int num)
@@ -126,14 +123,12 @@ is_a_prime(int num)
     if(num < 2)
         return 0;
     for(int i = 0; i < PossiblePrimesSize; i++)
-    {
-       if( (num > PossiblePrimes[i]) && (num % PossiblePrimes[i] == 0) )
+       if((num > PossiblePrimes[i]) && (num % PossiblePrimes[i] == 0))
           return 0;
-    }
     return 1;
 }
 
-/* ========================OK=======================
+/* ======================UNUSED======================
  * Returns 1 if num is prime, 0 if num is NOT prime.
  * (checks from 2 to sqrt(num))
  */
@@ -148,9 +143,7 @@ is_a_prime_old(int num)
     return 1;
 }
 
-
-
-/* ========================OK=======================
+/* ========================OK========================
  * Returns number of primes in interval of indexes
  * [low_i, high_i] for array arr[] of size arr_sz.
  */
@@ -163,14 +156,13 @@ count_primes(int const arr[], int arr_sz, int low_i, int high_i)
 
     for(int i = low_i; i <= high_i; i++)
     {
+        /* if haven't seen this number before, do prime check */
         if(arr[i] != curr)
         {
             curr = arr[i];
             curr_is_prime = is_a_prime(curr);
         }
         rez += curr_is_prime;
-        //if(curr_is_prime)
-            //std::cout << arr[i] << std::endl;
     }
     printf("%d\n", rez);
     return rez;
