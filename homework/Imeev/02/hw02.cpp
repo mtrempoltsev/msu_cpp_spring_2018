@@ -10,7 +10,7 @@ enum
     SECOND_PRIME = 3,
 };
 
-int get_index(const int *data, int n, int num);
+int get_index(const int *data, int n, int num, bool take_last);
 int prime_counter(const int *, int);
 int check(int num);
 
@@ -21,8 +21,8 @@ main(int argc, char *argv[])
         return -1;
     }
     for (int i = 1; i < argc; i += DELTA) {
-        int first = get_index(Data, Size, std::atoi(argv[i]));
-        int last = get_index(Data, Size, std::atoi(argv[i + 1]));
+        int first = get_index(Data, Size, std::atoi(argv[i]), false);
+        int last = get_index(Data, Size, std::atoi(argv[i + 1]), true);
         if (first >= 0 and last >= 0) {
             std::cout << prime_counter(Data + first, last - first + 1) << std::endl;
         } else {
@@ -33,12 +33,17 @@ main(int argc, char *argv[])
 }
 
 int
-get_index(const int *data, int n, int num)
+get_index(const int *data, int n, int num, bool take_last)
 {
     int i;
-    for (i = 0; i < n && data[i] <= num; ++i) {};
-    if (num == data[i - 1]) {
-        return i - 1;
+    for (i = 0; i < n && data[i] < num; ++i) {};
+    if (num == data[i]) {
+        if (take_last) {
+            while (data[i + 1] == data[i]) {
+                ++i;
+            }
+        }
+        return i;
     }
     return -1;
 }
@@ -46,9 +51,13 @@ get_index(const int *data, int n, int num)
 int
 prime_counter(const int *data, int n)
 {
-    int counter = check(data[0]);
+    int check_result = check(data[0]);
+    int counter = check_result;
     for (int i = 1; i < n; ++i) {
-        counter += check(data[i]);
+        if (data[i] > data[i - 1]) {
+            check_result = check(data[i]);
+        }
+        counter += check_result;
     }
     return counter;
 }
