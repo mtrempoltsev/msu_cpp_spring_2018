@@ -4,20 +4,11 @@
 
 int binary_search(int const arr[], int arr_sz, int needed_num);
 int find_alike(int const arr[], int arr_sz, int pos, int dir);
-int is_a_prime(int num);
-int count_primes(int const arr[], int arr_sz, int left_pos, int right_pos);
+void init_eratosthenes_mask(bool mask[], int mask_sz);
 
-/* As we know that numbers in that array can't go higher than 100 000, we can
-   use a list of primes from 2 to sqrt (100 000) for quicker prime checks */
-const int PossiblePrimes[] = {
-    2  ,	3  ,	5  ,	7  ,	11 ,	13 ,	17 ,	19 ,	23 ,	29,
-    31 ,	37 ,	41 ,	43 ,	47 ,	53 ,	59 ,	61 ,	67 ,	71,
-    73 ,	79 ,	83 ,	89 ,	97 ,	101,	103,	107,	109,	113,
-    127,	131,	137,	139,	149,	151,	157,	163,	167,	173,
-    179,	181,	191,	193,	197,	199,	211,	223,	227,	229,
-    233,	239,	241,	251,	257,	263,	269,	271,	277,	281,
-    283,	293,	307,	311,	313 };
-const int PossiblePrimesSize = sizeof(PossiblePrimes) / sizeof(PossiblePrimes[0]);
+/* mask that will tell us which numbers are prime */
+const int max_num = Data[Size - 1];
+bool primes_mask[max_num];
 
 int
 main(int argc, char *argv[])
@@ -25,6 +16,7 @@ main(int argc, char *argv[])
     /* Note: Data[] and Size loaded from "numbers.dat" */
     int start_num,  s_pos;
     int finish_num, f_pos;
+    init_eratosthenes_mask(primes_mask, max_num);
 
     /* we require an even number of arguments */
     if((argc % 2) && (argc > 1))
@@ -54,7 +46,10 @@ main(int argc, char *argv[])
                 /* widening the interval */
                 s_pos = find_alike(Data, Size, s_pos, -1);
                 f_pos = find_alike(Data, Size, f_pos, 1);
-                printf("%d\n", count_primes(Data, Size, s_pos, f_pos));
+                int rez = 0;
+                for(int i = s_pos; i <= f_pos; i++)
+                    rez += primes_mask[Data[i]];
+                printf("%d\n", rez);
             }
         }
         return 0;
@@ -106,40 +101,23 @@ find_alike(int const arr[], int arr_sz, int pos, int dir)
     return (pos - dir);
 }
 
-/* is_a_prime()
- * Returns 1 if num is prime, 0 if num is NOT prime.
+/* eratosthenes_mask()
+ * mask[i] = true  if i is a prime
+ * mask[i] = false if i is NOT a prime
+ * mask_sz should be >= 2
+ * 
+ * NOTE: idea to use it was taken from BD-11 TELEGRAM CHAT
+ * For my original solution see the following commit:
+ * 377121ee00611f781ddf3725a08b9f303a93d2f4
  */
-int
-is_a_prime(int num)
+void
+init_eratosthenes_mask(bool mask[], int mask_sz)
 {
-    if(num < 2)
-        return 0;
-    for(int i = 0; i < PossiblePrimesSize; i++)
-       if((num > PossiblePrimes[i]) && (num % PossiblePrimes[i] == 0))
-          return 0;
-    return 1;
-}
-
-/* count_primes()
- * Returns number of primes in interval of indexes
- * [left_pos, right_pos] for array arr[] of size arr_sz.
- */
-int
-count_primes(int const arr[], int arr_sz, int left_pos, int right_pos)
-{
-    int rez = 0;
-    int curr_num = -1;
-    int curr_is_prime;
-
-    for(int i = left_pos; i <= right_pos; i++)
-    {
-        /* if haven't seen this number before, do prime check */
-        if(arr[i] != curr_num)
-        {
-            curr_num = arr[i];
-            curr_is_prime = is_a_prime(curr_num);
-        }
-        rez += curr_is_prime;
-    }
-    return rez;
+	for(int i = 0; i < mask_sz; i++)
+		mask[i] = true;
+    mask[0] = mask[1] = false;
+    for (int i = 2; i <= mask_sz; i++)
+        if (mask[i] && (i * 1ll * i <= mask_sz))
+            for (int j = i*i; j <= mask_sz; j += i)
+                mask[j] = false;
 }
