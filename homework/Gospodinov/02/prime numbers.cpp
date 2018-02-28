@@ -33,7 +33,7 @@ int binarySearch(int val, const int* a, int left, int right)
 
 int main(int argc, char* argv[])
 {
-	if (!(argc & 1) || argc == 1)
+	if (argc % 2 == 0 || argc == 1)
 		return -1;
 
 	int num_of_pairs = argc / 2;
@@ -41,8 +41,8 @@ int main(int argc, char* argv[])
 	int* right = new int[num_of_pairs];
 	for (int n = 0; n < num_of_pairs; n++)
 	{
-		left[n] = std::atoi(argv[n << 1 + 1]);
-		right[n] = std::atoi(argv[n << 1 + 2]);
+		left[n] = std::atoi(argv[n * 2 + 1]);
+		right[n] = std::atoi(argv[n * 2 + 2]);
 	}
 
 	int MAX = 100000;
