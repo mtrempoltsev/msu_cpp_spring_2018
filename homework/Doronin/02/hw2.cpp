@@ -33,24 +33,58 @@ inline int count_prime_numb(const int size, int left, int right, const int array
 	int count = 0;
 	int lindex = size;
 	int rindex = size;
+		
+	int l = 0;
+	int r = size;
+	int middle;
 	
-	for(register int i = 0; i < Size; ++i)
-		if(array[i] == left)
+	while(l + 1 < r)
+	{
+		middle = l + (r - l)/2;
+		if(array[middle] > left)
+			r = middle;
+		else
+			l = middle;
+				
+	}
+	if(left == array[l])
+		while(true)
 		{
-			lindex = i;
-			break;
+			if(array[l-1] == left && l-1 >= 0)
+				l -= 1;
+			else
+			{
+				lindex = l;
+				break;
+			}
 		}
 	
 	if(lindex == size)
-		return count;
+		return count;	
 	
-	for(register int i = lindex + 1; i < Size; ++i)
-		if(array[i] == right)
+	l = lindex;
+	r = size;
+	
+	while(l + 1 < r)
 		{
-			rindex = i;
-			if(array[i+1] != right)
-				break;
+			middle = l + (r - l)/2;
+			if(array[middle] > right)
+				r = middle;
+			else
+				l = middle;
+				
 		}
+		if(right == array[l])
+			while(true)
+			{
+				if(array[l+1] == right && l+1 < size)
+					l += 1;
+				else 
+				{
+					rindex = l;
+					break;
+				}
+			}
 						
 	if(rindex == size)
 		return count;
