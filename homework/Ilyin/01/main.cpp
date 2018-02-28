@@ -26,7 +26,7 @@ void sum_b_cols(int** test, size_t N){
 
     for (size_t i = 0; i < N; i++){
         for (size_t j = 0; j < N; j++){
-        res += test[i][j];
+        res += test[j][i];
         }
     }
 }
@@ -37,7 +37,7 @@ void sum_b_rows(int** test, size_t N){
 
     for (size_t i = 0; i < N; i++){
         for (size_t j = 0; j < N; j++){
-        res += test[j][i];
+        res += test[i][j];
         }
     }
 
