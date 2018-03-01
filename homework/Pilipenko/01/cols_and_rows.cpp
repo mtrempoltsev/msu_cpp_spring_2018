@@ -4,7 +4,8 @@
 
 using namespace std;
 
-const int size = 10000;
+const size_t size_of_rows = 10000;
+const size_t size_of_cols = 10000;
 
 class Timer {
 public:
@@ -42,17 +43,17 @@ void sum_by_row(int **a, size_t num_col, size_t num_row) {
 }
 
 int main() {
-    int **a = new int *[size];
-    for (size_t i = 0; i < size; i++) {
-        a[i] = new int[size];
+    int **a = new int *[size_of_rows];
+    for (size_t i = 0; i < size_of_rows; i++) {
+        a[i] = new int[size_of_cols];
     }
     cout << "Time for cols: ";
-    sum_by_col(a, size, size);
+    sum_by_col(a, size_of_cols, size_of_rows);
     cout << endl;
     cout << "Time for rows: ";
-    sum_by_row(a, size, size);
+    sum_by_row(a, size_of_cols, size_of_rows);
 
-    for (size_t i = 0; i < size; i++) {
+    for (size_t i = 0; i < size_of_rows; i++) {
         delete[] a[i];
     }
     delete[] a;
