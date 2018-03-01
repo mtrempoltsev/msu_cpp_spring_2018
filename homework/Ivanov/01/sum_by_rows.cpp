@@ -28,21 +28,21 @@ int main(int argc, char const *argv[])
 {
     int **arr;
     arr = new int*[SIZE];
-    volatile int sum = 0;
     for(int i = 0; i < SIZE; i++) {
         arr[i] = new int[SIZE];
         for(int j = 0; j < SIZE; j++) {
             arr[i][j] = ++sum;
         }
     }
-    Timer timer;
-    sum = 0;
-    for(volatile int i = 0; i < SIZE; i++) {
-        for(volatile int j = 0; j < SIZE; j++) {
-            sum += arr[i][j];
+    {
+        Timer timer;
+        volatile int sum = 0;
+        for(volatile int i = 0; i < SIZE; i++) {
+            for(volatile int j = 0; j < SIZE; j++) {
+                sum += arr[i][j];
+            }
         }
     }
-    timer.~Timer();
     for(int i = 0; i < SIZE; i++) {
     	delete[] arr[i];
     }
