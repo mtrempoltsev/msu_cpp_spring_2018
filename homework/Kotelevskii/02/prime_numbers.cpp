@@ -65,7 +65,8 @@ int bin_search(int l, int r, int a,bool flag)
 		}
 	}
 }
-void seive(bool* A,size_t seive_size) {
+void seive(bool* A,size_t seive_size)
+{
 	
 	for (size_t i = 0; i < seive_size; i++)
 		A[i] = false;
