@@ -2,23 +2,22 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+
 #define SIZE_r 10000
 #define SIZE_c 10000
 
 using namespace std;
 
-class Timer
-{
+class Timer {
 public:
     Timer()
-        : start_(std::chrono::high_resolution_clock::now())
-    {
+            : start_(std::chrono::high_resolution_clock::now()) {
     }
 
-    ~Timer()
-    {
+    ~Timer() {
         const auto finish = std::chrono::high_resolution_clock::now();
-        std::cout << std::chrono::duration_cast<std::chrono::microseconds>(finish - start_).count() << " us" << std::endl;
+        std::cout << std::chrono::duration_cast<std::chrono::microseconds>(finish - start_).count() << " us"
+                  << std::endl;
     }
 
 private:
@@ -27,27 +26,25 @@ private:
 
 
 int main() {
-	srand(time(NULL));
+    srand(time(NULL));
 
-	int ** a = new int * [SIZE_r];
-	for (int i = 0; i < SIZE_r; i++) {
-		a[i] = new int [SIZE_c];
-		for (int j = 0; j < SIZE_c; j++)
-			a[i][j] = rand();
-	}
+    int **a = new int *[SIZE_r];
+    for (int i = 0; i < SIZE_r; i++) {
+        a[i] = new int[SIZE_c];
+        for (int j = 0; j < SIZE_c; j++)
+            a[i][j] = rand();
+    }
 
-	int sum = 0;
-	{
-		Timer t;
-		for (int i = 0; i < SIZE_c; i++)
-			for (int j = 0; j < SIZE_r; j++)
-				sum += a[j][i];
-	}
-	cout << sum << endl;
+    int sum = 0;
+        Timer t;
+        for (int i = 0; i < SIZE_c; i++)
+            for (int j = 0; j < SIZE_r; j++)
+                sum += a[j][i];
+    cout << sum << endl;
 
-	for (int i = 0; i < SIZE_r; i++)
-		delete[] a[i];
-	delete[] a;
+    for (int i = 0; i < SIZE_r; i++)
+        delete[] a[i];
+    delete[] a;
 
-	return 0;
+    return 0;
 }
