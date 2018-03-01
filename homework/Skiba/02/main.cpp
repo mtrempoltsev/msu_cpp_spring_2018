@@ -1,8 +1,6 @@
 #include <iostream>
-#include <climits>
 #include <cstring>
 #include <cstdlib>
-#include <set>
 #include "numbers.dat"
 
 const int N = 100000;
@@ -39,7 +37,7 @@ int main(int argc, char *argv[]) {
     if (argc < 2) {
         return -1;
     }
-    std::set <int> eazy;
+    /*std::set <int> eazy;
     eazy.insert(2);
     for (int i = 3; i < N; i++) {
         int flag = 0;
@@ -52,7 +50,7 @@ int main(int argc, char *argv[]) {
         if (!flag) {
             eazy.insert(i);
         }
-    }
+    }*/
     for (int i = 1; i < argc; ++++i) {
         int beg, end;
         beg = std::atoi(argv[i]);
@@ -70,12 +68,35 @@ int main(int argc, char *argv[]) {
                 return -1;
             }
         }
+        if (beg > end) {
+            std::cout << 0 << std::endl;
+            continue;
+        }
         beg = bin_search_l(beg, 0, Size - 1);
         end = bin_search_r(end, 0, Size - 1);
         int ans = 0;
-        for (int i = beg; i < end; i++) {
+        /*for (int i = beg; i < end; i++) {
             if (eazy.find(Data[i]) != eazy.end()) {
                 ans++;
+            }
+        }*/
+        for (int i = beg; i < end; i++) {
+            if (i > 2) {
+                int flag = 0;
+                for (int j = 2; j * j <= Data[i]; j++) {
+                    if (!(Data[i] % j)){
+                        flag = 1;
+                        break;
+                    }
+                }
+                if (!flag) {
+                    ans++;
+                }
+            } else {
+                if (Data[i] == 2) {
+                    ans++;
+                }
+                continue;
             }
         }
         std::cout << ans << std::endl;
