@@ -37,20 +37,7 @@ int main(int argc, char *argv[]) {
     if (argc < 2) {
         return -1;
     }
-    /*std::set <int> eazy;
-    eazy.insert(2);
-    for (int i = 3; i < N; i++) {
-        int flag = 0;
-        for (auto& el : eazy) {
-            if (!(i % el)) {
-                flag = 1;
-                break;
-            }
-        }
-        if (!flag) {
-            eazy.insert(i);
-        }
-    }*/
+
     for (int i = 1; i < argc; ++++i) {
         int beg, end;
         beg = std::atoi(argv[i]);
@@ -75,11 +62,6 @@ int main(int argc, char *argv[]) {
         beg = bin_search_l(beg, 0, Size - 1);
         end = bin_search_r(end, 0, Size - 1);
         int ans = 0;
-        /*for (int i = beg; i < end; i++) {
-            if (eazy.find(Data[i]) != eazy.end()) {
-                ans++;
-            }
-        }*/
         for (int i = beg; i < end; i++) {
             if (i > 2) {
                 int flag = 0;
