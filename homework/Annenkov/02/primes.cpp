@@ -1,9 +1,7 @@
 #include "numbers.dat"
 // Data - массив
 // Size - размер массива
-
 #include <iostream>
-
 
 #define N 100000
 
@@ -13,12 +11,12 @@ bool prime(int n);
 int main(int argc, char* argv[])
 {
     // проверка аргументов и запись индексов начала/конца перебора
+    if ( (argc-1) % 2 != 0 || argc == 1)
+        return -1;
+
     int args[argc];
     for (int i = 1; i < argc; ++i)
         args[i] = std::atoi(argv[i]);
-
-    if ( (argc-1) % 2 != 0 || argc == 1)
-        return -1;
 
     int index[argc];
     for (int i = 1; i < argc; ++i)
