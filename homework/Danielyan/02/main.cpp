@@ -62,4 +62,5 @@ int main(int argc, char* argv[]) {
     for (int i = 1; i < argc; i += 2) {
         std::cout << preprocessor.CountPrimesInRangeNumber(atoi(argv[i]), atoi(argv[i + 1])) << "\n";
     }
+    return 0;
 }
