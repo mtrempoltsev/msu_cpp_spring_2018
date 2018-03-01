@@ -42,6 +42,7 @@ int main(int argc, char const *argv[])
             sum += arr[i][j];
         }
     }
+    timer.~Timer();
     for(int i = 0; i < SIZE; i++) {
     	delete[] arr[i];
     }
