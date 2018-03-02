@@ -37,8 +37,8 @@ int main(int argc, char* argv[])
 		return -1;
 
 	int num_of_pairs = argc / 2;
-	std::unique_ptr<int[]> left(new int[num_of_pairs]);
-	std::unique_ptr<int[]> right(new int[num_of_pairs]);
+	auto left = std::make_unique<int[]>(num_of_pairs);
+	auto right = std::make_unique<int[]>(num_of_pairs);
 	for (int n = 0; n < num_of_pairs; n++)
 	{
 		left[n] = std::atoi(argv[n * 2 + 1]);
@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
 	}
 
 	int MAX = 100000;
-	std::unique_ptr<bool[]> prime(new bool[MAX + 1]);
+	std::unique_ptr<bool[]> prime = std::make_unique<bool[]>(MAX + 1);
 	for (int i = 0; i <= MAX; i++)
 		prime[i] = true;
 	make_Sieve(prime, MAX);
