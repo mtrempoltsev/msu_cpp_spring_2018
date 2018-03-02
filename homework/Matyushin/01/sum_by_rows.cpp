@@ -20,12 +20,12 @@ private:
     const std::chrono::high_resolution_clock::time_point start_;
 };
 
-int sum_by_mode(int** data){
+int sum_by_mode(int size, int** data){
     Timer t;
     int sum = 0;    
-    for (int j = 0; j < SIZE; j++)
-        for (int i = 0; i < SIZE; i++)
-            sum += data[i][j];
+    for (int j = 0; j < size; j++)
+        for (int i = 0; i < size; i++)
+            sum += data[j][i];
     return sum;
 }
 
@@ -34,9 +34,14 @@ int main(void) {
     int** data = new int*[SIZE];
     for (int i = 0; i < SIZE; i++)
         data[i] = new int[SIZE];
-    printf("->>%d\n", sum_by_mode(data));
+    printf("->>%d\n", sum_by_mode(SIZE, data));
 
+    for(int i = 0; i < SIZE; i++) {
+        delete[] data[i];
+    }
+    delete[] data;
     return 0;
 }
+
 
 
