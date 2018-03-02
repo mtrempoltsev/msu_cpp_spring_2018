@@ -38,10 +38,12 @@ int main()
     
     std::cout << std::endl;
     
-    Timer t;
-    for (int i = 0; i < M; ++i) {
-        for (int j = 0; j < N; ++j) {
-            sum += a[j][i];
+    {  
+        Timer t;
+        for (int i = 0; i < M; ++i) {
+            for (int j = 0; j < N; ++j) {
+                sum += a[j][i];
+            }
         }
     }
     std::cout << sum << std::endl;
