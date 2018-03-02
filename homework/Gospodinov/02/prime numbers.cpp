@@ -1,8 +1,8 @@
+#include <memory>
 #include <iostream>
-#include <vector>
 #include "numbers.dat"
 
-void make_Sieve(std::vector<bool>& prime, int n)
+void make_Sieve(std::unique_ptr<bool[]>& prime, int n)
 {
 	prime[0] = prime[1] = false;
 	for (int i = 0; i <= n; i++)
@@ -37,8 +37,8 @@ int main(int argc, char* argv[])
 		return -1;
 
 	int num_of_pairs = argc / 2;
-	int* left = new int[num_of_pairs];
-	int* right = new int[num_of_pairs];
+	std::unique_ptr<int[]> left(new int[num_of_pairs]);
+	std::unique_ptr<int[]> right(new int[num_of_pairs]);
 	for (int n = 0; n < num_of_pairs; n++)
 	{
 		left[n] = std::atoi(argv[n * 2 + 1]);
@@ -46,7 +46,9 @@ int main(int argc, char* argv[])
 	}
 
 	int MAX = 100000;
-	std::vector<bool> prime(MAX + 1, true);
+	std::unique_ptr<bool[]> prime(new bool[MAX + 1]);
+	for (int i = 0; i <= MAX; i++)
+		prime[i] = true;
 	make_Sieve(prime, MAX);
 
 	for (int n = 0; n < num_of_pairs; n++)
