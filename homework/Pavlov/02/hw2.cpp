@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
 {
     if (!(argc & 1) || argc == 1) return -1;
 
-    bool a[Data[Size-1]];
+    bool* a = new bool[Data[Size-1]];
     a[0] = false;
     a[1] = false;
 
@@ -60,5 +60,8 @@ int main(int argc, char* argv[])
 
         std::cout<<p<<"\n";
     }
+
+    delete[] a;
+
     return 0;
 }
