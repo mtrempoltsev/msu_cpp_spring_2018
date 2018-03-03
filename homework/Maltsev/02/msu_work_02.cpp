@@ -32,7 +32,7 @@ int main(int argc, char** argv)
             }
         }
     }
-    int start_index,
+    int start_index, end_index,
             start_number, end_number;
     int i = 1;
     int cur_index, cur_number;
@@ -47,7 +47,8 @@ int main(int argc, char** argv)
             return 0;
         }
         start_index = binary_search(Data, 0, Size, start_number);
-        if ( start_index >= 0) {
+        end_index = binary_search(Data, 0, Size, end_number);
+        if ( start_index >= 0 && end_index >= 0) {
             int counter = 0;
             cur_index = start_index;
             cur_number = Data[cur_index];
