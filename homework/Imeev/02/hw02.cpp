@@ -39,7 +39,7 @@ get_index(const int *data, int n, int num, bool take_last)
     for (i = 0; i < n && data[i] < num; ++i) {};
     if (num == data[i]) {
         if (take_last) {
-            while (data[i + 1] == data[i]) {
+            while (i < n - 1 && data[i + 1] == data[i]) {
                 ++i;
             }
         }
