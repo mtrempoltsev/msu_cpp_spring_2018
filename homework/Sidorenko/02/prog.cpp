@@ -72,8 +72,7 @@ int main(int argc, char* argv[])
     {
         int v = std::atoi(argv[i]);
 	int w = std::atoi(argv[i+1]);
-        std::cout<<Doit(v, w)<<" ";
+        std::cout<<Doit(v, w)<<std::endl;
     }
-    std::cout<<"\n";
     return 0;
 }
