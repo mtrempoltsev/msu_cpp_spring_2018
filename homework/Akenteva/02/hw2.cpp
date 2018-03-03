@@ -1,5 +1,4 @@
 #include <iostream>
-#include <ctime>
 #include "numbers.dat"
 
 int binary_search(int const arr[], int arr_sz, int needed_num);
@@ -16,6 +15,8 @@ main(int argc, char *argv[])
     /* Create and init mask that will tell us which numbers are prime */
     const int max_num = Data[Size - 1];
     bool * primes_mask = new bool[max_num];
+    if (!primes_mask)
+        return -1;
     init_eratosthenes_mask(primes_mask, max_num);
 
     /* we require an even number of arguments */
