@@ -14,21 +14,23 @@ int main(int argc, char* argv[])
     if ( (argc-1) % 2 != 0 || argc == 1)
         return -1;
 
-    int args[argc];
+    int* args = new int[argc];
     for (int i = 1; i < argc; ++i)
         args[i] = std::atoi(argv[i]);
 
-    int index[argc];
+    int* index = new int[argc];
     for (int i = 1; i < argc; ++i)
         if ( (index[i] = in_data(args[i])) < 0)
             return 0;
+
+    delete[] args;
     // ----
 
     bool is_prime[N];
     for (int i = 2; i < N; ++i)
         is_prime[i] = prime(i);
 
-    for (int s = 1; s <= (argc-1); s += 2)
+    for (int s = 1; s < argc; s += 2)
     {
         int prime_count = 0;
         for (int i = index[s]; i <= index[s+1]; ++i)
@@ -38,6 +40,7 @@ int main(int argc, char* argv[])
         std::cout << prime_count << std::endl;
     }
 
+    delete[] index;
     return 0;
 }
 
