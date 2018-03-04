@@ -19,7 +19,7 @@ void eratos(bool *primass) {
 
 int bins(int num) {
 
-    int l = 0, r = Size, m;
+    size_t l = 0, r = Size, m;
     while (r - 1 > 0) {
         m = (l + r) / 2;
         if (Data[m] == num) {
@@ -51,7 +51,8 @@ int main(int argc, char *argv[]) {
     std::fill_n(primass, opt::rbord, false);
     eratos(primass);
 
-    int l, lpos, r, rpos, result;
+    size_t l, lpos, r, rpos;
+    int result;
     for (size_t i = 1; i < argc; i += 2) {
 
         l = std::atoi(argv[i]);
@@ -64,7 +65,7 @@ int main(int argc, char *argv[]) {
         }
 
         result = 0;
-        for (int j = lpos; j <= rpos; ++j) {
+        for (size_t j = lpos; j <= rpos; ++j) {
             result += !primass[Data[j]];
         }
 
