@@ -1,5 +1,5 @@
 #include <iostream>
-include "numbers.dat"
+#include "numbers.dat"
 
 namespace opt {
     constexpr size_t rbord = 100000;
