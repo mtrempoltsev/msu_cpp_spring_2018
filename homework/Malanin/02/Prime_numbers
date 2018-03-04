@@ -1,0 +1,91 @@
+#include<iostream>
+#include<math.h>
+#include "numbers.dat"
+
+
+
+struct containerpair
+{
+	int first, second;
+	containerpair()
+	{
+		first = 0; second = 0;
+	}
+};
+
+bool checkindex(int l, int r)
+{
+	return ((l > r) || (l < 0) || (r < 0) || (l > 100000) || (r > 100000));
+}
+
+
+bool is_prime(int x)
+{
+	if (x == 1) return false;
+	if (x == 2) return true;
+	if (x % 2 == 0) return false;
+	for (int i = 3; i <= (int)sqrt(x); i += 2)
+	{
+		if (x % i == 0) return false;
+	}
+	return true; 	
+}
+
+int low(int x)
+{
+	int i = 0;
+	while (Data[i] < x) i++;
+	if (Data[i] == x)
+		return i;
+	else 
+		return -1;
+}
+
+int up(int low_in, int x)
+{
+	int i = low_in + 1;
+	while (Data[i] < x) i++;
+	if (Data[i] > x) return -1;
+	while (Data[i] == x) i++;
+	return (i - 1);
+}
+
+
+int main(int argc, char* argv[])
+{
+	int l, r, count;
+	if ((argc == 1) || (argc % 2 == 0)) return -1;
+
+	containerpair* v = new containerpair[(argc - 1)/2];
+
+	for (int i = 0; i < (argc - 1) / 2; i++)
+	{
+		l = std::atoi(argv[2 * i + 1]);
+		r = std::atoi(argv[2 * i + 2]);
+		if (checkindex(l, r))
+		{
+			l = r = 0;
+		}
+		v[i].first = l;
+		v[i].second = r;
+	}
+
+	
+	for (int i = 0; i < (argc - 1) / 2; i++)
+	{
+		l = low(v[i].first);
+		r = up(l, v[i].second);
+		count = 0;
+		if ((l != -1) && (r != -1)) 
+			for (int i = l; i <= r; i++)
+			{
+				if (is_prime(Data[i]))
+				{
+					count++;
+				}
+			}
+		std::cout << count << std::endl;
+	}
+	delete[] v;	
+	return 0;
+}
