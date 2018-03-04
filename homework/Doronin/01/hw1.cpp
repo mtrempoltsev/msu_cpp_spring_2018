@@ -1,7 +1,8 @@
 #include <iostream>
 #include <chrono>
-
 using namespace std;
+
+
 class Timer
 {
 public:
@@ -20,102 +21,114 @@ private:
     const std::chrono::high_resolution_clock::time_point start_;
 };
 
-int counter(int** data)
+int counter(int** data, const size_t N)
 {
 
     int res1 = 0, res2 = 0;
 
     cout << "sum of columns:"<<endl;
-    Timer t1;
-    for(int i = 0; i < 10000; i++)
-        for(int j = 0; j < 10000; j++)
-            res1 += data[i][j];
-
+    {
+        Timer t1;
+        for (size_t i = 0; i < N; i++)
+            for (size_t j = 0; j < N; j++)
+                res1 += data[i][j];
+    }
 
     cout<<"sum of rows:"<<endl;
-    Timer t2;
-    for(int i = 0; i < 10000; i++)
-        for(int j = 0; j < 10000; j++)
-            res2 += data[j][i];
-
+    {
+        Timer t2;
+        for (size_t i = 0; i < N; i++)
+            for (size_t j = 0; j < N; j++)
+                res2 += data[j][i];
+    }
     return (res1 + res2)/2;
 }
 
-int** alloc2d_first()
+int** alloc2d_first(const size_t N)
 {
     int** vector_2d;
-    vector_2d = new int*[10000];
-    for (int i = 0; i < 10000; i++)
-        vector_2d[i] = new int[10000];
-    for(int i = 0; i < 10000; i++)
-        for(int j = 0; j < 10000; j++)
+    vector_2d = new int*[N];
+    for (size_t i = 0; i < N; i++)
+        vector_2d[i] = new int[N];
+    for(size_t i = 0; i < N; i++)
+        for(size_t j = 0; j < N; j++)
             vector_2d[i][j] = 1;
     return vector_2d;
 }
 
-int** alloc2d_second()
+int** alloc2d_second(const size_t N)
 {
     int** vector_2d;
-    vector_2d = (int**)malloc(10000*sizeof(int*));
-    for(int i = 0; i < 10000; i++)
-        vector_2d[i] = (int*)malloc(10000*sizeof(int));
-    for(int i = 0; i < 10000; i++)
-        for(int j = 0; j < 10000; j++)
+    vector_2d = (int**)malloc(N*sizeof(int*));
+    for(size_t i = 0; i < N; i++)
+        vector_2d[i] = (int*)malloc(N*sizeof(int));
+    for(size_t i = 0; i < N; i++)
+        for(size_t j = 0; j < N; j++)
             vector_2d[i][j] = 1;
     return vector_2d;
 }
 
-int** alloc2d_third()
+int** alloc2d_third(const size_t N)
 {
     int** vector_2d;
     int* buff;
-    vector_2d = (int**)malloc(10000*sizeof(int*) + 10000*10000* sizeof(int));
-    buff = (int*)(vector_2d + 10000);
-    for(int i = 0; i < 10000; i++)
-        vector_2d[i] = buff + i*10000;
-    for(int i = 0; i < 10000; i++)
-        for(int j = 0; j < 10000; j++)
+    vector_2d = (int**)malloc(N*sizeof(int*) + N*N* sizeof(int));
+    buff = (int*)(vector_2d + N);
+    for(size_t i = 0; i < N; i++)
+        vector_2d[i] = buff + i*N;
+    for(size_t i = 0; i < N; i++)
+        for(size_t j = 0; j < N; j++)
             vector_2d[i][j] = 1;
     return vector_2d;
 }
 
-int* alloc_vector()
+int* alloc_vector(const size_t N)
 {
     int* vector;
-    vector = new int[10000*10000];
-    for(int i = 0; i < 10000*10000; i++)
+    vector = new int[N*N];
+    for(size_t i = 0; i < N*N; i++)
         vector[i] = 1;
     return vector;
 }
 
-int count_vector(int* v)
+int count_vector(int* v, const size_t N)
 {
     int res = 0;
     cout<<"sum of vector:"<<endl;
     Timer t;
-    for(int i = 0; i < 10000*10000; i++ )
+    for(size_t i = 0; i < N*N; i++ )
         res += v[i];
+
     return res;
 }
-int main(){
 
+int main(){
+    const size_t N = 10000;
     int** vector_2d;
-    vector_2d = alloc2d_first();
-    counter(vector_2d);
+    vector_2d = alloc2d_first(N);
+    counter(vector_2d, N);
+    for (size_t i = 0; i < N; i++)
+        delete[] vector_2d[i];
     delete[] vector_2d;
     cout<<endl;
 
-    vector_2d = alloc2d_second();
-    counter(vector_2d);
+    vector_2d = alloc2d_second(N);
+    counter(vector_2d, N);
+    for (size_t i = 0; i < N; i++)
+         free(vector_2d[i]);
     free(vector_2d);
     cout<<endl;
 
-    vector_2d = alloc2d_third();
-    counter(vector_2d);
+    vector_2d = alloc2d_third(N);
+    counter(vector_2d, N);
     free(vector_2d);
+    
     cout<<endl;
+    int* vector;
+    vector = alloc_vector(N);
+    count_vector(vector, N);
+    delete[] vector;
 
-    count_vector(alloc_vector());
 
     return 0;
 }

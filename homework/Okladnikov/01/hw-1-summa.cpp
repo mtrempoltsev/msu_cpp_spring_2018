@@ -9,8 +9,6 @@
 #include <iostream>
 #include <chrono>
 
-const int N = 10000;
-
 class Timer
 {
 public:
@@ -29,7 +27,7 @@ private:
     const std::chrono::high_resolution_clock::time_point start_;
 };
 
-void cnt_string(int **a)
+void cnt_string(int **a, int N)
 {
     std::cout << "Summuring by rows: ";
     int s = 0;
@@ -44,7 +42,7 @@ void cnt_string(int **a)
     }
 }
 
-void cnt_colomn(int **a)
+void cnt_colomn(int **a, int N)
 {
     std::cout << "Summuring by colomn: ";
     int s = 0;
@@ -61,14 +59,16 @@ void cnt_colomn(int **a)
 
 int main()
 {
+    const int N = 10000;
+    
     int **a = new int *[N];
     for (int i = 0; i < N; i++)
     {
         a[i] = new int [N];
     }
     
-    cnt_string(a);
-    cnt_colomn(a);
+    cnt_string(a, N);
+    cnt_colomn(a, N);
     
     for (int i = 0; i < N; i++)
         delete []a[i];
