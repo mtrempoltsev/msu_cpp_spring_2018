@@ -48,13 +48,6 @@ int binSearch(int key, bool move_to_left) {
             return -1;
     }
 }
-bool isCorrectPair(std::pair<int, int> &p) {
-    if(p.first > p.second){
-        std::cout << 0 << std::endl;
-        return 0;
-    }
-    return 1;
-}
 
 int main(int argc, char* argv[]) {
     if(argc == 1 || argc % 2 == 0)
