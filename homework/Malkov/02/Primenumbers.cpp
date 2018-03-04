@@ -7,9 +7,9 @@ namespace opt {
 
 void eratos(bool *primass) {
     primass[0] = primass[1] = true;
-    for (int i = 2; i < opt::rbord; i++) {
+    for (size_t i = 2; i < opt::rbord; i++) {
         if (!primass[i]) {
-            for (int j = 2 * i; j < opt::rbord; j += i) {
+            for (size_t j = 2 * i; j < opt::rbord; j += i) {
                 primass[j] = true;
             }
         }
@@ -18,8 +18,7 @@ void eratos(bool *primass) {
 }
 
 int bins(int num) {
-
-    size_t l = 0, r = Size, m;
+    int l = 0, r = Size, m;
     while (r - 1 > 0) {
         m = (l + r) / 2;
         if (Data[m] == num) {
@@ -51,8 +50,7 @@ int main(int argc, char *argv[]) {
     std::fill_n(primass, opt::rbord, false);
     eratos(primass);
 
-    size_t l, lpos, r, rpos;
-    int result;
+    int l, lpos, r, rpos, result;
     for (size_t i = 1; i < argc; i += 2) {
 
         l = std::atoi(argv[i]);
@@ -65,7 +63,7 @@ int main(int argc, char *argv[]) {
         }
 
         result = 0;
-        for (size_t j = lpos; j <= rpos; ++j) {
+        for (int j = lpos; j <= rpos; ++j) {
             result += !primass[Data[j]];
         }
 
