@@ -15,10 +15,6 @@ namespace Limits
     constexpr int MAX_SIZE = max_bound + 1;
 }
 
-bool is_prime[Limits::MAX_SIZE];
-int pref[Limits::MAX_SIZE];
-int cnt[Limits::MAX_SIZE];
-
 int read_arg(char *arg)
 {
     return std::min(std::max(atoi(arg), Limits::min_bound), Limits::max_bound);
@@ -26,25 +22,30 @@ int read_arg(char *arg)
 
 int main(int argc, char *argv[])
 {
-    using Limits::MAX_SIZE;
-
     // Case when number of arguments is incorrect
     if (argc % 2 == 0 || argc <= 1) {
         return -1;
     }
 
+    using Limits::MAX_SIZE;
+
+    // Arrays for computing answer
+    bool *is_prime = new bool[MAX_SIZE];
+    int *pref = new int[MAX_SIZE];
+    int *cnt = new int[MAX_SIZE];
+
     // Prepare 'is_prime' array
-    std::fill(std::begin(is_prime), std::end(is_prime), true);
+    std::fill(is_prime, is_prime + MAX_SIZE, true);
     is_prime[0] = is_prime[1] = false;
 
     // Sieve of Eratosthenes
-    int sqr_sz = sqrt(MAX_SIZE);
+    int sqr_sz = sqrt(Limits::max_bound);
     for (int i = 2; i < sqr_sz + 2; ++i) {
         if (!is_prime[i]) {
             continue;
         }
 
-        for (int j = i * i; j < MAX_SIZE; j += i) {
+        for (int j = i * i; j <= Limits::max_bound; j += i) {
             is_prime[j] = false;
         }
     }
@@ -55,7 +56,7 @@ int main(int argc, char *argv[])
     }
 
     // Count answer for each prefix
-    for (int i = 1; i < MAX_SIZE; ++i) {
+    for (int i = 1; i <= Limits::max_bound; ++i) {
         pref[i] = pref[i - 1] + cnt[i];
     }
 
@@ -66,5 +67,9 @@ int main(int argc, char *argv[])
 
         std::cout << (r >= l ? pref[r] - pref[l - 1] : 0) << std::endl;
     }
+
+    delete[] cnt;
+    delete[] pref;
+    delete[] is_prime;
 }
 
