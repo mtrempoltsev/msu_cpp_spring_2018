@@ -15,8 +15,6 @@
 }*/
 
 
-static bool sieve[Size];
-
 inline void Eratosphen(bool sieve[], const int size)
 {
 	sieve[0] = sieve[1] = true;
@@ -66,25 +64,25 @@ inline int count_prime_numb(const int size, int left, int right, const int array
 	r = size;
 	
 	while(l + 1 < r)
-		{
-			middle = l + (r - l)/2;
-			if(array[middle] > right)
-				r = middle;
-			else
-				l = middle;
+	{
+		middle = l + (r - l)/2;
+		if(array[middle] > right)
+			r = middle;
+		else
+			l = middle;
 				
-		}
-		if(right == array[l])
-			while(true)
+	}
+	if(right == array[l])
+		while(true)
+		{
+			if(array[l+1] == right && l+1 < size)
+				l += 1;
+			else 
 			{
-				if(array[l+1] == right && l+1 < size)
-					l += 1;
-				else 
-				{
-					rindex = l;
-					break;
-				}
+				rindex = l;
+				break;
 			}
+		}
 						
 	if(rindex == size)
 		return count;
@@ -111,18 +109,14 @@ int main(int argc, char* argv[])
 			return 0;
 		}
 	}
-	
 		
 	int left=0;
 	int right=0;
-	
-	/*
-	 * I suppouse that bool sieve[] initialising all false, and we may economy on it
-	 * for(int i = 0; i < Size; ++i)
-		sieve[i] = true;
-		* 
-		* */ 
-		
+
+	bool sieve[Size];
+	for(register int i = 0; i < Size; ++i)
+		sieve[i] = false;
+
 	Eratosphen(sieve, Size);
 
 	
