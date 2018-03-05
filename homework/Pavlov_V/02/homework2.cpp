@@ -15,7 +15,7 @@ void EratosthenesSieve(std::vector<bool>& is_prime){
     }
 }
 
-int GetAllPrimesInRange(int start, int finish, std::vector<bool>& is_prime) {
+int GetAllPrimesInRange(int start, int finish, const std::vector<bool>& is_prime) {
     int count = 0;
     for (unsigned long long i = start; i <= finish; ++i) {
         if(is_prime[Data[i]])
