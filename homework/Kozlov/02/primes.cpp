@@ -14,7 +14,7 @@ int counter = 0;
 
 bool check(int a, int b)
 {
-    return (a > b || std::min(a,b) < 0 || std::max(a,b) > 100000 );
+    return (std::min(a,b) < 0 || std::max(a,b) > 100000 );
 }
 
 bool prime(int a)
@@ -95,6 +95,7 @@ int main(int argc, char* argv[])
         v[i].second = std::atoi(argv[2*i+2]);
 
         if (check(v[i].first, v[i].second)) return -1;
+        
     }
 
     for (i = 0; i < (argc - 1) / 2; ++i)
