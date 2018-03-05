@@ -45,7 +45,7 @@ bool sscanfOfArgv(int argc, char* argv[], unsigned* &begin, unsigned* &end)
     return sscanfReturnCounter == argc - 1;
 }
 
-unsigned maxValFromArr(const unsigned* arr, const int& N)
+unsigned maxValFromArr(const unsigned* arr, const int N)
 {
     auto max_val = arr[0];
     for (int i = 1; i < N; ++i) {
