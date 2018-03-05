@@ -30,17 +30,9 @@ bool is_prime_number(int num) {
 
 int find_prime_numbers(int start, int end) {
 
-    int n = 0, cache = -1, i = 0;
+    int n = 0, cache = -1, i = start;
 
-    if (start > end) {
-        return n;
-    }
-
-    while(Data[i] < start){
-        ++i;
-    }
-
-    while (Data[i] <= end) {
+    while (i <= end) {
 
         if (cache == Data[i]) {
             ++i;
@@ -58,6 +50,36 @@ int find_prime_numbers(int start, int end) {
     return n;
 }
 
+int index_start(int start){
+    int i = 0;
+
+    while(i < Size){
+        if(Data[i] >= start){
+            return i;
+        }
+        ++i;
+    }
+
+    return -1;
+}
+
+int index_end(int end){
+    int i = 0;
+
+    if(end == Data[Size-1]){
+        return Size-1;
+    }
+
+    while(i < Size){
+        if(Data[i] > end){
+            return i-1;
+        }
+        ++i;
+    }
+
+    return -1;
+}
+
 int main(int argc, char* argv[]) {
 
     int start = 0, end = 0;
@@ -67,10 +89,16 @@ int main(int argc, char* argv[]) {
     }
 
     for (int i = 1; i < argc; i = i + 2) {
-        start = atoi(argv[i]);
-        end = atoi(argv[i+1]);
 
-        if (start >= 0 && end >= 0 && start <= 100000 && end <= 100000) {
+        if(atoi(argv[i]) > atoi(argv[i+1])){
+            cout << 0 << endl;
+            continue;
+        }
+
+        start = index_start(atoi(argv[i]));
+        end = index_end(atoi(argv[i+1]));
+
+        if (start >= 0 && end >= 0) {
             cout << find_prime_numbers(start, end) << endl;
         } else {
             cout << 0 << endl;
