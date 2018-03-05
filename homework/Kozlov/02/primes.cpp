@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
         else
         {
             process(a_index, b_index);
-            std::cout << counter << ' ';
+            std::cout << counter << endl;
             counter = 0;
         }
     }
