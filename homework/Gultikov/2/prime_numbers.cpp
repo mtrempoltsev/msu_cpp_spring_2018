@@ -28,7 +28,7 @@ void Eratosthenes_sieve(int Size, bool* sieve)
 	{
 		if (sieve[i])
 		{
-			if (i * 1ll * i <=Size)
+			if (i * 1ll * i <= Size)
 			{
 				for (int j = i * i; j <= Size; j += i)
 					sieve[j] = false;
@@ -45,16 +45,15 @@ int main(int argc, char* argv[])
     }
 
     int num = (argc - 1)/2;
-    int *left = new int[argc - 1];
-    int *right = new int[argc - 1];
+    int *left = new int[num];
+    int *right = new int[num];
 
-    bool *sieve = new bool[Size];
-    for(int i = 0; i < Size; ++i)
+    bool *sieve = new bool[Data[Size - 1] + 1];
+    for(int i = 0; i <= Data[Size - 1]; ++i)
     {
         sieve[i] = true;
     }
-
-    Eratosthenes_sieve(Size, sieve);
+    Eratosthenes_sieve(Data[Size - 1], sieve);
 
     for (int i = 0; i < num; ++i)
     {
@@ -81,6 +80,5 @@ int main(int argc, char* argv[])
         }
         std::cout<<c<<std::endl;
     }
-
 return 0;
 }
