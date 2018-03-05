@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
         else
         {
             process(a_index, b_index);
-            std::cout << counter << endl;
+            std::cout << counter << std::endl;
             counter = 0;
         }
     }
