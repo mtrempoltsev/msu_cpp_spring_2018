@@ -71,5 +71,9 @@ int main() {
     cout << "the sum of the columns of the matrix = "
          << sum_col_matrix(matrix, m, n)
          << endl;
+    for(int i = 0; i < m; ++i) {
+        delete[] matrix[i];
+    }
+    delete[] matrix;
     return 0;
 }
