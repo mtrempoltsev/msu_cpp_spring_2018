@@ -36,18 +36,12 @@ int main(int argc, char *argv[])
 
 	const int countOfPairs = (argc-1) / 2;
 
-	int *max_arr = new int[countOfPairs];
-	int *min_arr = new int[countOfPairs];
-
-	for (int i = 0; i < countOfPairs; i++)
-	{
-		min_arr[i] = atoi(argv[1 + 2 * i]);
-		max_arr[i] = atoi(argv[2 * i + 1 + 1]);
-	}
-
 	for (int j = 0; j < countOfPairs; j++)
 	{
-		if (min_arr[j] > max_arr[j])
+		int min_p = atoi(argv[1 + 2 * j]);
+		int max_p = atoi(argv[2 * j + 1 + 1]);
+
+		if (min_p > max_p)
 		{
 			std::cout << 0;
 			return 0;
@@ -64,7 +58,7 @@ int main(int argc, char *argv[])
 		int i = 0;
 		for (; i < Size; i++)
 		{
-			if (Data[i] == min_arr[j])
+			if (Data[i] == min_p)
 			{
 				isMinExist = true;
 				indMin = i;
@@ -75,7 +69,7 @@ int main(int argc, char *argv[])
 		i = Size - 1;
 		for (; i >= 0; i--)
 		{
-			if (Data[i] == max_arr[j])
+			if (Data[i] == max_p)
 			{
 				isMaxExist = true;
 				indMax = i;
@@ -98,9 +92,7 @@ int main(int argc, char *argv[])
 		std::cout << prime_counter << '\n';
 	}
 
-	free(sieve);
-	free(min_arr);
-	free(max_arr);
+	delete[] sieve;
 
 	return 0;
 }
