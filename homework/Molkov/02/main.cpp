@@ -54,14 +54,19 @@ int main(int argc, char* argv[])
 		right = bin_search(Data, 0, Size, tmp2);
 
 		int count = 0;
-		for (int i = left; i <= right; i++) {
-			if (arr[Data[i]]) {
-				count++;
+		if (left == -1)
+			std::cout << count << "\n";
+		else {
+			for (int i = left; i <= right; i++) {
+				if (arr[Data[i]]) {
+					count++;
+				}
 			}
 		}
 
 		std::cout << count << "\n";
 	}
+	delete [] arr;
 	//system("pause");
 	return 0;
 }
