@@ -13,19 +13,19 @@ int check(const int& x)
 	return 1;
 }
 
-int searchIndex(int pos, const int *data, int s, bool begin)
+int searchIndex(int pos, const int *data,cosnt int& s, bool begin)
 {
 	if (begin)
 	{
 		for (int i = 0; i < s; i++)
 			if (data[i] == pos)
 				return i;
-		return -1;
+		return s;
 	}
 	for (int i = s; i > -1; i--)
 		if (data[i] == pos)
 			return i;
-	return -1;
+	return 0;
 }
 
 int main(int argc, char** argv)
