@@ -1,6 +1,4 @@
 #include <iostream>
-#include <vector>
-#include <utility>
 #include <cstdlib>
 #include "numbers.dat"
 
@@ -87,20 +85,16 @@ int main(int argc, char* argv[])
 
     if (argc == 1 || (argc % 2 == 0) ) return -1;
 
-    std::vector<int> v;
 
     for (i = 0; i < (argc - 1) ; i+=2)
     {
-        v.push_back(std::atoi(argv[i+1]));
-        v.push_back(std::atoi(argv[i+2]));
-
-        if (check(v[i], v[i+1])) return -1;
+        if ( check(std::atoi(argv[i+1]), std::atoi(argv[i+2]) ) ) return -1;
     }
 
     for (i = 0; i < argc - 1; i += 2)
     {
-        a_index = lower(v[i]);
-        b_index = upper(v[i+1]);
+        a_index = lower(std::atoi(argv[i+1]));
+        b_index = upper(std::atoi(argv[i+2]));
         std::cout << process(a_index, b_index) << std::endl;
     }
     return 0;
