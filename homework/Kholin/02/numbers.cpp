@@ -1,9 +1,11 @@
 #include "numbers.dat"
 #include <iostream>
+#include <memory>
 
 int main(int argc, char *argv[]) {
     const int max = 100001;
-    bool* isPrime = static_cast<bool*>(malloc(max * sizeof(bool)));
+    std::unique_ptr<bool[]> isPrime_ptr(new bool[max]);
+    bool* isPrime = isPrime_ptr.get();
     for (int i = 0; i < max; ++i) {
         isPrime[i] = true;
     }
@@ -16,7 +18,8 @@ int main(int argc, char *argv[]) {
         }
     }
     
-    int* countOfPrimeNumber = static_cast<int*>(malloc(Size * sizeof(int)));
+    std::unique_ptr<int[]> countOfPrimeNumber_ptr(new int[Size]);
+    int* countOfPrimeNumber = countOfPrimeNumber_ptr.get();
     countOfPrimeNumber[0] = isPrime[Data[0]];
     for (int i = 1; i < Size; ++i) {
         countOfPrimeNumber[i] = countOfPrimeNumber[i - 1] + isPrime[Data[i]];
@@ -31,8 +34,6 @@ int main(int argc, char *argv[]) {
         int m = atoi(argv[k + 1]);
         if (m < n) {
             std::cout << 0 << std::endl;
-            free(isPrime);
-            free(countOfPrimeNumber);
             return 0;
         }
         int i = 0;
@@ -40,8 +41,6 @@ int main(int argc, char *argv[]) {
             ++i;
         }
         if (i >= Size) {
-            free(isPrime);
-            free(countOfPrimeNumber);
             std::cout << 0 << std::endl;
             return 0;
         }
@@ -51,13 +50,9 @@ int main(int argc, char *argv[]) {
         }
         if (j < 0) {
             std::cout << 0 << std::endl;
-            free(isPrime);
-            free(countOfPrimeNumber);
             return 0;
         }
         std::cout << countOfPrimeNumber[j] - countOfPrimeNumber[i] + isPrime[Data[i]] << std::endl;
     }
     return 0;
-    free(isPrime);
-    free(countOfPrimeNumber);
 }
