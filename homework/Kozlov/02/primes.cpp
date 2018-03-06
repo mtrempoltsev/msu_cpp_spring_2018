@@ -9,8 +9,6 @@ int lower(int);
 int upper(int);
 bool check(int, int);
 
-int _size = sizeof(Data) / sizeof(int);
-int counter = 0;
 
 bool check(int a, int b)
 {
@@ -28,7 +26,7 @@ bool prime(int a)
 
 int lower(int a)
 {
-    int l = 0, r = _size - 1;
+    int l = 0, r = Size - 1;
 
     while (l < r)
     {
@@ -43,7 +41,7 @@ int lower(int a)
 
 int upper(int a)
 {
-      int l = 0, r = _size - 1;
+      int l = 0, r = Size - 1;
       while (l < r)
       {
         int m = r - (r - l)/2;
@@ -55,8 +53,9 @@ int upper(int a)
       return Data[l] == a ? l : -1;
 }
 
-void process(int l, int r)
+int process(int l, int r)
 {
+    int counter = 0;
     while (l <= r)
     {
         if (prime( Data[l] ) )
@@ -77,6 +76,7 @@ void process(int l, int r)
             while (l <= r && Data[l] == Data[l-1]);
         }
     }
+    return counter;
 }
 
 
@@ -87,29 +87,21 @@ int main(int argc, char* argv[])
 
     if (argc == 1 || (argc % 2 == 0) ) return -1;
 
-    std::vector<std::pair<int, int> > v(1);
+    std::vector<int> v;
 
-    for (i = 0; i < (argc - 1) / 2; ++i)
+    for (i = 0; i < (argc - 1) ; i+=2)
     {
-        v[i].first = std::atoi(argv[2*i+1]);
-        v[i].second = std::atoi(argv[2*i+2]);
+        v.push_back(std::atoi(argv[i+1]));
+        v.push_back(std::atoi(argv[i+2]));
 
-        if (check(v[i].first, v[i].second)) return -1;
-        
+        if (check(v[i], v[i+1])) return -1;
     }
 
-    for (i = 0; i < (argc - 1) / 2; ++i)
+    for (i = 0; i < argc - 1; i += 2)
     {
-        a_index = lower(v[i].first);
-        b_index = upper(v[i].second);
-        if ( a_index == -1 || b_index == -1)
-            std::cout << 0 << ' ';
-        else
-        {
-            process(a_index, b_index);
-            std::cout << counter << std::endl;
-            counter = 0;
-        }
+        a_index = lower(v[i]);
+        b_index = upper(v[i+1]);
+        std::cout << process(a_index, b_index) << std::endl;
     }
     return 0;
 }
