@@ -49,9 +49,7 @@ int main(int argc, char* argv[])
 	if ((argc == 1) || (argc % 2 == 0))
 		return -1;
 	int first, last, summa = 0;
-	int *prime = new int[options::size];
-	for (int i = 0; i < options::size; i++)
-		prime[i] = 0;
+	int *prime = new int[options::size]();
 	eratosphen(prime);
 	for (int i = 0; i < (argc - 1) / 2; i++)
 	{
@@ -68,4 +66,5 @@ int main(int argc, char* argv[])
 			summa += !prime[Data[j]];
 		std::cout << summa << std::endl;
 	}
+        delete[] prime;
 }
