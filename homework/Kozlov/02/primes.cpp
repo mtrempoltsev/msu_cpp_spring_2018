@@ -10,7 +10,7 @@ bool check(int, int);
 
 bool check(int a, int b)
 {
-    return (std::min(a,b) < 0 || std::max(a,b) > 100000 );
+    return (std::min(a,b) < 0 || std::max(a,b) > 100000 || a < 0 || b < 0 );
 }
 
 bool prime(int a)
@@ -53,6 +53,7 @@ int upper(int a)
 
 int process(int l, int r)
 {
+    if ( check(l, r) ) return 0;
     int counter = 0;
     while (l <= r)
     {
@@ -85,11 +86,6 @@ int main(int argc, char* argv[])
 
     if (argc == 1 || (argc % 2 == 0) ) return -1;
 
-
-    for (i = 0; i < (argc - 1) ; i+=2)
-    {
-        if ( check(std::atoi(argv[i+1]), std::atoi(argv[i+2]) ) ) return -1;
-    }
 
     for (i = 0; i < argc - 1; i += 2)
     {
