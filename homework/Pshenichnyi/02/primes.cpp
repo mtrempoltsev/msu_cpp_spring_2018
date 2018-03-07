@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "numbers.dat"
 #include <cmath>
-
+#include <cstring>
 
 int gener_prime_seq (int *a, int n, int x) //сгенерировать массив простых чисел меньших x
 {
@@ -72,8 +72,11 @@ int main(int argc, char* argv[])
 								  того чтобы знать сколько выделить памяти для массива прост.чис.*/ 
 
 	p = new int[max/2 + 1]; //массив простых чисел
+	//memset(p,0,(max/2+1)*sizeof(int)); 
 	if (gener_prime_seq (p, max/2 + 1, max) < 0)
 	{
+		delete[] p;
+		delete[] intervals;
 		return 0;
 	}
 
