@@ -4,8 +4,7 @@
 
 bool is_prime(int val)
 {
-    int sqrt_val = trunc(sqrt(val));
-    for (int i = 2; i <= sqrt_val; i++) {
+    for (int i = 2; i*i <= val; i++) {
         if (!(val % i)) {
             return false;
         }
