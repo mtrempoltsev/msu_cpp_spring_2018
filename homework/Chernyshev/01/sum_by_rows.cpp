@@ -5,19 +5,19 @@
 
 
 // Constants for matrix sizes
-enum Sizes : size_t
+namespace Sizes
 {
-    max_rows = 10'000,
-    max_cols = 10'000,
-};
+    constexpr size_t max_rows = 10'000;
+    constexpr size_t max_cols = 10'000;
+}
 
 // Constants for random generator
-enum Random
+namespace Random
 {
-    seed = 0xbadf00dU,
-    min_value = -10'000,
-    max_value = 10'000,
-};
+    constexpr unsigned seed = 0xbadf00dU;
+    constexpr int min_value = -10'000;
+    constexpr int max_value = 10'000;
+}
 
 
 // Timer class

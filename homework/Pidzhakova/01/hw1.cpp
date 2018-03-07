@@ -59,6 +59,11 @@ int main() {
         }
     }
     cout << "result=" << result << "\n" << endl;
+    
+    //clear memory
+    for (size_t i =0; i < rows; i++){
+        delete[] array[i];
+    }
     delete[] array;
     return 0;
 }

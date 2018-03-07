@@ -1,0 +1,43 @@
+#include "numbers.dat"
+#include <iostream>
+
+int check(const int& x)
+{
+	if (x == 2)
+		return 1;
+	if (x < 2 || !(x & 1))
+		return 0;
+	for (int i = 3; i*i <= x; i += 2)
+		if (x % i == 0)
+			return 0;
+	return 1;
+}
+
+int searchIndex(int pos, const int *data,cosnt int& s, bool begin)
+{
+	if (begin)
+	{
+		for (int i = 0; i < s; i++)
+			if (data[i] == pos)
+				return i;
+		return s;
+	}
+	for (int i = s; i > -1; i--)
+		if (data[i] == pos)
+			return i;
+	return 0;
+}
+
+int main(int argc, char** argv)
+{
+	int count;
+	if (argc < 3 || argc % 2 == 0) return -1;
+	for (int i = 1; i < argc; i += 2)
+	{
+		count = 0;
+		for (int j = searchIndex(std::atoi(argv[i]), Data, Size, true); j <= searchIndex(std::atoi(argv[i + 1]), Data, Size, false); j++)
+			count += check(Data[j]);
+		std::cout << count << std::endl;
+	}
+	return 0;
+}
