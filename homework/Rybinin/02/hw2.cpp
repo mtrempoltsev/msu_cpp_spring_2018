@@ -1,8 +1,6 @@
 #include <iostream>
 #include "numbers.dat"
 
-const int MAX_V = 1e5;
-
 int* find_primes(int asize)
 {
     int *arr = (int *)malloc(asize * sizeof(int));
@@ -30,6 +28,7 @@ int* create_map(int asize)
 int main(int argc, char* argv[])
 {
     if (argc % 2 == 0 || argc == 1) return -1;
+    const int MAX_V = 1e5;
     int *index = create_map(MAX_V + 1);
     int *prime = find_primes(MAX_V + 1);
     for (int i = 1; i < argc; i += 2)
