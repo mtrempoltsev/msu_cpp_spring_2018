@@ -3,22 +3,27 @@
 #include <stdio.h>
 #include "numbers.dat"
 #include <cmath>
+#define TRUE 1
+#define FALSE 0
 
-int gener_prime_seq (int *a, int x) //сгенерировать массив простых чисел меньших x
+int gener_prime_seq (int *a, int n, int x) //сгенерировать массив простых чисел меньших x
 {
-	int i,p = 3;
-	int size = 1;
+	int i;
+	int p = 3; //простое число которое и будем добавлять в массив
+	int size = 1; //размер генерируемого массива
 	a[0] = 2;
-	bool status;
+	bool status; //прошло ли число проверку на простоту для дальнейшего добавления в массив пр.чис.
 
 	while (p <= x)
 	{
-		status = 1;
+		if (size > n) return -1; //ошибка с размером массива
+
+		status = TRUE;
 		for (i = 0; i < size; i ++)
 		{
 			if (p % a[i] == 0) 
 			{
-				status = 0;
+				status = FALSE;
 				break;
 			}
 		}
@@ -32,7 +37,7 @@ int gener_prime_seq (int *a, int x) //сгенерировать массив п
 	return size;
 }
 
-int count_prime (const int *a, int n, int *p, int start, int finish)
+int count_prime (const int *a, int n, int *p, int start, int finish) //возвращает количество прост чисел на ОДНОМ промежутке
 {
 	int i = 0,j = 0,k = 0;
 
@@ -58,16 +63,21 @@ int main(int argc, char* argv[])
 
 	int *intervals, *p, max = -1;
 
-	intervals = new int[argc -1];
+	intervals = new int[argc -1]; //массив границ 
 	for (int i = 1; i < argc; i ++)
 		intervals[i-1] = atoi(argv[i]);
 
 	for (int i = 0; i < argc-1; i ++)
 		if (intervals[i] > max)
-			max = intervals[i];
+			max = intervals[i]; /*нашли максимальное число из промежутка для 
+								  того чтобы знать сколько выделить памяти для массива прост.чис.*/ 
 
-	p = new int[max/2 + 1];
-	gener_prime_seq (p, max);
+	p = new int[max/2 + 1]; //массив простых чисел
+	if (gener_prime_seq (p, max/2 + 1, max) < 0)
+	{
+		printf("ERROR with len of prime array\n");
+		return 0;
+	}
 
 	int k = 0;
 	for (int i = 0; i < argc - 1; i += 2)
