@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
         return -1;
 
     const int n = 100001;
-    bool *primes = new bool[n]; //массив простых чисел
+    bool *primes = new bool[n];
     sieve(primes, n);
 
     int l, r, ld, rd;
