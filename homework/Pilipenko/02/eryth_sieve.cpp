@@ -1,4 +1,5 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <stdlib.h>
 #include "numbers.dat"
 
 void eryth_sieve(bool *prime, const int m_n) {
@@ -51,9 +52,9 @@ int main(int argc, char *argv[]) {
     int l, l_ind, r, r_ind, result;
     for (size_t i = 1; i < argc; i += 2) {
 
-        l = std::atoi(argv[i]);
+        l = atoi(argv[i]);
         l_ind = binary_s(l);
-        r = std::atoi(argv[i+1]);
+        r = atoi(argv[i+1]);
         r_ind = binary_s(r);
 
         if (l_ind == -1 || r_ind == -1) {
