@@ -1,7 +1,7 @@
 #include <iostream>
-#include <fstream>
 #include <vector>
 #include <cstdlib>
+#include "numbers.dat"
 
 std::vector<bool> eratosphene_sieve(int b){
     std::vector<bool> indic_array;
@@ -14,7 +14,7 @@ std::vector<bool> eratosphene_sieve(int b){
         indic_array[i] = 1;
     }
 
-    for (int64_t i = 2; i < b+1; i++){
+    for (int64_t i = 2; i < b + 1; i++){
 
         if (indic_array[i] != 1){
             continue;
@@ -33,9 +33,9 @@ std::vector<bool> eratosphene_sieve(int b){
     
 }
 
-size_t bin_search(std::vector<int> numbers, int a, bool right_border){
+size_t bin_search(const int * numbers, const int size, int a, bool right_border, bool &except_flag){
     size_t first = 0;
-    size_t last = numbers.size();
+    size_t last = size;
 
     while (first < last){
         size_t mid = (first + last) / 2;
@@ -59,7 +59,7 @@ size_t bin_search(std::vector<int> numbers, int a, bool right_border){
         }
 
         else{
-            std::cout<<0;
+            except_flag = 0;
             return 0;
         }
     }
@@ -76,80 +76,40 @@ size_t bin_search(std::vector<int> numbers, int a, bool right_border){
         }
 
         else{
-            std::cout<<0;
+            except_flag = 0;
             return 0;
         }
     }
 }
 
-/*std::vector<int> atkin_sieve(int a, int b){
-
-}
-
-std::vector<int> primes_int_union(int a, int b, std::vector<int> f_arg, int f_arg_a, int f_arg_b, std::vector<int> s_arg, int s_arg_a, int s_arg_b){
-
-}*/
-
 int main(int argc, char **argv){
-    std::vector<int> data;
-
-    size_t N = 1024;
-
-    data.resize(N);
-
-    std::ifstream file_f;
-    file_f.open("numbers.dat");
-    
-    char buf[256];
-
-    size_t i = 0;
-
-    if (file_f.is_open() && !file_f.eof()){
-        file_f.ignore(256, '\n');
-        file_f.ignore(256, '\n');
-    }
-    else{
-        return -1;
-    }
-
-    while (!file_f.eof()){
-        
-        file_f.getline(buf, 256, ',');
-
-        data[i] = atoi(buf);
-
-        if (i == N - 1){
-            N *= 2;
-            data.resize(N);
-        }
-
-        i++;
-
-    }
-
-    N = i;
-
-    data.resize(N);
 
     if (argc % 2 == 0 || argc == 1){
         std::cout<<"-1"<<std::endl;
         return -1;
     }
 
-    
+    bool except_flag = 0;
+    bool &exc_flag_ref = except_flag;
+
     for (size_t i = 1; i < (argc + 1) / 2; i++){
         int a = atoi(argv[2 * i - 1]);
         int b = atoi(argv[2 * i]);
 
         std::vector<bool> primes = eratosphene_sieve(b);
 
+        size_t first = bin_search(Data, Size, a, 0, exc_flag_ref);
+        size_t last = bin_search(Data, Size, b, 1, exc_flag_ref);
+        
+        if (except_flag){
+            std::cout<<0;
+            return 0;
+        }
+
         int count = 0;
 
-        size_t first = bin_search(data, a, 0);
-        size_t last = bin_search(data, b, 1);
-
         for (size_t j = first; j < last; j++ ){
-            if (primes[data[j]]){
+            if (primes[Data[j]]){
                 count++;
             }
         }
