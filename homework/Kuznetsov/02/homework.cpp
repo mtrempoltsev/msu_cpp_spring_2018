@@ -1,5 +1,12 @@
 #include "numbers.dat"
 #include <iostream>
+
+bool isSimple(int number) {
+	for (int i = 2; i*i <= number; i++) 
+		if (number%i == 0)
+			return false;
+	return number > 1;
+}
 void eratosfen(bool *arr, int size) {
 	arr[0] = false;
 	arr[1] = false;
@@ -26,8 +33,10 @@ int main(int argc, char* argv[]){
 			std::cout << simpleCount<<"\n";
 			continue;
 		}
-		if (Data[Size - 1] < rightNumber)
-			return -1;
+		if (Data[Size - 1] < rightNumber){
+			std::cout << simpleCount << "\n";
+			continue;
+		}
 		bool enterRange = false;
 		for (int i = 0; i < Size; i++) {
 			if (Data[i] == leftNumber)
@@ -37,8 +46,10 @@ int main(int argc, char* argv[]){
 					simpleCount++;
 				if (Data[i] == rightNumber && Data[i + 1] != Data[i])
 					break;
-			}else if(Data[i] >= rightNumber)
-				return -1;
+			}else if (Data[i] >= rightNumber) {
+				simpleCount = 0;
+				break;
+			}
 		}
 		std::cout << simpleCount<<"\n";
 	}
