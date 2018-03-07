@@ -3,8 +3,7 @@
 #include <stdio.h>
 #include "numbers.dat"
 #include <cmath>
-#define TRUE 1
-#define FALSE 0
+#include <cstring>
 
 int gener_prime_seq (int *a, int n, int x) //сгенерировать массив простых чисел меньших x
 {
@@ -18,12 +17,12 @@ int gener_prime_seq (int *a, int n, int x) //сгенерировать масс
 	{
 		if (size > n) return -1; //ошибка с размером массива
 
-		status = TRUE;
+		status = true;
 		for (i = 0; i < size; i ++)
 		{
 			if (p % a[i] == 0) 
 			{
-				status = FALSE;
+				status = false;
 				break;
 			}
 		}
@@ -73,9 +72,11 @@ int main(int argc, char* argv[])
 								  того чтобы знать сколько выделить памяти для массива прост.чис.*/ 
 
 	p = new int[max/2 + 1]; //массив простых чисел
+	//memset(p,0,(max/2+1)*sizeof(int)); 
 	if (gener_prime_seq (p, max/2 + 1, max) < 0)
 	{
-		printf("ERROR with len of prime array\n");
+		delete[] p;
+		delete[] intervals;
 		return 0;
 	}
 
