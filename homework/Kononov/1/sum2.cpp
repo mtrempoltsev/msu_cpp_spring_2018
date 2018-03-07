@@ -21,7 +21,6 @@ class Timer
 
 int main()
 {
-	Timer t;
 	const int DIM = 10000;
 
 	int** array = new int * [DIM];
@@ -33,12 +32,16 @@ int main()
 
 	for (int j = 0; j < DIM; ++j)
 		for (int i = 0; i < DIM; ++i)
-			array[i][j] = 0;
+			array[j][i] = 0;
 	
-	for (int j = 0; j < DIM; ++j)
-		for (int i = 0; i < DIM; ++i)
-			sum += array[i][j];
-	
+	{
+		Timer t;
+		
+		for (int j = 0; j < DIM; ++j)
+			for (int i = 0; i < DIM; ++i)
+				sum += array[i][j];
+	}
+
 	for (int i = 0; i < DIM; ++i)
 		delete [] array[i];
 
