@@ -10,7 +10,7 @@ std::vector<bool> eratosphene_sieve(int b){
     indic_array[0] = 0;
     indic_array[1] = 0;
 
-    for (size_t i = 2; i < b + 1; i++){
+    for (int i = 2; i < b + 1; i++){
         indic_array[i] = 1;
     }
 
@@ -33,12 +33,12 @@ std::vector<bool> eratosphene_sieve(int b){
     
 }
 
-size_t bin_search(const int * numbers, const int size, int a, bool right_border, bool &except_flag){
-    size_t first = 0;
-    size_t last = size;
+int bin_search(const int * numbers, const int size, int a, bool right_border){
+    int first = 0;
+    int last = size;
 
     while (first < last){
-        size_t mid = (first + last) / 2;
+        int mid = (first + last) / 2;
         if (a <= numbers[mid]){
             last = mid;
         }
@@ -59,8 +59,7 @@ size_t bin_search(const int * numbers, const int size, int a, bool right_border,
         }
 
         else{
-            except_flag = 0;
-            return 0;
+            return -1;
         }
     }
     else{
@@ -76,8 +75,7 @@ size_t bin_search(const int * numbers, const int size, int a, bool right_border,
         }
 
         else{
-            except_flag = 0;
-            return 0;
+            return -1;
         }
     }
 }
@@ -89,26 +87,23 @@ int main(int argc, char **argv){
         return -1;
     }
 
-    bool except_flag = 0;
-    bool &exc_flag_ref = except_flag;
-
-    for (size_t i = 1; i < (argc + 1) / 2; i++){
+    for (int i = 1; i < (argc + 1) / 2; i++){
         int a = atoi(argv[2 * i - 1]);
         int b = atoi(argv[2 * i]);
 
         std::vector<bool> primes = eratosphene_sieve(b);
 
-        size_t first = bin_search(Data, Size, a, 0, exc_flag_ref);
-        size_t last = bin_search(Data, Size, b, 1, exc_flag_ref);
+        int first = bin_search(Data, Size, a, false);
+        int last = bin_search(Data, Size, b, true);
         
-        if (except_flag){
+        if (first == -1|| last == -1){
             std::cout<<0;
             return 0;
         }
 
         int count = 0;
 
-        for (size_t j = first; j < last; j++ ){
+        for (int j = first; j < last; j++ ){
             if (primes[Data[j]]){
                 count++;
             }
