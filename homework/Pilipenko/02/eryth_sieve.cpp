@@ -1,13 +1,11 @@
 #include <bits/stdc++.h>
 #include "numbers.dat"
 
-const int MAX_N = 100004;
-
-void eryth_sieve(bool *prime) {
+void eryth_sieve(bool *prime, const int m_n) {
     prime[0] = prime[1] = true;
-    for (size_t i = 2; i < MAX_N; i++) {
+    for (size_t i = 2; i < m_n; i++) {
         if (!prime[i]) {
-            for (size_t j = 2 * i; j < MAX_N; j += i) {
+            for (size_t j = 2 * i; j < m_n; j += i) {
                 prime[j] = true;
             }
         }
@@ -43,10 +41,12 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
+    const int MAX_N = 100004;
+
     bool *prime = new bool[MAX_N];
     std::fill_n(prime, MAX_N, false);
 
-    eryth_sieve(prime);
+    eryth_sieve(prime, MAX_N);
 
     int l, l_ind, r, r_ind, result;
     for (size_t i = 1; i < argc; i += 2) {
