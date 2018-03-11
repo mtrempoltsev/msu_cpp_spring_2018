@@ -6,23 +6,6 @@
 #include <chrono>
 using namespace std;
 
-class Timer
-{
-public:
-    Timer()
-            : start_(chrono::high_resolution_clock::now())
-    {
-    }
-
-    ~Timer()
-    {
-        const auto finish = chrono::high_resolution_clock::now();
-        cout << chrono::duration_cast<chrono::microseconds>(finish - start_).count() << " us" << endl;
-    }
-
-private:
-    const chrono::high_resolution_clock::time_point start_;
-};
 
 int bin_search(const int *array, int l, int r, int key)
 {
@@ -41,7 +24,7 @@ int bin_search(const int *array, int l, int r, int key)
 
 
 void ert(bool *array, int size) {
-    for (int i = 0; i < size; i++)
+    for (int i = 2; i < size; i++)
         array[i] = true;
 
     for (int i = 2; ((i*i) < size); i++) {
@@ -61,10 +44,8 @@ int main(int argc, char* argv[])
     bool *array;
     array = new bool[Data[Size - 1]];
 
-    Timer total_time;
     ert(array, Size - 1);
 
-    Timer test_time;
     int l, r;
     for (int i = 1; i < argc; i += 2) {
         int arg1 = atoi(argv[i]);
@@ -74,7 +55,7 @@ int main(int argc, char* argv[])
 
         int count = 0;
         if (l == -1)
-            cout << 0 << endl;
+            return -1;
         else {
             for (int j = l; j <= r; j++) {
                 if (array[Data[j]]) {
@@ -88,5 +69,4 @@ int main(int argc, char* argv[])
     delete [] array;
     return 0;
 }
-
 
