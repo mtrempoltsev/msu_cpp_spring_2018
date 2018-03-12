@@ -2,7 +2,6 @@
 #include <iostream>
 #include "numbers.dat"
 #include <chrono>
-using namespace std;
 
 
 int bin_search(const int *array, int l, int r, int key)
@@ -48,8 +47,8 @@ int main(int argc, char* argv[])
 
     int l, r;
     for (int i = 1; i < argc; i += 2) {
-        int arg1 = atoi(argv[i]);
-        int arg2 = atoi(argv[i + 1]);
+        int arg1 = std::atoi(argv[i]);
+        int arg2 = std::atoi(argv[i + 1]);
         l = bin_search(Data, 0, Size, arg1);
         r = bin_search(Data, l, Size, arg2);
 
@@ -64,7 +63,7 @@ int main(int argc, char* argv[])
             }
         }
 
-        cout << count << endl;
+        std::cout << count << std::endl;
     }
     delete [] array;
     return 0;
