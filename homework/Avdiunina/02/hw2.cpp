@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
     bool *array;
     array = new bool[Data[Size - 1]];
 
-    ert(array, Size - 1);
+    ert(array, Data[Size - 1]);
 
     int l, r;
     for (int i = 1; i < argc; i += 2) {
