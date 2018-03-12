@@ -1,9 +1,8 @@
-//
-// Created by polina997 on 3/3/18.
-//
+
 #include <iostream>
 #include "numbers.dat"
 #include <chrono>
+using namespace std;
 
 
 int bin_search(const int *array, int l, int r, int key)
@@ -25,11 +24,13 @@ int bin_search(const int *array, int l, int r, int key)
 void ert(bool *array, int size) {
     for (int i = 2; i < size; i++)
         array[i] = true;
+    array[0] = false;
+    array[1] = false;
 
     for (int i = 2; ((i*i) < size); i++) {
         if (array[i])
-            for (int j = (i*i); j < size; j += i) {
-               array[j] = false;
+            for (int j = (2*i); j < size; j += i) {
+                array[j] = false;
             }
     }
 }
@@ -47,8 +48,8 @@ int main(int argc, char* argv[])
 
     int l, r;
     for (int i = 1; i < argc; i += 2) {
-        int arg1 = std::atoi(argv[i]);
-        int arg2 = std::atoi(argv[i + 1]);
+        int arg1 = atoi(argv[i]);
+        int arg2 = atoi(argv[i + 1]);
         l = bin_search(Data, 0, Size, arg1);
         r = bin_search(Data, l, Size, arg2);
 
@@ -63,9 +64,8 @@ int main(int argc, char* argv[])
             }
         }
 
-        std::cout << count << std::endl;
+        cout << count << endl;
     }
     delete [] array;
     return 0;
 }
-
