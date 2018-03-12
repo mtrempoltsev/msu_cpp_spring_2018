@@ -1,12 +1,6 @@
 #include "numbers.dat"
 #include <iostream>
 
-bool isSimple(int number) {
-	for (int i = 2; i*i <= number; i++) 
-		if (number%i == 0)
-			return false;
-	return number > 1;
-}
 void eratosfen(bool *arr, int size) {
 	arr[0] = false;
 	arr[1] = false;
