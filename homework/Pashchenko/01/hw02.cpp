@@ -58,12 +58,44 @@ int right(int edge)
     return -1;
 }
 
+const int primeNumber(void)
+{
+    int s = Size, c = 0;
+    while(s != 0)
+    {
+        s /= 10;
+        c++;
+    }
+    
+    if(c <= 3)
+        return 169;
+    if(c == 4)
+        return 1230;
+    if(c == 5)
+        return 9593;
+    if(c == 6)
+        return 78499;
+    if(c == 7)
+        return 664580;
+    if(c == 8)
+        return 5761456;
+    if(c == 9)
+        return 50847535;
+    else
+    {
+        std::cout << "too much primes" << std::endl;
+        return -1;
+    }
+}
+
 int main(int argc, char *argv[])
 {
     if(!(argc & 1) || argc == 1)
         return -1;
 
-    const int n = Size + 1;
+    
+    const int n = primeNumber();
+    
     bool *primes = new bool[n];
     sieve(primes, n);
 
