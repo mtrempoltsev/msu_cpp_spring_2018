@@ -37,12 +37,12 @@ int main(int argc, char *argv[]) {
     if (argc < 2) {
         return -1;
     }
-    int N = 0;
-    for (int i = 0; i < Size; i++) {
+    int N = Data[Size - 1];
+    /*for (int i = 0; i < Size; i++) {
         if (Data[i] > N) {
             N = Data[i];
         }
-    }
+    }*/
     for (int i = 1; i < argc; i+=2) {
         int beg, end;
         beg = std::atoi(argv[i]);
