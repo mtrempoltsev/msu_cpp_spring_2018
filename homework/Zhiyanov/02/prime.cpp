@@ -41,6 +41,11 @@ int main(int argc, char* argv[]){
         if (indr == -1)
             indr = Size - 1;
 
+        if (Data[indr] != r || Data[indl] != l){
+            std::cout << 0 << "\n";
+            continue;
+        }
+
         int count = 0;
 
         for (int j = indl; j <= indr; ++j)
