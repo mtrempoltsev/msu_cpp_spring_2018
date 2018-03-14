@@ -271,7 +271,6 @@ public:
 	}
 	~Farmer() {
 		std::cout << "I'm died, Farmer" << std::endl;
-		system("pause");
 	}
 };
 
