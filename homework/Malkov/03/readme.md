@@ -1,1 +1,1 @@
-![UML diagram of classes](TheMiddleAges.png)
+![UML diagram](TheMiddleAges.png)
