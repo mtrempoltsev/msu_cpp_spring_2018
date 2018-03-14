@@ -1,4 +1,4 @@
-//Kononov Sergey BD.11
+//Kononov Sergey BD-11
 
 #include <list> 
 
