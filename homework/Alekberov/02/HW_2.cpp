@@ -5,7 +5,7 @@
 #include "numbers.dat"
 
 
-bool* getSieve (const int sizeSieve) {
+bool* getSieve (int sizeSieve) {
   bool* result = new bool[sizeSieve];
   std::fill_n (result, sizeSieve, true);
 
