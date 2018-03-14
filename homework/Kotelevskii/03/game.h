@@ -2,41 +2,41 @@
 #include<iostream>
 #include <string>
 
-// класс одушевленных объектов
+// РєР»Р°СЃСЃ РѕРґСѓС€РµРІР»РµРЅРЅС‹С… РѕР±СЉРµРєС‚РѕРІ
 class animate
 {
 protected:
-	int health; //у каждого есть какое-то здоровье, если оно <= то существо погибает
+	int health; //Гі ГЄГ Г¦Г¤Г®ГЈГ® ГҐГ±ГІГј ГЄГ ГЄГ®ГҐ-ГІГ® Г§Г¤Г®Г°Г®ГўГјГҐ, ГҐГ±Г«ГЁ Г®Г­Г® <= ГІГ® Г±ГіГ№ГҐГ±ГІГўГ® ГЇГ®ГЈГЁГЎГ ГҐГІ
 	void set_health(int q);
 	std::string personal_name; 
 	void set_personal_name(std::string N_name);
-	int damage_without_weapon; //урон существа без оружия ( у людей ещё отдельно может быть урон от оружия )
+	int damage_without_weapon; //ГіГ°Г®Г­ Г±ГіГ№ГҐГ±ГІГўГ  ГЎГҐГ§ Г®Г°ГіГ¦ГЁГї ( Гі Г«ГѕГ¤ГҐГ© ГҐГ№Вё Г®ГІГ¤ГҐГ«ГјГ­Г® Г¬Г®Г¦ГҐГІ ГЎГ»ГІГј ГіГ°Г®Г­ Г®ГІ Г®Г°ГіГ¦ГЁГї )
 	void set_damage_without_weapon(int d);
 public:
 	animate();
 	~animate();
 };
 
-// класс неодушевленных объектов
+// ГЄГ«Г Г±Г± Г­ГҐГ®Г¤ГіГёГҐГўГ«ГҐГ­Г­Г»Гµ Г®ГЎГєГҐГЄГІГ®Гў
 class inanimate
 {
 protected:
-	int weigth; //вес предмета, которые он будет занимать в рюкзаке у человека
-	int condition; //100- идеальное состояние, 0 - сломан
+	int weigth; //ГўГҐГ± ГЇГ°ГҐГ¤Г¬ГҐГІГ , ГЄГ®ГІГ®Г°Г»ГҐ Г®Г­ ГЎГіГ¤ГҐГІ Г§Г Г­ГЁГ¬Г ГІГј Гў Г°ГѕГЄГ§Г ГЄГҐ Гі Г·ГҐГ«Г®ГўГҐГЄГ 
+	int condition; //100- ГЁГ¤ГҐГ Г«ГјГ­Г®ГҐ Г±Г®Г±ГІГ®ГїГ­ГЁГҐ, 0 - Г±Г«Г®Г¬Г Г­
 	void set_weigth(int q);
-	void change_condition();//после использования предмета его качество будет меняться
+	void change_condition();//ГЇГ®Г±Г«ГҐ ГЁГ±ГЇГ®Г«ГјГ§Г®ГўГ Г­ГЁГї ГЇГ°ГҐГ¤Г¬ГҐГІГ  ГҐГЈГ® ГЄГ Г·ГҐГ±ГІГўГ® ГЎГіГ¤ГҐГІ Г¬ГҐГ­ГїГІГјГ±Гї
 public:
 	inanimate();
 	~inanimate();
 };
 
-// класс людей
+// ГЄГ«Г Г±Г± Г«ГѕГ¤ГҐГ©
 class human: public animate
 {
 protected:
-	bool gender; //0-женщина, 1-мужчина
-	int age; //возраст может меняться
-	int full_damage; // полный урон, учитывающий урон оружия и силу человека
+	bool gender; //0-Г¦ГҐГ­Г№ГЁГ­Г , 1-Г¬ГіГ¦Г·ГЁГ­Г 
+	int age; //ГўГ®Г§Г°Г Г±ГІ Г¬Г®Г¦ГҐГІ Г¬ГҐГ­ГїГІГјГ±Гї
+	int full_damage; // ГЇГ®Г«Г­Г»Г© ГіГ°Г®Г­, ГіГ·ГЁГІГ»ГўГ ГѕГ№ГЁГ© ГіГ°Г®Г­ Г®Г°ГіГ¦ГЁГї ГЁ Г±ГЁГ«Гі Г·ГҐГ«Г®ГўГҐГЄГ 
 	void set_full_damage(int d);
 	void set_gender(bool g);
 	void set_age(int a);
@@ -45,7 +45,7 @@ public:
 	~human();
 };
 
-//класс животных
+//ГЄГ«Г Г±Г± Г¦ГЁГўГ®ГІГ­Г»Гµ
 class animal : public animate
 {
 public:
@@ -53,7 +53,7 @@ public:
 	~animal();
 };
 
-//класс свиней
+//ГЄГ«Г Г±Г± Г±ГўГЁГ­ГҐГ©
 class pig : public animal
 {
 public:
@@ -62,18 +62,18 @@ public:
 };
 
 
-//класс оружия
+//ГЄГ«Г Г±Г± Г®Г°ГіГ¦ГЁГї
 class weapon : public inanimate
 {
 protected:
-	int weapon_damage; //урон оружия
+	int weapon_damage; //ГіГ°Г®Г­ Г®Г°ГіГ¦ГЁГї
 	void set_weapon_damage(int d);
 public:
 	weapon();
 	~weapon();
 };
 
-//класс рыцарей
+//ГЄГ«Г Г±Г± Г°Г»Г¶Г Г°ГҐГ©
 class knight : public human
 {
 public:
@@ -82,7 +82,7 @@ public:
 	lats* Lats;
 	~knight();
 };
-//класс лучников
+//ГЄГ«Г Г±Г± Г«ГіГ·Г­ГЁГЄГ®Гў
 class archer : public human
 {
 public:
@@ -91,7 +91,7 @@ public:
 	hauberk* Hauberk;
 	~archer();
 };
-//класс крестьян
+//ГЄГ«Г Г±Г± ГЄГ°ГҐГ±ГІГјГїГ­
 class peasant : public human
 {
 public:
@@ -100,21 +100,21 @@ public:
 	~peasant();
 };
 
-//класс мечей
+//ГЄГ«Г Г±Г± Г¬ГҐГ·ГҐГ©
 class sword :public weapon
 {
 public:
 	sword();
 	~sword();
 };
-//класс луков
+//ГЄГ«Г Г±Г± Г«ГіГЄГ®Гў
 class bow :public weapon
 {
 public:
 	bow();
 	~bow();
 };
-//класс лопат
+//ГЄГ«Г Г±Г± Г«Г®ГЇГ ГІ
 class shovel :public weapon
 {
 public:
@@ -132,7 +132,7 @@ public:
 	~armor();
 };
 
-//латы
+//Г«Г ГІГ»
 class lats : public armor
 {
 public:
@@ -140,7 +140,7 @@ public:
 	~lats();
 };
 
-//кольчуга
+//ГЄГ®Г«ГјГ·ГіГЈГ 
 class hauberk : public armor
 {
 public:
