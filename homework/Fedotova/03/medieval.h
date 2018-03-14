@@ -11,6 +11,7 @@ private:
     unsigned hp, attack, defense;
 public:
     Alive(const std::string & name, unsigned hp, unsigned attack, unsigned defense);
+    virtual ~Alive() = default;
     friend void Battle(Alive * comp1, Alive * comp2);
 };
 
@@ -27,7 +28,7 @@ private:
     void Destroy(unsigned br);
 public:
     Thing(const std::string & name, unsigned firm);
-    virtual ~Thing();
+    virtual ~Thing() = default;
     friend void Battle(Alive * comp1, Alive * comp2);
     friend class Human;
     virtual std::string NameOfClass() const = 0;
@@ -43,26 +44,25 @@ private:
     unsigned attack;
 public:
     Arsenal(const std::string & name, unsigned firm, unsigned attack);
-    virtual ~Arsenal();
-    virtual std::string NameOfClass() const = 0;
+    ~Arsenal();
 };
 
 class Shovel: public Arsenal
 {
 public:
-    std::string NameOfClass() const;
+    std::string NameOfClass() const override;
 };
 
 class Sword: public Arsenal
 {
 public:
-    std::string NameOfClass() const;
+    std::string NameOfClass() const override;
 };
 
 class Arch: public Arsenal
 {
 public:
-    std::string NameOfClass() const;
+    std::string NameOfClass() const override;
 };
 
 class Armor: public Thing
@@ -71,20 +71,19 @@ private:
     unsigned defense;
 public:
     Armor(const std::string & name, unsigned firm, unsigned defense);
-    virtual ~Armor();
-    virtual std::string NameOfClass() const = 0;
+    ~Armor();
 };
 
 class Lats: public Armor
 {
 public:
-    std::string NameOfClass() const;
+    std::string NameOfClass() const override;
 };
 
 class Chain: public Armor
 {
 public:
-    std::string NameOfClass() const;
+    std::string NameOfClass() const override;
 };
 
 class Human: public Alive
@@ -101,7 +100,7 @@ private:
     std::set<std::string> armors; 
 public:
     Human(const std::string & name, bool gender, unsigned hp, unsigned attack, unsigned defense, const std::set<std::string> & arsenals, const std::set<std::string> & armors);
-    virtual ~Human();
+    ~Human();
     void TakeArsenal(Arsenal * pars);
     void TakeArmor(Armor * parm);
     void RemoveArsenal();
@@ -138,7 +137,7 @@ class Animal: public Alive
 {
 public:
     Animal(const std::string & name, unsigned hp, unsigned attack, unsigned defense);
-    virtual ~Animal();
+    ~Animal();
 };
 
 class Pig: public Animal
