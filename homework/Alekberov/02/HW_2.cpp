@@ -2,8 +2,8 @@
 #include <cmath>
 
 
-
 #include "numbers.dat"
+
 
 bool* getSieve (const int sizeSieve) {
   bool* result = new bool[sizeSieve];
@@ -21,10 +21,12 @@ bool* getSieve (const int sizeSieve) {
 }
 
 int main (int argc, char* argv[]) {
-  auto sieve = getSieve (100001);
   if ((argc == 1) || (argc % 2 == 0))
     return -1;
   const int countOfPairs = (argc - 1) / 2;
+
+  int ArrSize = 100001;
+  auto sieve = getSieve (ArrSize);
 
   for (int j = 0; j < countOfPairs; ++j) {
     int nmb_1 = std::atoi (argv[1 + 2 * j]);
@@ -61,7 +63,7 @@ int main (int argc, char* argv[]) {
       std::cout << count_of_prime << '\n';
     }
 
-    else 
+    else
       std::cout << 0 << '\n';
   }
   delete[] sieve;
