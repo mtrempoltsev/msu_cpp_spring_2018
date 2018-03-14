@@ -1,6 +1,7 @@
 //Kononov Sergey group BD-11
 //Task 2
 
+#include <cstdlib>
 #include <iostream>
 #include "numbers.dat"
 #include <vector>
@@ -68,7 +69,7 @@ int main(int argc, char* argv[])
 	
 	int l_bound, r_bound, result = 0;
 
-	const int N = 100000;
+	const int N = Size;
 	std::vector <bool> simp_numbers_array(N + 1, true);
 	
 	filter_numbers(simp_numbers_array, N);
@@ -76,8 +77,8 @@ int main(int argc, char* argv[])
 	int i = 1; 
 	while (i < argc)
 	{
-		l_bound = std::atoi(argv[i++]);
-		r_bound = std::atoi(argv[i++]);
+		l_bound = atoi(argv[i++]);
+		r_bound = atoi(argv[i++]);
 		
 		if (l_bound > r_bound)
 		{
