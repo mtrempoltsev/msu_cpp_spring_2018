@@ -25,7 +25,7 @@ int main (int argc, char* argv[]) {
     return -1;
   const int countOfPairs = (argc - 1) / 2;
 
-  int ArrSize = 100001;
+  int ArrSize = Data[Size-1];
   auto sieve = getSieve (ArrSize);
 
   for (int j = 0; j < countOfPairs; ++j) {
