@@ -4,44 +4,42 @@
 #include <cstdlib>
 
 
-int IsPrime(int numb, std::vector<int>& lpd){
+int IsPrime(int numb,const std::vector<int>& lpd){
     if (lpd[numb] == numb)
-    	return 1;
+        return 1;
     else
-    	return 0;
+        return 0;
 }
 
 
 int PrimesWithin(int start, int fin){
-	if(start > fin){
-		return 0;
+    if(start > fin){
+	    return 0;
 	}
-	int i = 0, j = Size - 1;
-	for(i; (i <= j) && Data[i] != start; ++i);
-    for(j; (j >= i) && Data[j] != fin; --j);
-    
+    int i = 0, j = Size - 1;
+    for (i; (i <= j) && Data[i] != start; ++i);
+    for (j; (j >= i) && Data[j] != fin; --j);
     if(i > j){
-    	return 0;
+        return 0;
     }
-    
     std::vector<int> primes, lpd(fin + 1, 0); //littlest prime divider
-    primes.reserve((unsigned int)(fin / 10));
+    primes.reserve((size_t)(fin / 10));
     for (int i = 2; i <= fin; ++i) {
-	    if (lpd[i] == 0) {
-		    lpd[i] = i;
+        if (lpd[i] == 0) {
+            lpd[i] = i;
 		    primes.push_back (i);
-	    }
-	    for (int j = 0; j < (int)primes.size() && primes[j] <= lpd[i] && i * primes[j] <= fin; ++j)
+        }
+        for (int j = 0; j < (int)primes.size() && primes[j] <= lpd[i] && i * primes[j] <= fin; ++j)
 		    lpd[i * primes[j]] = primes[j];
     }
     int counter = 0, is_curr_prime = 0;
-    for(int q = i + 1; q <= j + 1; ++q){
-    	is_curr_prime = IsPrime(Data[q - 1], lpd);
-    	counter += is_curr_prime;
-    	while(q <= j && Data[q] == Data[q - 1]){
-    	    counter += is_curr_prime;
-    	    ++q;
-    	}
+    for (int q = i + 1; q <= j + 1; ++q) {
+        is_curr_prime = IsPrime(Data[q - 1], lpd);
+        counter += is_curr_prime;
+        while (q <= j && Data[q] == Data[q - 1]) {
+            counter += is_curr_prime;
+            ++q;
+        }
     }
     return counter;
 }

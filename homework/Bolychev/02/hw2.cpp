@@ -5,7 +5,7 @@
 // Data - array
 // Size - size of Data
 
-bool* sieve(const unsigned& max_val)
+bool* sieve(const unsigned max_val)
 {
     bool* prime = new bool [max_val + 1];
     
@@ -45,7 +45,7 @@ bool sscanfOfArgv(int argc, char* argv[], unsigned* &begin, unsigned* &end)
     return sscanfReturnCounter == argc - 1;
 }
 
-unsigned maxValFromArr(const unsigned* arr, const int& N)
+unsigned maxValFromArr(const unsigned* arr, const int N)
 {
     auto max_val = arr[0];
     for (int i = 1; i < N; ++i) {
@@ -59,8 +59,8 @@ unsigned maxValFromArr(const unsigned* arr, const int& N)
 
 int main(int argc, char* argv[])
 {
-    unsigned* begin = 0;
-    unsigned* end = 0;
+    unsigned* begin = nullptr;
+    unsigned* end = nullptr;
     
     
     if (argc == 1 || argc % 2 != 1 || !sscanfOfArgv(argc, argv, begin, end))

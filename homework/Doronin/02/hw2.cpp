@@ -113,9 +113,7 @@ int main(int argc, char* argv[])
     int left=0;
     int right=0;
 
-    bool sieve[Size];
-    for(register int i = 0; i < Size; ++i)
-        sieve[i] = false;
+    bool* sieve= new bool[Size]();
 
     Eratosphen(sieve, Size);
 
@@ -126,6 +124,8 @@ int main(int argc, char* argv[])
         right = std::atoi(argv[i+1]);
         std::cout<<count_prime_numb(Size, left, right, Data, sieve)<<std::endl;
     }
+    
+    delete[] sieve;
     
     return 0;
 }

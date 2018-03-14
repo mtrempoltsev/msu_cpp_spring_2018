@@ -14,7 +14,7 @@ main(int argc, char *argv[])
 
     /* Create and init mask that will tell us which numbers are prime */
     const int max_num = Data[Size - 1];
-    bool * primes_mask = new bool[max_num];
+    bool * primes_mask = new(std::nothrow) bool[max_num]; /* might return nullptr */
     if (!primes_mask)
         return -1;
     init_eratosthenes_mask(primes_mask, max_num);
