@@ -137,7 +137,6 @@ class Animal: public Alive
 {
 public:
     Animal(const std::string & name, unsigned hp, unsigned attack, unsigned defense);
-    ~Animal();
 };
 
 class Pig: public Animal

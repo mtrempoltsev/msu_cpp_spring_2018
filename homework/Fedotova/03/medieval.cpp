@@ -122,8 +122,6 @@ Archer::Archer(const std::string & name, bool gender): Human(name, gender, arche
 
 Animal::Animal(const std::string & name, unsigned hp, unsigned attack, unsigned defense): Alive(name, hp, attack, defense) {}
 
-Animal::~Animal() {}
-
 Pig::Pig(const std::string & name, bool gender): Animal(name, pig_hp, pig_attack, pig_defense) {}
 
 void Battle(Alive * comp1, Alive * comp2) {
