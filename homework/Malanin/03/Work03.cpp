@@ -167,3 +167,10 @@ Pig::Pig(const std::string& _name):Animal(80, 100, 10, 5)
 {
 	name = _name;
 }
+
+int main()
+{
+	srand(time(NULL));
+	return 0;
+}
+
