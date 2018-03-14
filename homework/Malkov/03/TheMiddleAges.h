@@ -1,6 +1,7 @@
 class Item {
     const std::string name;
-    const unsigned int durability;
+    const unsigned int max_durability;
+    unsigned int durability;
     bool broken;
 };
 
