@@ -52,11 +52,11 @@ class Humans: public Animate
 
 class Animal: public Animate
 {
-    Humans *owner;
+    const int damage;
 };
 
 class Pig: public Animal {
-
+    Peasant *owner;
 };
 
 class Knight: public Humans
