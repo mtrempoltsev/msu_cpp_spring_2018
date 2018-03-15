@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 class Characteristics {
   int health;
   int location;

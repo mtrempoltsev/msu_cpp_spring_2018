@@ -59,21 +59,22 @@ class People : public Unit
 	bool haveWeapon;
 	bool haveArmor;
 	Armor* armor;
+	Weapon* weapon;
 };
 
 class Peasant : public People
 {
-	Shovel* shovel;
+	
 };
 
 class Archer : public People
 {
-	Bow* bow;
+	
 };
 
 class Knight : public People
 {
-	Sword* sword;
+	
 };
 
 class Animal : public Unit
