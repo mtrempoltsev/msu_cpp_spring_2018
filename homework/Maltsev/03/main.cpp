@@ -51,9 +51,10 @@ public:
     }
 
     friend std::ostream &operator<<(std::ostream &os, const Alive &al) {
-        std::cout << "cur_health = " << al.cur_health
+        os << "cur_health = " << al.cur_health
                   << "; max_health = " << al.max_health
                   << std::endl;
+        return os;
     }
 };
 
@@ -69,9 +70,10 @@ public:
     }
 
     friend std::ostream &operator<<(std::ostream &os, const Animal &an) {
-        std::cout << (Alive &) an
+        os << dynamic_cast<const Alive&>(an)
                   << "exp = " << an.exp
                   << std::endl;
+        return os;
     }
 
 };
@@ -83,9 +85,10 @@ public:
             : Animal(hp, exp) {};
 
     friend std::ostream &operator<<(std::ostream &os, const Pig &pig) {
-        std::cout << "Pig"
-                  << (Animal &) pig
+        os << "Pig "
+                  << dynamic_cast<const Animal&>(pig)
                   << std::endl;
+        return os;
     }
 };
 
@@ -96,9 +99,10 @@ public:
             : Animal(hp, exp) {};
 
     friend std::ostream &operator<<(std::ostream &os, const Sheep &sheep) {
-        std::cout << "Sheep"
-                  << (Animal &) sheep
+        os << "Sheep "
+                  << dynamic_cast<const Animal&>(sheep)
                   << std::endl;
+        return os;
     }
 };
 
@@ -126,9 +130,10 @@ public:
     }
 
     friend std::ostream &operator<<(std::ostream &os, const Item &item) {
-        std::cout << "durability = " << item.durability
+        os << "durability = " << item.durability
                   << "; cost = " << item.cost
                   << std::endl;
+        return os;
     }
 };
 
@@ -144,10 +149,11 @@ public:
     }
 
     friend std::ostream &operator<<(std::ostream &os, const Weapon &weapon) {
-        std::cout << "Weapon:\n"
-                  << (Item &) weapon
+        os << "Weapon:\n"
+                  << dynamic_cast<const Item&>(weapon)
                   << "damage = " << weapon.damage
                   << std::endl;
+        return os;
     }
 };
 
@@ -163,10 +169,11 @@ public:
     }
 
     friend std::ostream &operator<<(std::ostream &os, const Armor &armor) {
-        std::cout << "Armor:\n"
-                  << (Item &) armor
+        os << "Armor:\n"
+                  << dynamic_cast<const Item&>(armor)
                   << "defense = " << armor.defense
                   << std::endl;
+        return os;
     }
 };
 
@@ -177,9 +184,10 @@ public:
             Armor(durability, cost, def) {};
 
     friend std::ostream &operator<<(std::ostream &os, const Hauberk &hauberk) {
-        std::cout << "Hauberk:\n"
-                  << (Armor &) hauberk
+        os << "Hauberk:\n"
+                  << dynamic_cast<const Armor&>(hauberk)
                   << std::endl;
+        return os;
     }
 };
 
@@ -190,9 +198,10 @@ public:
             Armor(durability, cost, def) {};
 
     friend std::ostream &operator<<(std::ostream &os, const Lats &lats) {
-        std::cout << "Lats:\n"
-                  << (Armor &) lats
+        os << "Lats:\n"
+                  << dynamic_cast<const Armor&>(lats)
                   << std::endl;
+        return os;
     }
 };
 
@@ -203,9 +212,10 @@ public:
             Weapon(durability, cost, dmg) {};
 
     friend std::ostream &operator<<(std::ostream &os, const Shovel &shovel) {
-        std::cout << "Shovel:\n"
-                  << (Weapon &) shovel
+        os << "Shovel:\n"
+                  << dynamic_cast<const Weapon&>(shovel)
                   << std::endl;
+        return os;
     }
 };
 
@@ -216,9 +226,10 @@ public:
             Weapon(durability, cost, dmg) {};
 
     friend std::ostream &operator<<(std::ostream &os, const Sword &sword) {
-        std::cout << "Sword:\n"
-                  << (Weapon &) sword
+        os << "Sword:\n"
+                  << dynamic_cast<const Weapon&>(sword)
                   << std::endl;
+        return os;
     }
 };
 
@@ -229,9 +240,10 @@ public:
             Weapon(durability, cost, dmg) {};
 
     friend std::ostream &operator<<(std::ostream &os, const Bow &bow) {
-        std::cout << "Bow:\n"
-                  << (Weapon &) bow
+        os << "Bow:\n"
+                  << dynamic_cast<const Weapon&>(bow)
                   << std::endl;
+        return os;
     }
 };
 
@@ -328,21 +340,22 @@ public:
     }
 
     friend std::ostream &operator<<(std::ostream &os, const Human &h) {
-        std::cout << "Human's stats:\n" << (Alive &) h
+        os << "Human's stats:\n" << dynamic_cast<const Alive&>(h)
                   << "dexterity = " << h.dexterity
                   << "; strength = " << h.strength
                   << "; intelligence = " << h.intelligence
                   << std::endl;
         if (h.weapon != nullptr) {
-            std::cout << "Have a " << *h.weapon << std::endl;
+            os << "Have a " << *h.weapon << std::endl;
         } else {
-            std::cout << "Haven't a weapon " << std::endl;
+            os << "Haven't a weapon " << std::endl;
         }
         if (h.armor != nullptr) {
-            std::cout << "Have a " << *h.armor << std::endl;
+            os << "Have a " << *h.armor << std::endl;
         } else {
-            std::cout << "Haven't a armor " << std::endl;
+            os << "Haven't a armor " << std::endl;
         }
+        return os;
     }
 
 };
@@ -353,7 +366,8 @@ public:
     explicit Peasant(uint hp = 20, uint dext = 2, uint str = 5, uint intel = 0, Shovel* shovel = nullptr):
             Human(hp,dext, str, intel, shovel) {};
     friend std::ostream &operator<<(std::ostream &os, const Peasant &peasant) {
-        std::cout << "I'm a Peasant: \n" << (Human&)peasant << std::endl;
+        os << "I'm a Peasant: \n" << dynamic_cast<const Human&>(peasant) << std::endl;
+        return os;
     }
 };
 class Archer :
@@ -362,7 +376,8 @@ public:
     explicit Archer(uint hp = 100, uint dext = 20, uint str = 6, uint intel = 7, Bow* bow = nullptr, Lats* lats = nullptr):
             Human(hp,dext, str, intel, bow, lats) {};
     friend std::ostream &operator<<(std::ostream &os, const Archer &archer) {
-        std::cout << "I'm a Archer: \n" << (Human&)archer << std::endl;
+        os << "I'm a Archer: \n" << dynamic_cast<const Human&>(archer) << std::endl;
+        return os;
     }
 };
 class Knight :
@@ -371,7 +386,8 @@ public:
     explicit Knight(uint hp = 150, uint dext = 10, uint str = 30, uint intel = 1, Sword* sword = nullptr, Hauberk* hauberk = nullptr):
             Human(hp,dext, str, intel, sword, hauberk) {};
     friend std::ostream &operator<<(std::ostream &os, const Knight &knight) {
-        std::cout << "I'm a Knight: \n" << (Human&)knight << std::endl;
+        os << "I'm a Knight: \n" << dynamic_cast<const Human&>(knight) << std::endl;
+        return os;
     }
 };
 
@@ -389,7 +405,7 @@ int main() {
 //    Archer archer{12, 54, 3 ,4, &bow, &lats};
 //    h.increse_max_hp(100);
 //    h.inreae_intelligence(10);
-//    std::cout << archer
+//    std::cout << Pig()
 //              << peasant
 //              << std::endl;
 //    human.equip_armor(&lats);
