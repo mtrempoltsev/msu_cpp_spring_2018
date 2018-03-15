@@ -2,13 +2,19 @@
 
 #include "Weapon.h"
 
-class Bow : public Weapon {
+class Bow : protected Weapon {
 
 public:
 	// BEGIN---------------------------------------------- CONSTRUCTOR ------------------------------------------------
-	Bow(const char* name, unsigned int attack_rate, unsigned int attack_speed, const char* attack_type) : Weapon(name, attack_rate, attack_speed, attack_type) {
+	Bow(string_t name, uint_t attack_rate, uint_t attack_speed, string_t attack_type) :
+		Weapon(name, attack_rate, attack_speed, attack_type)
+	{
+
 	}
 	// END------------------------------------------------ CONSTRUCTOR ------------------------------------------------
+
+	// BEGIN---------------------------------------------- SETTERS ----------------------------------------------------
+	// END------------------------------------------------ SETTERS ----------------------------------------------------
 
 	// BEGIN---------------------------------------------- GETTERS ----------------------------------------------------
 	// END------------------------------------------------ GETTERS ----------------------------------------------------

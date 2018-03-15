@@ -2,26 +2,26 @@
 
 #include "../Tool.h"
 
-class Armor : public Tool {
+class Armor : protected Tool {
 
 public:
 	// BEGIN---------------------------------------------- CONSTRUCTOR ------------------------------------------------
-	Armor(const char* name, unsigned int defence_rate, const char* defence_type) : Tool(name) {
-		type_ = "armor";
+	Armor(string_t name, uint_t defence_rate, string_t defence_type) :
+		Tool(name, "armor", false),
 
-		defence_rate_ = defence_rate;
-		defence_type_ = defence_type;
+		defence_rate_(defence_rate),
+		defence_type_(defence_type)
+	{
 
-		broken_ = false;
 	}
 	// END------------------------------------------------ CONSTRUCTOR ------------------------------------------------
 
 	// BEGIN---------------------------------------------- GETTERS ----------------------------------------------------
-	unsigned int defence_rate() const {
+	uint_t defence_rate() const {
 		return defence_rate_;
 	}
 
-	const char* defence_type() const {
+	string_t defence_type() const {
 		return defence_type_;
 	}
 	// END------------------------------------------------ GETTERS ----------------------------------------------------
@@ -31,7 +31,7 @@ public:
 	// END------------------------------------------------ DESTRUCTOR -------------------------------------------------
 
 private:
-	unsigned int defence_rate_;
+	uint_t defence_rate_;
 
-	const char* defence_type_;
+	string_t defence_type_;
 };

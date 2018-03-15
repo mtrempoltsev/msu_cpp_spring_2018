@@ -6,7 +6,10 @@ class Showel : public Weapon {
 
 public:
 	// BEGIN---------------------------------------------- CONSTRUCTOR ------------------------------------------------
-	Showel(const char* name, unsigned int attack_rate, unsigned int attack_speed, const char* attack_type) : Weapon(name, attack_rate, attack_speed, attack_type) {
+	Showel(string_t name, uint_t attack_rate, uint_t attack_speed, string_t attack_type) :
+		Weapon(name, attack_rate, attack_speed, attack_type)
+	{
+
 	}
 	// END------------------------------------------------ CONSTRUCTOR ------------------------------------------------
 

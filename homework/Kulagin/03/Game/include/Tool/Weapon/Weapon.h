@@ -2,32 +2,32 @@
 
 #include "../Tool.h"
 
-class Weapon : public Tool {
+class Weapon : protected Tool {
 
 public:
 	// BEGIN---------------------------------------------- CONSTRUCTOR ------------------------------------------------
-	Weapon(const char* name, unsigned int attack_rate, unsigned int attack_speed, const char* attack_type) : Tool(name) {
-		type_ = "weapon";
+	Weapon(string_t name, uint_t attack_rate, uint_t attack_speed, string_t attack_type) :
+		Tool(name, "weapon", false),
 
-		attack_rate_ = attack_rate;
-		attack_speed_ = attack_speed;
-
-		attack_type_ = attack_type;
-
-		broken_ = false;
+		attack_rate_(attack_rate),
+		attack_speed_(attack_speed),
+		attack_type_(attack_type) {
 	}
 	// END------------------------------------------------ CONSTRUCTOR ------------------------------------------------
 
+	// BEGIN---------------------------------------------- SETTERS ----------------------------------------------------
+	// END------------------------------------------------ SETTERS ----------------------------------------------------
+
 	// BEGIN---------------------------------------------- GETTERS ----------------------------------------------------
-	unsigned int attack_rate() const {
+	uint_t attack_rate() const {
 		return attack_rate_;
 	}
 
-	unsigned int attack_speed() const {
+	uint_t attack_speed() const {
 		return attack_speed_;
 	}
 
-	const char* attack_type() const {
+	string_t attack_type() const {
 		return attack_type_;
 	}
 	// END------------------------------------------------ GETTERS ----------------------------------------------------
@@ -37,8 +37,8 @@ public:
 	// END------------------------------------------------ DESTRUCTOR -------------------------------------------------
 
 private:
-	unsigned int attack_rate_;
-	unsigned int attack_speed_;
+	uint_t attack_rate_;
+	uint_t attack_speed_;
 
-	const char* attack_type_;
+	string_t attack_type_;
 };
