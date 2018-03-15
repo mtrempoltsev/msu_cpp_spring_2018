@@ -86,7 +86,7 @@ public:
 class Peasant : public Human
 {
 public:
-    Peasant(const std::string &name, unsigned hp, unsigned attack, unsigned defense, bool gender, Weapon, Armor *arm);
+    Peasant(const std::string &name, unsigned hp, unsigned attack, unsigned defense, bool gender, Weapon *wpn, Armor *arm);
 };
 
 class Swordsman : public Human
@@ -98,11 +98,10 @@ public:
 class Bowman : public Human
 {
 public:
-    Bowman(const std::string &name, unsigned hp, unsigned attack, unsigned defense, bool gender, Weapon, Armor *arm);
+    Bowman(const std::string &name, unsigned hp, unsigned attack, unsigned defense, bool gender, Weapon *wpn, Armor *arm);
 };
 
  int main(void)
  {
      return 0;
  }
-
