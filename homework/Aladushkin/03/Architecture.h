@@ -17,7 +17,7 @@ public:
 	std::string get_name() { return name; }
 
 	void set_location(Point new_location) { location = new_location; }
-	void set_name(std::string new_name) { name = new_name; }
+	void set_name(const std::string& new_name) { name = new_name; }
 
 protected:
 
@@ -51,7 +51,7 @@ public:
 	void set_strength(int new_strength) { strength = new_strength; }
 
 protected:
-	
+
 	bool able_to_destroyed = true;
 	int strength;
 };
@@ -104,7 +104,7 @@ class Persona : public Object
 public:
 
 	int get_attitude() { return attitude; }
-	int get_hp() {return hp;}
+	int get_hp() { return hp; }
 	int get_speed() { return speed; }
 
 	void set_attitude(int new_attitude) { attitude = new_attitude; }
@@ -122,17 +122,20 @@ protected:
 class Human : public Persona
 {
 public:
-	
+
 	Weapon* get_weapon() { return weapon; }
 	Armor* get_armor() { return armor; }
-	
+	int get_base_damage() { return base_damage; }
+
 	void set_weapon(Weapon* new_weapon) { weapon = new_weapon; }
 	void set_armor(Armor* new_armor) { armor = new_armor; }
+	void set_base_damage(int new_base_damage) { base_damage = new_base_damage; }
 
 protected:
 
 	Weapon* weapon;
 	Armor* armor;
+	int base_damage;
 };
 
 class Animal : public Persona
@@ -149,25 +152,6 @@ protected:
 };
 
 // Classes for which instances will be created
-
-struct None_weapon : public Weapon
-{
-	None_weapon(Persona* owner_persona)
-	{
-		name = "None";
-		location = owner_persona->get_location();
-
-		weight = 0;
-		owner = owner_persona;
-
-		able_to_destroyed = false;
-		strength = 100;
-
-		damage = 5;
-		range = 5;
-	}
-};
-
 
 struct Shovel : public Weapon
 {
@@ -248,20 +232,6 @@ struct Bow : public Projectile_Weapon
 	}
 };
 
-struct None_armor : public Armor
-{
-	None_armor(Persona* owner_persona)
-	{
-		name = "None";
-		location = owner_persona->get_location();
-		weight = 0;
-		owner = owner_persona;
-		able_to_destroyed = false;
-		strength = 100;
-		efficiency = 0;
-	}
-};
-
 struct Plate_armor : public Armor
 {
 	Plate_armor(Persona* owner_persona)
@@ -318,7 +288,7 @@ struct Peasant : public Human
 		speed = 20;
 		attitude = 100;
 		weapon = new Shovel(this);
-		armor = new None_armor(this);
+		armor = nullptr;
 	}
 };
 
