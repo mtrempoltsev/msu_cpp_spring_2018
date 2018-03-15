@@ -106,6 +106,7 @@ public:
 
 class Bow : public Weapon
 {
+public:
 	Bow(Being* _owner);
 };
 
@@ -126,18 +127,21 @@ class Peasant : public Human
 {
 public:
 	Peasant(const std::string& _name);
+	~Peasant();
 };
 
 class Archer : public Human
 {
 public:
 	Archer(const std::string& _name);
+	~Archer();
 };
 
 class Knight : public Human
 {
 public:
 	Knight(const std::string& _name);
+	~Knight();
 };
 
 class Pig : public Animal
