@@ -48,34 +48,30 @@ class Humans: public Animate
 {
     const int damage;
     const int defence;
+    Armor *armor;
+    Weapon *weapon;
+    Animal *animal
 };
 
 class Animal: public Animate
 {
-    const int damage;
+    Humans *owner;
 };
 
 class Pig: public Animal {
-    Peasant *owner;
-};
-
-class Knight: public Humans
-{
-    Sword *weapon;
-    Lats *armor;
 
 };
 
-class Archer: public Humans
-{
-    Bow *weapon;
-    ChainArmor *armor;
+class Knight: public Humans {
+
 };
 
-class Peasant: public Humans
-{
-    Shovel *weapon;
-    Pig *animal;
+class Archer: public Humans{
+
+};
+
+class Peasant: public Humans{
+
 };
 
 
