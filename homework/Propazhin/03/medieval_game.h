@@ -10,6 +10,8 @@ class Weapon: public Item
 {
     const int range;
     const int damage;
+    Weapon(){}
+    ~Weapon(){}
 };
 
 class Shovel: public Weapon{};
@@ -19,6 +21,8 @@ class Bow: public Weapon{};
 class Armor: public Item
 {
     const int effiency;
+    Armor() {}
+    ~Armor() {}
 };
 
 class ChainArmor: public Armor{};
@@ -44,6 +48,8 @@ class Human: public Creature
     int damage;
     Weapon weapon;
     Armor armor;
+    Human() {}
+    virtual ~Human() {delete weapon; delete armor;}
 };
 
 class Peasant: public Human{};
@@ -51,11 +57,13 @@ class Peasant: public Human{};
 class Archer: public Human
 {
     Archer() { weapon = new Bow(); armor  = new ChainArmor();}
+    ~Archer(){}
 };
 
 class Knight: public Human
 {
     Knight() { weapon = new Sword(); armor = new Plate();}
+    ~Knight() {}
 };
 
 class Pig: public Animal{};
