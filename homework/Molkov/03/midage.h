@@ -1,18 +1,21 @@
 #pragma once
 #include <string>
 
-class Unit {
-protected:
-	const std::string name;
-	unsigned hp, attack, defense;
-};
+
 
 class Item {
 protected:
-	Unit* item_owner;
+	//Unit* item_owner;
 	const std::string name;
 	unsigned durability;
 	bool is_available = true;// если durability вещи становится ниже некоторого порога, вещь ломается и ее нельзя больше использовать
+};
+
+class Unit {
+protected:
+	Item* owner;
+	const std::string name;
+	unsigned hp, attack, defense;
 };
 
 class Animal
