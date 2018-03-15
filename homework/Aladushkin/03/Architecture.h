@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 struct Point
 {
@@ -29,17 +30,14 @@ protected:
 class Item : public Object
 {
 public:
-
+	
 	int get_weight() { return weight; }
-	Persona* get_owner() { return owner; }
 
 	void set_weight(int new_weight) { weight = new_weight; }
-	void set_owner(Persona* new_owner) { owner = new_owner; }
 
 protected:
 
 	int weight;
-	Persona* owner;
 };
 
 class Equipment_items : public Item
@@ -51,7 +49,7 @@ public:
 	void set_strength(int new_strength) { strength = new_strength; }
 
 protected:
-
+	
 	bool able_to_destroyed = true;
 	int strength;
 };
@@ -75,9 +73,11 @@ protected:
 
 class Projectile_Weapon : public Weapon
 {
+public:
+
 	int get_ammo() { return ammo; }
 
-	int set_ammo(int new_ammo) { new_ammo = ammo; }
+	void set_ammo(int new_ammo) { new_ammo = ammo; }
 
 protected:
 
@@ -104,7 +104,7 @@ class Persona : public Object
 public:
 
 	int get_attitude() { return attitude; }
-	int get_hp() { return hp; }
+	int get_hp() {return hp;}
 	int get_speed() { return speed; }
 
 	void set_attitude(int new_attitude) { attitude = new_attitude; }
@@ -155,15 +155,16 @@ protected:
 
 struct Shovel : public Weapon
 {
-	Shovel(Persona* owner_persona)
+	Shovel(Human* owner_persona)
 	{
 		name = "Shovel";
 		location = owner_persona->get_location();
 		weight = 2;
-		owner = owner_persona;
 		strength = 100;
 		damage = 10;
 		range = 20;
+
+		owner_persona->set_weapon(this);
 	}
 
 	Shovel(Point weapon_location)
@@ -171,7 +172,6 @@ struct Shovel : public Weapon
 		name = "Shovel";
 		location = weapon_location;
 		weight = 2;
-		owner = nullptr;
 		strength = 100;
 		damage = 10;
 		range = 20;
@@ -182,15 +182,16 @@ struct Shovel : public Weapon
 
 struct Sword : public Weapon
 {
-	Sword(Persona* owner_persona)
+	Sword(Human* owner_persona)
 	{
 		name = "Sword";
 		location = owner_persona->get_location();
 		weight = 5;
-		owner = owner_persona;
 		strength = 300;
 		damage = 50;
 		range = 10;
+
+		owner_persona->set_weapon(this);
 	}
 
 	Sword(Point weapon_location)
@@ -198,7 +199,6 @@ struct Sword : public Weapon
 		name = "Sword";
 		location = weapon_location;
 		weight = 5;
-		owner = nullptr;
 		strength = 300;
 		damage = 50;
 		range = 10;
@@ -207,16 +207,17 @@ struct Sword : public Weapon
 
 struct Bow : public Projectile_Weapon
 {
-	Bow(Persona* owner_persona)
+	Bow(Human* owner_persona)
 	{
 		name = "Bow";
 		location = owner_persona->get_location();
 		weight = 5;
-		owner = owner_persona;
 		strength = 300;
 		damage = 50;
 		range = 10;
 		ammo = 20;
+
+		owner_persona->set_weapon(this);
 	}
 
 	Bow(Point weapon_location)
@@ -224,7 +225,6 @@ struct Bow : public Projectile_Weapon
 		name = "Bow";
 		location = weapon_location;
 		weight = 5;
-		owner = nullptr;
 		strength = 300;
 		damage = 50;
 		range = 10;
@@ -234,14 +234,15 @@ struct Bow : public Projectile_Weapon
 
 struct Plate_armor : public Armor
 {
-	Plate_armor(Persona* owner_persona)
+	Plate_armor(Human* owner_persona)
 	{
 		name = "Plate Armor";
 		location = owner_persona->get_location();
 		weight = 40;
-		owner = owner_persona;
 		strength = 500;
 		efficiency = 100;
+
+		owner_persona->set_armor(this);
 	}
 
 	Plate_armor(Point armor_location)
@@ -249,30 +250,28 @@ struct Plate_armor : public Armor
 		name = "Plate Armor";
 		location = armor_location;
 		weight = 40;
-		owner = nullptr;
 		strength = 500;
 		efficiency = 100;
 	}
 };
 
-struct Chain_mail : public Armor
+struct Chain_mail : public Armor, std::enable_shared_from_this<Chain_mail>
 {
-	Chain_mail(Persona* owner_persona)
+	Chain_mail(Human* owner_persona)
 	{
 		name = "Chain Mail";
 		location = owner_persona->get_location();
 		weight = 10;
-		owner = owner_persona;
 		strength = 300;
 		efficiency = 50;
+
+		owner_persona->set_armor(this);
 	}
 
 	Chain_mail(Point armor_location)
 	{
 		name = "Chain Mail";
 		location = armor_location;
-		weight = 10;
-		owner = nullptr;
 		strength = 300;
 		efficiency = 50;
 	}
@@ -290,6 +289,11 @@ struct Peasant : public Human
 		weapon = new Shovel(this);
 		armor = nullptr;
 	}
+
+	~Peasant()
+	{
+		delete weapon;
+	}
 };
 
 struct Archer : public Human
@@ -304,6 +308,12 @@ struct Archer : public Human
 		weapon = new Bow(this);
 		armor = new Chain_mail(this);
 	}
+
+	~Archer()
+	{
+		delete weapon;
+		delete armor;
+	}
 };
 
 struct Knight : public Human
@@ -317,6 +327,12 @@ struct Knight : public Human
 		attitude = 40;
 		weapon = new Sword(this);
 		armor = new Plate_armor(this);
+	}
+
+	~Knight()
+	{
+		delete weapon;
+		delete armor;
 	}
 };
 
