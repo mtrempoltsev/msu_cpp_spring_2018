@@ -153,7 +153,7 @@ public:
 		inHands = tool(0);
 		onChest = torso(0);
 		onLegs = legs(0);
-	}
+	};
 	void pickTool(tool a)
 	{
 		inHands = a;
@@ -166,6 +166,19 @@ public:
 	void pickLeggins(legs a)
 	{
 		onLegs = a;
+	};
+	void breakTool()
+	{
+		inHands = tool(0);
+	};
+
+	void breakArmor()
+	{
+		onChest = torso(0);
+	};
+	void breakLeggins()
+	{
+		onLegs = legs(0);
 	};
 };
 

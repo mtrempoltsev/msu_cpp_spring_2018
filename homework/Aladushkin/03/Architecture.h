@@ -70,7 +70,6 @@ protected:
 
 	int damage;
 	int range;
-	int strength;
 };
 
 
@@ -149,7 +148,7 @@ protected:
 	int damage;
 };
 
-//  лассы, дл€ которых будут создаватьс€ экземпл€ры
+// Classes for which instances will be created
 
 struct None_weapon : public Weapon
 {
