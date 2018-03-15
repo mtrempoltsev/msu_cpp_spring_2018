@@ -11,12 +11,11 @@
 
 
 int main() {
+
     Peasant* f_peasant = new Peasant();
     Knight* f_knight = new Knight();
 
     Fist* saber1 = new Sword();
-
-    std::cout<<saber1->get_type()<<std::endl;
 
     f_knight->get_weapon(saber1);
 
@@ -42,7 +41,6 @@ int main() {
         std::cout<<"win knight"<<std::endl;
 
 
-    delete saber1;
     delete f_knight;
     delete f_peasant;
     delete f_archer;

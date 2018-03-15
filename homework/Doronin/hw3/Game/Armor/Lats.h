@@ -10,21 +10,10 @@
 
 class Lats: public Shirt
 {
-private:
-    const uint armor = 5;
-    uint count_use;
 public:
-    Lats(): count_use(10){}
-    uint get_armor()
-    {
-        count_use -= 1;
-        if(count_use !=0)
-        {
-            count_use -= 1;
-            return this->armor;
-        }
-        else
-            return 0;
+    Lats(){
+        count_use = 10;
+        armor = 10;
     }
 };
 

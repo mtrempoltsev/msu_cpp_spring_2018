@@ -8,20 +8,18 @@
 
 class Fist {
 protected:
-   uint type;
-
+   uint _damage;
 public:
-    Fist(): type(0){}
-    virtual uint get_type()
+    Fist(): _damage(5){}
+    virtual ~Fist() = default;
+    uint get_damage()
     {
-        return this->type;
+        return _damage;
     }
-
     virtual bool  use()
     {
         return true;
     }
 };
-
 
 #endif //GAME_FIST_H

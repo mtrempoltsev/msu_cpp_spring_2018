@@ -9,23 +9,19 @@
 #include "Unit.h"
 
 class Pig: public Unit {
-protected:
-    uint _health;
-
 public:
-    Pig(): _health(50) {}
-
-    virtual uint get_health()
-    {
-        return this->_health;
+    Pig(){
+        _health = 50;
     }
 
-    virtual  void set_health(uint hp)
+    void set_health(uint hp)
     {
-        if(hp == 0)
-            this->~Pig();
+        if(hp == 0) {
+            std::cout << "pig death" << std::endl;
+            _health=0;
+        }
         else
-            this->_health=hp;
+            _health=hp;
     }
 
     void make_hry()
