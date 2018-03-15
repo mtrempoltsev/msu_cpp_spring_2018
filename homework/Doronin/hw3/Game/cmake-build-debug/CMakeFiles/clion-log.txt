@@ -1,4 +1,0 @@
-/home/roman/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/173.4548.31/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/roman/CLionProjects/Game
--- Configuring done
--- Generating done
--- Build files have been written to: /home/roman/CLionProjects/Game/cmake-build-debug
