@@ -1,16 +1,17 @@
 #include <iostream>
 
-#include "include/Weapon.h"
-#include "include/Armor.h"
+#include "include/Animal/Pig.h"
 
-#include "include/Pig.h"
+#include "include/Player/Peasant.h"
+#include "include/Player/Knight.h"
+#include "include/Player/Archer.h"
 
-#include "include/Peasant.h"
-#include "include/Knight.h"
-#include "include/Archer.h"
+#include "include/Tool/Weapon.h"
+#include "include/Tool/Armor.h"
 
-#include "include/Player.h"
-
+#include "include/Tool/Sword.h"
+#include "include/Tool/Bow.h"
+#include "include/Tool/Showel.h"
 
 using namespace std;
 
@@ -27,6 +28,10 @@ int main() {
 	Peasant peasant;
 	Knight knight;
 	Archer archer;
+
+	Bow b1("cool bow", 1, 1, "pierce");
+	Sword b2("cool sword", 1, 1, "magic");
+	Showel b3("cool showel", 1, 1, "pierce");
 
 	// Player player;
 
