@@ -14,22 +14,18 @@ class Peasant: public Unit {
 protected:
     Shirt*_armor;
     Fist* _weapon;
-    uint _damage;
 public:
-    Peasant()
+    Peasant():_armor(new Shirt()), _weapon(new Fist())
     {
-        this->_health = 100;
-        this->_damage = 5;
-        this->_armor = new Shirt();
-        this->_weapon = new Fist();
+        _health = 100;
     }
     virtual ~Peasant(){
-        delete this->_armor;
-        delete this->_weapon;
+        delete _armor;
+        delete _weapon;
     }
     uint get_health()
     {
-        return this->_health + this->_armor->get_armor();
+        return _health > 0 ? _health + _armor->get_armor() : 0;
     }
 
     virtual void set_health(uint hp)
@@ -37,40 +33,31 @@ public:
         if(hp==0)
         {
             std::cout<<"peasant is die"<<std::endl;
-            this->_health=hp;
-            this->~Peasant();
+            _health=0;
         }
         else
-            this->_health=hp;
+            _health=hp;
     }
 
-    virtual void get_weapon(Fist *w)
+    void get_weapon(Fist *w)
     {
-        delete this->_weapon;
-        this->_weapon = w;
-        switch (this->_weapon->get_type())
-        {
-            case  0: this->_damage=5;
-                break;
-            case  1: this->_damage=10;
-                break;
-            default: this->_damage=6;
-        }
+        delete _weapon;
+        _weapon = w;
     }
 
     void get_armor(Shirt *a)
     {
-        delete this->_armor;
-        this->_armor=a;
+        delete _armor;
+        _armor=a;
     }
 
     void attack(Unit* u)
     {
-        u->set_health(u->get_health() - this->_damage >= 0 ? u->get_health() - this->_damage : 0);
-        if(!this->_weapon->use())
+        u->set_health(u->get_health() - _weapon->get_damage() >= 0 ? u->get_health() - _weapon->get_damage() : 0);
+        if(!_weapon->use())
         {
-            delete[] this->_weapon;
-            this->_weapon = new Fist();
+            delete _weapon;
+            _weapon = new Fist();
         }
     }
 };

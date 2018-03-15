@@ -9,21 +9,19 @@
 class Unit {
 protected:
     uint _health;
-
 public:
     Unit(): _health(100) {}
-    virtual ~Unit()= default;
     virtual uint get_health()
     {
-        return this->_health;
+        return _health;
     }
 
     virtual  void set_health(uint hp)
     {
         if(hp == 0)
-             this->~Unit();
+             std::cout<<"unit death"<<std::endl;
         else
-            this->_health=hp;
+            _health=hp;
     }
 };
 

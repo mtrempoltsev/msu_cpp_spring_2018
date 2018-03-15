@@ -13,15 +13,15 @@ class Sword: public Fist
 protected:
     uint count_use;
 public:
-    Sword(): count_use(100){
-       type = 2;
+    Sword(): count_use(20)
+    {
+        _damage=20;
     }
-    ~Sword()= default;
     bool use()
     {
-        if(this->count_use != 0)
+        if(count_use != 0)
         {
-            this->count_use -= 1;
+            count_use -= 1;
             return true;
         }
         return false;

@@ -11,9 +11,12 @@
 class Showel: public Fist
 {
 private:
-    const uint type = 1;
-    uint count_use = 100;
+    uint count_use;
 public:
+    Showel(): count_use(20)
+    {
+        _damage = 8;
+    }
     bool use()
     {
         if(this->count_use != 0)

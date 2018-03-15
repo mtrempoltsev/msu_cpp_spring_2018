@@ -13,14 +13,16 @@ class Bow: public Fist
 protected:
     uint count_use;
 public:
-    Bow(): count_use(100){
-        type = 3;
+    Bow():  count_use(20)
+    {
+        _damage = 14;
     }
+
     bool use()
     {
-        if(this->count_use != 0)
+        if(count_use != 0)
         {
-            this->count_use -= 1;
+            count_use -= 1;
             return true;
         }
         return false;
