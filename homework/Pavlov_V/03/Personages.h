@@ -1,16 +1,11 @@
 #include <iostream>
 
-
-class Object {
-    
-};
-
-class Personage: public Object {
+class Personage {
 protected:
     std::string name;
     int hp;
 public:
-    Personage(std::string, int);
+    Personage(const std::string, int);
     Personage(): name("user"), hp(100) { };
     std::string getName();
     int getHp();
@@ -28,7 +23,7 @@ public:
     Pig(): breed("") { };
 };
 
-class Equipment: public Object {
+class Equipment {
 protected:
     int countArmor;
     int countDamage;
@@ -40,7 +35,8 @@ public:
 
 class Human: public Personage {
 protected:
-    Equipment eq;
+    Equipment armor;
+    Equipment damage;
 public:
     void takeWeapon();
     void turfWeapon();
@@ -50,7 +46,7 @@ public:
 
 class Peasant: public Human {
 public:
-    Peasant(std::string);
+    Peasant(const std::string);
 };
 
 class Archer: public Human {
