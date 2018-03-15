@@ -50,14 +50,12 @@ class Peasant: public Human{};
 
 class Archer: public Human
 {
-    Bow* weapon;
-    ChainArmor* armor;
+    Archer() { weapon = new Bow(); armor  = new ChainArmor();}
 };
 
 class Knight: public Human
 {
-    Sword* weapon;
-    Plate* armor;
+    Knight() { weapon = new Sword(); armor = new Plate();}
 };
 
 class Pig: public Animal{};
