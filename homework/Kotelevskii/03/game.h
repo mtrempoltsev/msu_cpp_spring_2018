@@ -62,9 +62,6 @@ public:
 
 class Armor : public Inanimate
 {
-protected:
-	int protection;
-	void set_protection(int p);
 public:
 	Armor();
 	~Armor();
