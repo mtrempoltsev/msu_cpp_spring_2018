@@ -33,9 +33,6 @@ public:
 //класс оружия
 class Weapon : public Inanimate
 {
-protected:
-	int weapon_damage; //урон оружия
-	void set_weapon_damage(int d);
 public:
 	Weapon();
 	~Weapon();
@@ -156,3 +153,5 @@ public:
 	Shovel* shovel;
 	~Peasant();
 };
+
+
