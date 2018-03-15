@@ -28,19 +28,19 @@ class Weapon : public Thing {
 
 
 
-class sword : public Weapon {
+class Sword : public Weapon {
 
 };
 
 
 
-class bow : public Weapon {
+class Bow : public Weapon {
 
 };
 
 
 
-class shovel : public Weapon {
+class Shovel : public Weapon {
 
 };
 
@@ -54,13 +54,13 @@ class Armor : public Thing {
 
 
 
-class lats : public Armor {
+class Lats : public Armor {
 
 };
 
 
 
-class chain_armor : public Armor {
+class Chain_armor : public Armor {
 
 };
 
@@ -96,13 +96,13 @@ class Animal : public Creature {
 
 
 
-class pig : public Animal {
+class Pig : public Animal {
 
 };
 
 
 
-class horse : public Animal {
+class Horse : public Animal {
 
 };
 
@@ -120,18 +120,18 @@ class Human : public Creature {
 
 
 
-class peasant : public Human {
+class Peasant : public Human {
 
 };
 
 
 
-class archer : public Human {
+class Archer : public Human {
 
 };
 
 
 
-class knight : public Human {
+class Knight : public Human {
 
 };
