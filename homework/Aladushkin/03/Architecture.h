@@ -288,6 +288,7 @@ struct Peasant : public Human
 		attitude = 100;
 		weapon = new Shovel(this);
 		armor = nullptr;
+		base_damage = 5;
 	}
 
 	~Peasant()
@@ -307,6 +308,7 @@ struct Archer : public Human
 		attitude = 50;
 		weapon = new Bow(this);
 		armor = new Chain_mail(this);
+		base_damage = 10;
 	}
 
 	~Archer()
@@ -327,6 +329,7 @@ struct Knight : public Human
 		attitude = 40;
 		weapon = new Sword(this);
 		armor = new Plate_armor(this);
+		base_damage = 15;
 	}
 
 	~Knight()
