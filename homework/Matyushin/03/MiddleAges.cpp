@@ -1,4 +1,4 @@
-class Machine : Environment {
+class Machine : public Environment {
     private:
         double fuel;
     public:
@@ -6,7 +6,7 @@ class Machine : Environment {
     protected:
 };
 
-class Entity:DynamicEnvironment {
+class Entity : public DynamicEnvironment {
     private:
         int age;
     public:
@@ -15,7 +15,7 @@ class Entity:DynamicEnvironment {
     protected:
 };
 
-class Man:Entity {
+class Man : public Entity {
     private:
         bool gender;
         (const &Man)[2] parents;
@@ -36,7 +36,7 @@ class Environment {
         int zPos;
 };
 
-class StaticEnvironment:Environment {
+class StaticEnvironment : public Environment {
     private:
         bool visible; 
     public:
@@ -44,7 +44,7 @@ class StaticEnvironment:Environment {
     protected:
 };
 
-class DynamicEnvironment : Environment {
+class DynamicEnvironment : public Environment {
     private:
         bool visible;
         double mass;
@@ -60,7 +60,7 @@ class DynamicEnvironment : Environment {
     protected:
 };
 
-class Bag : DynamicEnvironment {
+class Bag : public DynamicEnvironment {
     private:
         (const &Item[]) content;
         const &Man owner;
@@ -73,7 +73,7 @@ class Bag : DynamicEnvironment {
     protected:
 };
 
-class Eyes : DynamicEnvironment {
+class Eyes : public DynamicEnvironment {
     private:
         double[3] sightDirection;
         bool closed;
@@ -87,7 +87,7 @@ class Eyes : DynamicEnvironment {
     protected:
 };
 
-class Horse : Machine, DynamicEnvironment {
+class Horse : public Machine, public DynamicEnvironment {
     private:
         int[3] maneColor;
         int[3] tailColor;
@@ -107,7 +107,7 @@ class Horse : Machine, DynamicEnvironment {
     protected:
 };
 
-class Tree : StaticEnvironment {
+class Tree : public StaticEnvironment {
     private:
         int height;
         int kind;
@@ -120,14 +120,14 @@ class Tree : StaticEnvironment {
     protected:
 };
 
-class FruitfulTree : Tree {
+class FruitfulTree : public Tree {
     private:
     public:
         void dropFruit(void);
     protected:
 };
 
-class Item : DynamicEnvironment {
+class Item : public DynamicEnvironment {
     private:
         const &Man owner;
         int durability;
@@ -139,7 +139,7 @@ class Item : DynamicEnvironment {
     protected:
 };
 
-class Hauberk : Item {
+class Hauberk : public Item {
     private:
         int armor; 
     public:
@@ -147,7 +147,7 @@ class Hauberk : Item {
     protected:
 };
 
-class Lats : Item {
+class Lats : public Item {
     private:
         int armor; 
     public:
@@ -155,7 +155,7 @@ class Lats : Item {
     protected:
 };
 
-class Shovel : Item {
+class Shovel : public Item {
     private:
         int damage; 
     public:
@@ -163,7 +163,7 @@ class Shovel : Item {
     protected:
 };
 
-class Bow : Item {
+class Bow : public Item {
     private:
         int strength; 
     public:
@@ -171,7 +171,7 @@ class Bow : Item {
     protected:
 };
 
-class Sword : Item {
+class Sword : public Item {
     private:
         int damage; 
     public:
@@ -179,7 +179,7 @@ class Sword : Item {
     protected:
 };
 
-class Archer : Man {
+class Archer : public Man {
     private:
         const &Item tool;
         const &Item dress; 
@@ -192,7 +192,7 @@ class Archer : Man {
     protected:
 };
 
-class Peasant : Man {
+class Peasant : public Man {
     private:
         const &Item tool;
         const &Item dress; 
@@ -205,7 +205,7 @@ class Peasant : Man {
     protected:
 };
 
-class Knight : Man {
+class Knight : public Man {
     private:
         const &Item tool;
         const &Item dress; 
@@ -218,7 +218,7 @@ class Knight : Man {
     protected:
 };
 
-class _emptyItem : Item {
+class _emptyItem : public Item {
     private:    
     public:
         const bool voidness = true; 
