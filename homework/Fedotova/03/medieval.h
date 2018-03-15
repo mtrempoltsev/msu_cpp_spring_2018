@@ -27,10 +27,8 @@ private:
 public:
     Thing(const std::string & name, unsigned firm);
     virtual ~Thing() = default;
-    friend class Human;
     virtual std::string NameOfClass() const = 0;
     void Destroy(unsigned br);
-protected:
     void SetOwner(Human * ptr);
     Human * GetOwner() const;
     void RemoveOwner();
@@ -103,8 +101,6 @@ public:
     void TakeArmor(Armor * parm);
     void RemoveArsenal();
     void RemoveArmor();
-    friend class Arsenal;
-    friend class Armor;
 };
 
 class Farmer: public Human

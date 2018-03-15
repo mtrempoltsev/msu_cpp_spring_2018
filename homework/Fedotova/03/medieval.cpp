@@ -40,14 +40,14 @@ Arsenal::Arsenal(const std::string & name, unsigned firm, unsigned attack): Thin
 
 Arsenal::~Arsenal() {
     if (GetOwner())
-        GetOwner()->ars = nullptr;
+        GetOwner()->RemoveArsenal();
 }
 
 Armor::Armor(const std::string & name, unsigned firm, unsigned defense): Thing(name, firm), defense(defense) {}
 
 Armor::~Armor() {
     if (GetOwner())
-        GetOwner()->arm = nullptr;
+        GetOwner()->RemoveArmor();
 }
 
 std::string Shovel::NameOfClass() const {
@@ -74,15 +74,15 @@ Human::Human(const std::string & name, bool gender, unsigned hp, unsigned attack
 
 Human::~Human() {
     if (ars)
-        ars->owner = nullptr;
+        ars->SetOwner(nullptr);
     if (arm)
-        arm->owner = nullptr;
+        arm->SetOwner(nullptr);
 }
 
 void Human::TakeArsenal(Arsenal * pars) {
-    if (arsenals.find(pars->NameOfClass()) != arsenals.end() && pars->owner == nullptr && ars == nullptr) {
+    if (arsenals.find(pars->NameOfClass()) != arsenals.end() && pars->GetOwner() == nullptr && ars == nullptr) {
         ars = pars;
-        pars->owner = this;
+        pars->SetOwner(this);
         // some printf
     }
     //else
@@ -90,9 +90,9 @@ void Human::TakeArsenal(Arsenal * pars) {
 }
 
 void Human::TakeArmor(Armor * parm) {
-    if (armors.find(parm->NameOfClass()) != armors.end() && parm->owner == nullptr && arm == nullptr) {
+    if (armors.find(parm->NameOfClass()) != armors.end() && parm->GetOwner() == nullptr && arm == nullptr) {
         arm = parm;
-        parm->owner = this;
+        parm->SetOwner(this);
         // some printf
     }
     //else
@@ -125,12 +125,7 @@ Animal::Animal(const std::string & name, unsigned hp, unsigned attack, unsigned 
 Pig::Pig(const std::string & name, bool gender): Animal(name, pig_hp, pig_attack, pig_defense) {}
 
 void Battle(Alive * comp1, Alive * comp2) {
-    /* some actions with destroying of arsenals and armors
-    
-    в этой функции должен определиться исход боя и действие боя на участников; для расчета урона и тому подобного необходимо знать атаку, защиту, hp для участников и их оружий и доспехов; кроме того, функция должна уметь добавлять людям опыт и поломанность предметам, а такие методы, очевидно, публичными делать не надо - поэтому пришлось (рассуждая таким образом) сделать эту функцию ко всему подряд дружественной
-    
-    функция не описана конкретно, поскольку мне неочевидно, как именно должен проходить бой
-    
-    короче говоря, я считаю, что функция Battle - очень особенная, и ей как раз про всё знать надо
+    /* 
+some actions with destroying of arsenals and armors
     */
 }
