@@ -53,14 +53,8 @@ class Human : public Alive {
     Armor armor;
 };
 
-class Knight : public Human {
-    Sword *weapon;
-    Mail *armor;
-};
+class Knight : public Human {};
 
-class Archer : public Human {
-    Vest *armor;
-    Bow *weapon;
-};
+class Archer : public Human {};
 
 class Peasant : public Human {};
