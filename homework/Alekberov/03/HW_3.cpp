@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 class Characteristics {
   int health;
   int location;
@@ -46,23 +48,15 @@ class Person : public Characteristics {
   const int base_damage;
   const int base_defense;
   Animal *animal;
-};
-
-class Peasant : public Person {
-  Shovel *weapon;
-  Helmet *armor_1;
-  Hauberk *armor_2;
-};
-
-class Knight : public Person {
-  Steel *weapon;
+  Weapon *weapon;
   Armor *armor;
 };
 
-class Bowman : public Person {
-  Bow *weapon;
-  Helmet *armor;
-};
+class Peasant : public Person {};
+
+class Knight : public Person {};
+
+class Bowman : public Person {};
 
 
 
