@@ -29,11 +29,11 @@ public:
     virtual ~Thing() = default;
     friend class Human;
     virtual std::string NameOfClass() const = 0;
+    void Destroy(unsigned br);
 protected:
     void SetOwner(Human * ptr);
     Human * GetOwner() const;
     void RemoveOwner();
-    void Destroy(unsigned br);
 };
 
 class Arsenal: public Thing
