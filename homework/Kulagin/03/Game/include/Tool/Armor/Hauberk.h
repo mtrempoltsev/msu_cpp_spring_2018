@@ -1,37 +1,20 @@
 #pragma once
 
-#include "Tool.h"
+#include "Armor.h"
 
-class Armor : public Tool {
+class Hauberk : public Armor {
 
 public:
 	// BEGIN---------------------------------------------- CONSTRUCTOR ------------------------------------------------
-	Armor(const char* name, unsigned int defence_rate, const char* defence_type) : Tool(name) {
-		type_ = "armor";
-
-		defence_rate_ = defence_rate;
-		defence_type_ = defence_type;
-
-		broken_ = false;
-	}
+	Hauberk(const char* name, unsigned int defence_rate, const char* defence_type) : Armor(name, defence_rate, defence_type) {}
 	// END------------------------------------------------ CONSTRUCTOR ------------------------------------------------
 
 	// BEGIN---------------------------------------------- GETTERS ----------------------------------------------------
-	unsigned int defence_rate() const {
-		return defence_rate_;
-	}
-
-	const char* defence_type() const {
-		return defence_type_;
-	}
 	// END------------------------------------------------ GETTERS ----------------------------------------------------
 
 	// BEGIN---------------------------------------------- DESTRUCTOR -------------------------------------------------
-	~Armor() {}
+	~Hauberk() {}
 	// END------------------------------------------------ DESTRUCTOR -------------------------------------------------
 
 private:
-	unsigned int defence_rate_;
-
-	const char* defence_type_;
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Tool.h"
+#include "../Tool.h"
 
 class Armor : public Tool {
 

@@ -6,12 +6,12 @@
 #include "include/Player/Knight.h"
 #include "include/Player/Archer.h"
 
-#include "include/Tool/Weapon.h"
-#include "include/Tool/Armor.h"
+#include "include/Tool/Weapon/Sword.h"
+#include "include/Tool/Weapon/Bow.h"
+#include "include/Tool/Weapon/Showel.h"
 
-#include "include/Tool/Sword.h"
-#include "include/Tool/Bow.h"
-#include "include/Tool/Showel.h"
+#include "include/Tool/Armor/Lats.h"
+#include "include/Tool/Armor/Hauberk.h"
 
 using namespace std;
 
@@ -32,6 +32,9 @@ int main() {
 	Bow b1("cool bow", 1, 1, "pierce");
 	Sword b2("cool sword", 1, 1, "magic");
 	Showel b3("cool showel", 1, 1, "pierce");
+
+	Lats l3("cool lats", 1, "pierce");
+	Hauberk h3("cool hauberk", 1, "pierce");
 
 	// Player player;
 
