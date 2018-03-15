@@ -60,11 +60,11 @@ int right(int edge)
 
 int main(int argc, char *argv[])
 {
-    //if(argc % 1)
     if(!(argc & 1) || argc == 1)
         return -1;
 
-    const int n = 100001;
+    const int n = Data[Size - 1];
+
     bool *primes = new bool[n];
     sieve(primes, n);
 
