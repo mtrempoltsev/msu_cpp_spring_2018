@@ -35,6 +35,8 @@ class Creature
     const int max_XP;
     int HP;
     int XP;
+    Creature(){}
+    virtual ~Creature(){}
 };
 
 class Animal: public Creature
@@ -48,8 +50,6 @@ class Human: public Creature
     int damage;
     Weapon weapon;
     Armor armor;
-    Human() {}
-    virtual ~Human() {delete weapon; delete armor;}
 };
 
 class Peasant: public Human{};
@@ -57,13 +57,13 @@ class Peasant: public Human{};
 class Archer: public Human
 {
     Archer() { weapon = new Bow(); armor  = new ChainArmor();}
-    ~Archer(){}
+    ~Archer(){delete weapon; delete armor;}
 };
 
 class Knight: public Human
 {
     Knight() { weapon = new Sword(); armor = new Plate();}
-    ~Knight() {}
+    ~Knight() {delete weapon; delete armor;}
 };
 
 class Pig: public Animal{};
