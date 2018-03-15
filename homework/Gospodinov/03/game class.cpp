@@ -1,15 +1,19 @@
 #include <string>
 
-class Weapon
+class Thing
 {
 	std::string name;
 	unsigned durability;
+};
+
+class Weapon : public Thing
+{
 	unsigned damage;
 };
 
 class Bow : public Weapon
 {
-	
+
 };
 
 class Shovel : public Weapon
@@ -22,10 +26,9 @@ class Sword : public Weapon
 
 };
 
-class Armor
+class Armor : public Thing
 {
-	std::string name;
-	unsigned durability;
+
 };
 
 class Mail : public Armor
@@ -38,40 +41,45 @@ class Plate : public Armor
 
 };
 
-/*
-	Переменные haveWeapon и haveArmor отвечают за корректную работу программы при наличии/отсутствии оружия
-	Если персонаж будет атаковать, соответствующая функция будет осуществлять проверку на наличие оружия
-	При атаке персонажа будет проверяться наличие у него брони. Если она есть, снимается ее durability, иначе HP персонажа
-*/
 
 class Unit
 {
 	std::string name;
 	unsigned HP;
+};
+
+/*
+Переменные haveWeapon и haveArmor отвечают за корректную работу программы при наличии/отсутствии оружия
+Если персонаж будет атаковать, соответствующая функция будет осуществлять проверку на наличие оружия
+При атаке персонажа будет проверяться наличие у него брони. Если она есть, снимается ее durability, иначе HP персонажа
+*/
+
+class People : public Unit
+{
 	bool haveWeapon;
 	bool haveArmor;
 	Armor* armor;
+	Weapon* weapon;
 };
 
-class Peasant : public Unit
+class Peasant : public People
 {
-	Shovel* shovel;
+	
 };
 
-class Archer : public Unit
+class Archer : public People
 {
-	Bow* bow;
+	
 };
 
-class Knight : public Unit
+class Knight : public People
 {
-	Sword* sword;
+	
 };
 
-class Animal
+class Animal : public Unit
 {
-	std::string name;
-	unsigned HP;
+
 };
 
 class Pig : public Animal
