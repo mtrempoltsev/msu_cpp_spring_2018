@@ -12,7 +12,6 @@ private:
 public:
     Alive(const std::string & name, unsigned hp, unsigned attack, unsigned defense);
     virtual ~Alive() = default;
-    friend void Battle(Alive * comp1, Alive * comp2);
 };
 
 class Human;
@@ -25,17 +24,16 @@ private:
     const unsigned firmness;
     Human * owner;
     bool broken;
-    void Destroy(unsigned br);
 public:
     Thing(const std::string & name, unsigned firm);
     virtual ~Thing() = default;
-    friend void Battle(Alive * comp1, Alive * comp2);
     friend class Human;
     virtual std::string NameOfClass() const = 0;
 protected:
     void SetOwner(Human * ptr);
     Human * GetOwner() const;
     void RemoveOwner();
+    void Destroy(unsigned br);
 };
 
 class Arsenal: public Thing
