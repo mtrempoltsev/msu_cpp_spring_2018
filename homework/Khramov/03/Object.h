@@ -1,3 +1,6 @@
+#include <string>
+#include <vector>
+
 class Object {
 protected:
     std::string name;
@@ -25,7 +28,7 @@ protected:
     bool have_wep;
     std::vector<Weapon *> base_weapons;
     bool have_animal;
-    std::List<Animal *> animals;
+    std::vector<Animal *> animals;
 };
 
 class Archer : public Human {
@@ -88,6 +91,8 @@ protected:
 };
 
 class Sword : public Weapon {
+private:
+	float length;
 };
 
 class Bowl : Weapon {
@@ -111,9 +116,13 @@ class Hemlet : public Armor {
 };
 
 class Chainmail : public Armor {
+private:
+	std::string effect;
 };
 
 class Breastplates : public Armor {
+private:
+	std::string passive;
 };
 
 class Unusable_Item : public Object {
