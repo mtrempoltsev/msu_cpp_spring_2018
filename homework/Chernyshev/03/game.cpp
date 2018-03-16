@@ -144,6 +144,10 @@ public:
         return max_hp;
     }
 
+    virtual void speak() const
+    {
+    }
+
 private:
     int hp;
     const static int max_hp = 100;
@@ -204,7 +208,7 @@ public:
         change_weapon(shovel);
     }
 
-    void complain_about_life()
+    void speak() const override
     {
         std::cout << "I'm so tired and my life sucks!" << std::endl;
     }
@@ -244,10 +248,6 @@ public:
         weight = w;
     }
 
-    virtual void speak() const
-    {
-    }
-
 private:
     int weight;
 };
@@ -260,7 +260,7 @@ public:
     {
     }
 
-    void speak() const
+    void speak() const override
     {
         std::cout << "Hrgu-hrgu" << std::endl;
     }
@@ -274,7 +274,7 @@ public:
     {
     }
 
-    void speak() const
+    void speak() const override
     {
         std::cout << "Woof-woof" << std::endl;
     }
@@ -290,7 +290,7 @@ int main()
 
     Shovel sh1;
     Peasant p1(21, 167, &sh1);
-    p1.complain_about_life();
+    p1.speak();
 
 
     Bow b1;
