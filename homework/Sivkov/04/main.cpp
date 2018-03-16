@@ -103,14 +103,3 @@ private:
     size_t cols;
     size_t rows;
 };
-
-
-int main() {
-    Matrix a(2, 2);
-    //Matrix b(2, 2);
-    a[0][0] = 2;
-    a *= 2;
-    int b = a[0][0];
-    std::cout << a[0][0];
-    return 0;
-}
