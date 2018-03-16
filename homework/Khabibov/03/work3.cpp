@@ -18,9 +18,8 @@ class sword : public tool
 private:
 	int someField;
 public:
-	sword()
+	sword() : tool()
 	{
-		durability = 100;
 		someField = 1;
 	}
 };
@@ -30,9 +29,8 @@ class shovel : public tool
 private:
 	int someField;
 public:
-	shovel()
+	shovel() : tool()
 	{
-		durability = 100;
 		someField = 1;
 	}
 };
@@ -41,10 +39,9 @@ class bow : public tool
 {
 private:
 	int someField;
-	public:
-bow()
+public:
+	bow() : tool()
 	{
-		durability = 100;
 		someField = 1;
 	}
 };
@@ -69,9 +66,8 @@ class armor : public torso
 private:
 	int someField;
 public:
-	armor()
+	armor() : torso()
 	{
-		durability = 100;
 		someField = 1;
 	}
 };
@@ -81,9 +77,8 @@ class hauberk : public torso
 private:
 	int someField;
 public:
-	hauberk()
+	hauberk() : torso()
 	{
-		durability = 100;
 		someField = 1;
 	}
 };
@@ -93,9 +88,8 @@ class shirt : public torso
 private:
 	int someField;
 	public:
-	shirt()
+	shirt() : torso()
 	{
-		durability = 100;
 		someField = 1;
 	}
 };
@@ -120,9 +114,8 @@ class leggins : public legs
 private:
 	int someField;
 public:
-	leggins()
+	leggins() : legs()
 	{
-		durability = 100;
 		someField = 1;
 	}
 };
@@ -132,9 +125,8 @@ class pants : public legs
 private:
 	int someField;
 public:
-	pants()
+	pants() : legs()
 	{
-		durability = 100;
 		someField = 1;
 	}
 };
@@ -144,28 +136,41 @@ class man
 private:
 	int hp;
 public:
-	tool inHands;
-	torso onChest;
-	legs onLegs;
+	tool* inHands;
+	torso* onChest;
+	legs* onLegs;
 	man()
 	{
 		hp = 100;
-		inHands = tool(0);
-		onChest = torso(0);
-		onLegs = legs(0);
-	}
-	void pickTool(tool a)
+		inHands = &tool(0);
+		onChest = &torso(0);
+		onLegs = &legs(0);
+	};
+	void pickTool(tool* a)
 	{
 		inHands = a;
 	};
 
 	void pickArmor(torso a)
 	{
-		onChest = a;
+		onChest = &a;
 	};
 	void pickLeggins(legs a)
 	{
-		onLegs = a;
+		onLegs = &a;
+	};
+	void breakTool()
+	{
+		inHands = &tool(0);
+	};
+
+	void breakArmor()
+	{
+		onChest = &torso(0);
+	};
+	void breakLeggins()
+	{
+		onLegs = &legs(0);
 	};
 };
 
@@ -174,12 +179,12 @@ class knight : public man
 private:
 	int someField;
 public:
-	knight()
+	knight() : man()
 	{
 		someField = 1;
-		inHands = sword();
-		onChest = armor();
-		onLegs = leggins();
+		inHands = &sword();
+		onChest = &armor();
+		onLegs = &leggins();
 	}
 };
 
@@ -188,12 +193,12 @@ class farmer : public man
 private:
 	int someField;
 public:
-	farmer()
+	farmer() : man()
 	{
 		someField = 1;
-		inHands = shovel();
-		onChest = shirt();
-		onLegs = pants();
+		inHands = &shovel();
+		onChest = &shirt();
+		onLegs = &pants();
 	}
 };
 
@@ -202,12 +207,12 @@ class archer : public man
 private:
 	int someField;
 public:
-	archer()
+	archer() : man()
 	{
 		someField = 1;
-		inHands = bow();
-		onChest = hauberk();
-		onLegs = pants();
+		inHands = &bow();
+		onChest = &hauberk();
+		onLegs = &pants();
 	}
 };
 
@@ -228,7 +233,7 @@ class cow: public animal
 private:
 	int someField;
 public:
-	cow()
+	cow() : animal()
 	{
 		someField = 1;
 	}
@@ -239,7 +244,7 @@ class pig: public animal
 private:
 	int someField;
 public:
-	pig()
+	pig() : animal()
 	{
 		someField = 1;
 	}

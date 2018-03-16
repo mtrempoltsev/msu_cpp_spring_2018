@@ -45,9 +45,8 @@ class Weapon : public Thing
 {
 public:
     Weapon(int damage_, int max_hp)
-            : Thing(max_hp)
+            : Thing(max_hp), damage(damage_)
     {
-        damage = damage_;
     }
 
 private:
@@ -145,6 +144,10 @@ public:
         return max_hp;
     }
 
+    virtual void speak() const
+    {
+    }
+
 private:
     int hp;
     const static int max_hp = 100;
@@ -155,10 +158,8 @@ class Person : public Alive
 {
 public:
     Person(int age_, int height_)
-            : Alive()
+            : Alive(), age(age_), height(height_)
     {
-        age = age_;
-        height = height_;
     }
 
     void change_weapon(Weapon *w)
@@ -207,7 +208,7 @@ public:
         change_weapon(shovel);
     }
 
-    void complain_about_life()
+    void speak() const override
     {
         std::cout << "I'm so tired and my life sucks!" << std::endl;
     }
@@ -238,9 +239,8 @@ class Animal : public Alive
 {
 public:
     Animal(int weight_)
-            : Alive()
+            : Alive(), weight(weight_)
     {
-        weight = weight_;
     }
 
     void change_weight(int w)
@@ -260,7 +260,7 @@ public:
     {
     }
 
-    void make_hrgu_hrgu()
+    void speak() const override
     {
         std::cout << "Hrgu-hrgu" << std::endl;
     }
@@ -274,7 +274,7 @@ public:
     {
     }
 
-    void make_woof_woof()
+    void speak() const override
     {
         std::cout << "Woof-woof" << std::endl;
     }
@@ -290,7 +290,7 @@ int main()
 
     Shovel sh1;
     Peasant p1(21, 167, &sh1);
-    p1.complain_about_life();
+    p1.speak();
 
 
     Bow b1;
@@ -304,6 +304,11 @@ int main()
     cout << b1.get_hp() << ' ' << b1.get_max_hp() << endl;
 
 
-    Dog().make_woof_woof();
-    Pig().make_hrgu_hrgu();
+    Dog d1;
+    d1.speak();
+    Pig pig1;
+    pig1.speak();
+
+    Animal &animal1 = d1;
+    animal1.speak();
 }
