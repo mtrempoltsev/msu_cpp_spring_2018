@@ -46,6 +46,10 @@ public:
             return *this;
         }
 
+        ~Vector() {
+            delete[] data;
+        }
+
     private:
         int *data;
         size_t size;
@@ -96,6 +100,10 @@ public:
 
     size_t getColumns() const {
         return cols;
+    }
+    
+    ~Matrix() {
+        delete[] data;
     }
 
 private:
