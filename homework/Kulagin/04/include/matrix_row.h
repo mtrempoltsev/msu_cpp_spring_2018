@@ -9,7 +9,7 @@ class MatrixRow {
 
 public:
 	// BEGIN---------------------------------------------- CONSTRUCTOR ------------------------------------------------
-	MatrixRow(int ncols): ncols_(ncols) {
+	MatrixRow(ssize_t ncols): ncols_(ncols) {
 		Assert(ncols_ > 0, "cannot initialize matrix_row with " + to_string(ncols_) + " columns", __FILE__, __LINE__);
 
 		data.resize(ncols_);
@@ -17,9 +17,9 @@ public:
 	// END------------------------------------------------ CONSTRUCTOR ------------------------------------------------
 
 	// BEGIN---------------------------------------------- OPERATORS --------------------------------------------------
-	double& operator[](const int ncol);
+	double& operator[](const ssize_t ncol);
 
-	const double& operator[](const int ncol) const;
+	const double& operator[](const ssize_t ncol) const;
 	// END------------------------------------------------ OPERATORS --------------------------------------------------
 
 
@@ -30,5 +30,5 @@ public:
 private:
 	vector<double> data;
 
-	int ncols_;
+	ssize_t ncols_;
 };
