@@ -1,25 +1,25 @@
 #pragma once
 
-#include "../include/matrix.hpp"
+#include "../include/matrix.h"
 
 // GETTERS BEGINS
-size_t Matrix::get_nrows() const {
-	return nrows;
+ssize_t Matrix::nrows() const {
+	return nrows_;
 }
 
-size_t Matrix::get_ncols() const {
-	return ncols;
+ssize_t Matrix::ncols() const {
+	return ncols_;
 }
 // GETTERS ENDS
 
 // OPERATORS BEGINS
 bool Matrix::operator==(Matrix& _matrix) const {
-	if (nrows != _matrix.nrows || ncols != _matrix.ncols) {
+	if (nrows_ != _matrix.nrows() || ncols_ != _matrix.ncols()) {
 		return false;
 	}
 
-	for (size_t i = 0; i < nrows; i++) {
-		for (size_t j = 0; j < ncols; j++) {
+	for (ssize_t i = 0; i < nrows_; i++) {
+		for (ssize_t j = 0; j < ncols_; j++) {
 			if (data[i][j] != _matrix.data[i][j]) {
 				return false;
 			}
@@ -33,19 +33,19 @@ bool Matrix::operator!=(Matrix& _matrix) const {
 	return !(*this == _matrix);
 }
 
-MatrixRow& Matrix::operator[](const size_t _nrow) {
-	if (_nrow < 0 || _nrow >= nrows) {
-		cout << "Error: row index " << _nrow << " is out of range" << endl;
+MatrixRow& Matrix::operator[](const ssize_t nrow) {
+	if (nrow < 0 || nrow >= nrows_) {
+		cout << "Error: row index " << nrow << " is out of range" << endl;
 
 		exit(1);
 	}
 
-	return data[_nrow];
+	return data[nrow];
 }
 
 Matrix& Matrix::operator+=(const double k) {
-	for (size_t i = 0; i < nrows; i++) {
-		for (size_t j = 0; j < ncols; j++) {
+	for (ssize_t i = 0; i < nrows_; i++) {
+		for (ssize_t j = 0; j < ncols_; j++) {
 			data[i][j] += k;
 		}
 	}
@@ -54,8 +54,8 @@ Matrix& Matrix::operator+=(const double k) {
 }
 
 Matrix& Matrix::operator-=(const double k) {
-	for (size_t i = 0; i < nrows; i++) {
-		for (size_t j = 0; j < ncols; j++) {
+	for (ssize_t i = 0; i < nrows_; i++) {
+		for (ssize_t j = 0; j < ncols_; j++) {
 			data[i][j] -= k;
 		}
 	}
@@ -64,8 +64,8 @@ Matrix& Matrix::operator-=(const double k) {
 }
 
 Matrix& Matrix::operator*=(const double k) {
-	for (size_t i = 0; i < nrows; i++) {
-		for (size_t j = 0; j < ncols; j++) {
+	for (ssize_t i = 0; i < nrows_; i++) {
+		for (ssize_t j = 0; j < ncols_; j++) {
 			data[i][j] *= k;
 		}
 	}
@@ -80,8 +80,8 @@ Matrix& Matrix::operator/=(const double k) {
 		exit(1);
 	}
 
-	for (size_t i = 0; i < nrows; i++) {
-		for (size_t j = 0; j < ncols; j++) {
+	for (ssize_t i = 0; i < nrows_; i++) {
+		for (ssize_t j = 0; j < ncols_; j++) {
 			data[i][j] /= k;
 		}
 	}
@@ -90,18 +90,18 @@ Matrix& Matrix::operator/=(const double k) {
 }
 
 Matrix& Matrix::operator*=(const vector<double> v) {
-	if (ncols != v.size()) {
+	if (ncols_ != ssize_t(v.size())) {
 		cout << "Error: cannot multiply matrix by vector (size mismatch)" << endl;
 
 		exit(1);
 	}
 
-	Matrix _matrix(nrows, 1);
+	Matrix _matrix(nrows_, 1);
 
-	for (size_t i = 0; i < nrows; i++) {
+	for (ssize_t i = 0; i < nrows_; i++) {
 		double elem = 0;
 
-		for (size_t j = 0; j < ncols; j++) {
+		for (ssize_t j = 0; j < ncols_; j++) {
 			elem += data[i][j] * v[j];
 		}
 
@@ -115,8 +115,8 @@ Matrix& Matrix::operator*=(const vector<double> v) {
 // OPERATORS ENDS(
 
 void Matrix::print() const {
-	for (size_t i = 0; i < nrows; i++) {
-		for (size_t j = 0; j < ncols; j++) {
+	for (ssize_t i = 0; i < nrows_; i++) {
+		for (ssize_t j = 0; j < ncols_; j++) {
 			cout << data[i][j] << "\t";
 		}
 

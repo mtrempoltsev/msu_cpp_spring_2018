@@ -1,28 +1,17 @@
-#ifndef MATRIX_ROW_CPP
-#define MATRIX_ROW_CPP
+#pragma once
 
-#include "../include/matrix_row.hpp"
+#include "../include/matrix_row.h"
 
-// OPERATORS BEGINS
-double& MatrixRow::operator[](const int _ncol) {
-	if (_ncol < 0 || _ncol >= ncols) {
-		cout << "Error: col index " << _ncol << " is out of range" << endl;
+// BEGIN---------------------------------------- OPERATORS ------------------------------------------------------------
+double& MatrixRow::operator[](const int ncol) {
+	Assert(ncol >= 0 && ncol < ncols_, "Error: col index " + to_string(ncol) + " is out of range", __FILE__, __LINE__);
 
-		exit(1);
-	}
-
-	return data[_ncol];
+	return data[ncol];
 }
 
-const double& MatrixRow::operator[](const int _ncol) const {
-	if (_ncol < 0 || _ncol >= ncols) {
-		cout << "Error: col index " << _ncol << " is out of range" << endl;
+const double& MatrixRow::operator[](const int ncol) const {
+	Assert(ncol >= 0 && ncol < ncols_, "Error: col index " + to_string(ncol) + " is out of range", __FILE__, __LINE__);
 
-		exit(1);
-	}
-
-	return data[_ncol];
+	return data[ncol];
 }
-// OPERATORS ENDS
-
-#endif
+// END------------------------------------------ OPERATORS ------------------------------------------------------------

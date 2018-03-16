@@ -2,42 +2,32 @@
 
 #include "../src/matrix_row.cpp"
 
-using namespace std;
-
+typedef std::make_signed<std::size_t>::type ssize_t; // Since C++11
 
 class Matrix {
 
 public:
 	// BEGIN---------------------------------------------- CONSTRUCTOR ------------------------------------------------
-	Matrix(size_t _nrows, size_t _ncols) : nrows(_nrows), ncols(_ncols) {
-		if (nrows <= 0) {
-			cout << "Error: cannot initialize matrix with " << nrows << " rows" << endl;
+	Matrix(ssize_t nrows, ssize_t ncols) : nrows_(nrows), ncols_(ncols) {
+		Assert(nrows > 0, "cannot initialize matrix with " + to_string(nrows) + " rows", __FILE__, __LINE__);
+		Assert(ncols > 0, "cannot initialize matrix with " + to_string(ncols) + " columns", __FILE__, __LINE__);
 
-			exit(1);
-		}
-
-		if (ncols <= 0) {
-			cout << "Error: cannot initialize matrix with " << ncols << " columns" << endl;
-
-			exit(1);
-		}
-
-		for (size_t i = 0; i < nrows; i++) {
-			data.push_back(MatrixRow(ncols));
+		for (ssize_t i = 0; i < nrows_; i++) {
+			data.push_back(MatrixRow(ncols_));
 		}
 	}
 	// END------------------------------------------------ CONSTRUCTOR ------------------------------------------------
 
 	// BEGIN---------------------------------------------- GETTERS ----------------------------------------------------
-	size_t get_nrows() const;
-	size_t get_ncols() const;
+	ssize_t nrows() const;
+	ssize_t ncols() const;
 	// END------------------------------------------------ GETTERS ----------------------------------------------------
 
 	// BEGIN---------------------------------------------- OPERATORS --------------------------------------------------
 	bool operator==(Matrix&) const;
 	bool operator!=(Matrix&) const;
 
-	MatrixRow& operator[](size_t _nrow);
+	MatrixRow& operator[](ssize_t nrow);
 
 	Matrix& operator+=(const double k);
 
@@ -53,14 +43,12 @@ public:
 	void print() const;
 
 	// BEGIN---------------------------------------------- DESTRUCTOR -------------------------------------------------
-	~Matrix() {
-		data.clear();
-	};
+	~Matrix() {}
 	// END------------------------------------------------ DESTRUCTOR -------------------------------------------------
 
 private:
-	size_t nrows;
-	size_t ncols;
+	ssize_t nrows_;
+	ssize_t ncols_;
 
 	vector<MatrixRow> data;
 };
