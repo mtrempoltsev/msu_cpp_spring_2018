@@ -2,12 +2,12 @@
 
 #include "../Tool.h"
 
-class Armor : protected Tool {
+class Armor : public Tool {
 
 public:
 	// BEGIN---------------------------------------------- CONSTRUCTOR ------------------------------------------------
 	Armor(string_t name, uint_t defence_rate, string_t defence_type) :
-		Tool(name, "armor", false),
+		Tool("armor", name, false),
 
 		defence_rate_(defence_rate),
 		defence_type_(defence_type)
