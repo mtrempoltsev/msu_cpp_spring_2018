@@ -60,7 +60,7 @@ public:
         if (cols != comp_matrix.cols || rows != comp_matrix.rows) {
             return false;
         }
-        for (size_t i = 0; i < cols * rows; ++i) {
+        for (size_t i = 0; i < cols * rows; i++) {
             if (matrix[i] != comp_matrix.matrix[i]) {
                 return false;
             }
