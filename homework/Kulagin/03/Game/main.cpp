@@ -18,14 +18,11 @@ using namespace std;
 int main() {
 	// Weapon wp("Sword1", 1, 1, "magic");
 	// Armor arm("Sword1", 1, "magic");
-
-	// cout << wp.attack_type() << endl;
-
 	Pig pig;
 
-	Peasant peasant;
-	Knight knight;
-	Archer archer;
+	Peasant peasant("Kyle");
+	Knight knight("Eric Cartman");
+	Archer archer("Kenny");
 
 	Bow bow("cool bow", 1, 1, "pierce");
 	Sword sword("cool sword", 1, 1, "magic");
@@ -43,21 +40,15 @@ int main() {
 	knight.set_weapon("cool sword");
 	knight.set_armor("cool lats");
 
+	knight.unset_weapon();
+	// knight.unset_armor();
+
 	knight.print_tools("Tools:");
 
-	// knight.add_tool(&sword);
-	// Tool sw("sword");
-	// Weapon sword("sword", 1, 1, "d");
+	knight.print_weapon("Weapon:");
+	knight.print_armor("Armor:");
 
-	// player.add_tool(&sword);
-
-	// player.print_tools();
-
-	// player.set_weapon("sword");
-	// player.set_armor("sword");
-	// player.remove_tool(&sword);
-
-	// player.print_tools();
+	knight.info();
 
 	return 0;
 }

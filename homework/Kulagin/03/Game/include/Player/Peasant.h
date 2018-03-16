@@ -6,7 +6,7 @@ class Peasant : protected Player {
 
 public:
 	// BEGIN---------------------------------------------- CONSTRUCTOR ------------------------------------------------
-	Peasant(): Player("peasant", 1, 1, "piece") {
+	Peasant(string_t name = ""): Player("peasant", name, 1, 1, "piece") {
 	}
 	// END------------------------------------------------ CONSTRUCTOR ------------------------------------------------
 

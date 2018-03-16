@@ -9,7 +9,12 @@ class Player {
 
 public:
 	// BEGIN---------------------------------------------- CONSTRUCTOR ------------------------------------------------
-	Player(string_t type, uint_t attack_rate = 0, uint_t attack_speed = 0, string_t att = "None") {
+	Player(string_t type, string_t name, uint_t attack_rate = 0, uint_t attack_speed = 0, string_t attack_type = "None") :
+		type_(type),
+		name_(name),
+		attack_rate_(attack_rate),
+		attack_speed_(attack_speed),
+		attack_type_(attack_type) {
 
 	}
 	// END------------------------------------------------ CONSTRUCTOR ------------------------------------------------
@@ -100,14 +105,66 @@ public:
 		exit(1);
 	}
 
-	void print_tools(string_t header = "") {
+	void unset_weapon() {
+		weapon_ = nullptr;
+	}
+
+	void unset_armor() {
+		armor_ = nullptr;
+	}
+
+	void print_weapon(string_t header = "") const {
+		if (header) {
+			printf("%s ", header);
+		}
+
+		if (weapon_) {
+			printf("%s\n\n", weapon_->name());
+		} else {
+			printf("not set\n\n");
+		}
+	}
+
+	void print_armor(string_t header = "") const {
+		if (header) {
+			printf("%s ", header);
+		}
+
+		if (armor_) {
+			printf("%s\n\n", armor_->name());
+		} else {
+			printf("not set\n\n");
+		}
+	}
+
+	void print_tools(string_t header = "") const {
 		if (header) {
 			printf("%s\n", header);
 		}
 
 		for (auto k : tools_) {
-			printf("\t%s\n", k.first);
+			printf("\tName: \"%s\"\n", k.first);
+			printf("\tType: \"%s\"\n", k.second->type());
+
+			printf("\n");
 		}
+
+		printf("\n");
+	}
+
+	void info() {
+		for (int i = 0; i < 50; i++)
+			printf("-");
+
+		printf("\n");
+
+		printf("Name: \"%s\"\n\n", name_);
+		printf("Type: \"%s\"\n\n", type_);
+
+		print_tools("Tools:");
+
+		for (int i = 0; i < 50; i++)
+			printf("-");
 
 		printf("\n");
 	}
