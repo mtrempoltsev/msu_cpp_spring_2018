@@ -20,12 +20,12 @@ int searchIndex(int pos, const int *data, int s, bool begin)
 		for (int i = 0; i < s; ++i)
 			if (data[i] == pos)
 				return i;
-		return s;
+		return s+1;
 	}
 	for (int i = s; i > -1; --i)
 		if (data[i] == pos)
 			return i;
-	return 0;
+	return -1;
 }
 
 int main(int argc, char** argv)
