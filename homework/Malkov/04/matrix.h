@@ -18,9 +18,10 @@ private:
         }
 
         int &operator[](size_t _i) {
-            if (_i < 0 || _i >= rows) {
+            if (_i < 0 || _i >= link->rows) {
                 throw std::out_of_range("bad row index");
             }
+            return link->matrix[_i*link->cols+j];
         }
     };
 
