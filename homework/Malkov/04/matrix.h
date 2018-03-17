@@ -21,7 +21,7 @@ private:
             if (_i < 0 || _i >= link->rows) {
                 throw std::out_of_range("bad row index");
             }
-            return link->matrix[_i*link->cols+j];
+            return link->matrix[_i * link->cols + j];
         }
     };
 
