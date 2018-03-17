@@ -6,11 +6,8 @@ CPPFLAGS = -O2 -std=c++14
 
 all: check
 
-check: check.o
-	$(CPPC) $(CPPFLAGS) $^ -o $@
-
-check.o: check.cpp matrix.h
-	$(CPPC) $(CPPFLAGS) -c $<
+check: check.cpp matrix.h
+	$(CPPC) $(CPPFLAGS) $< -o $@
 
 clean:
 	rm -f check check.o
