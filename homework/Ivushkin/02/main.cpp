@@ -10,21 +10,26 @@ using namespace std;
 
 int binarysearch(int v, int l, int r)
 {
-	if (l == r) return l;
-	int m = (l + r) / 2;
-	if (Data[m] >= v) r = m;
-	else l = m + 1;
-	return binarysearch(v, l, r);
+	int m;
+	while (l < r)
+	{
+		m = (l + r) / 2;
+		if (Data[m] >= v) r = m;
+		else l = m + 1;
+	}
+	return l;
 }
 
-int shift(int a, int t)
+int shiftl(int a)
 {
-	if (t)
-		if (a == 0 || Data[a - 1] != Data[a]) return a;
-		else return shift(a - 1, t);
-	else
-		if (a == Size - 1 || Data[a + 1] != Data[a]) return a;
-		else return shift(a + 1, t);
+	while (a > 0 && Data[a - 1] == Data[a]) --a;
+	return a;
+}
+
+int shiftr(int a)
+{
+	while (a < Size - 1 && Data[a + 1] == Data[a]) ++a;
+	return a;
 }
 
 int main(int argc, char* argv[])
@@ -56,9 +61,9 @@ int main(int argc, char* argv[])
 			cout << 0;
 			return 0;
 		}
-		int l = shift(binarysearch(pairs[p], 0, Size - 1), 1);
+		int l = shiftl(binarysearch(pairs[p], 0, Size - 1));
 		++p;
-		int r = shift(binarysearch(pairs[p], 0, Size - 1), 0);
+		int r = shiftr(binarysearch(pairs[p], 0, Size - 1));
 		res.push_back(0);
 		for (int i = l; i <= r; ++i)
 			if (prime[Data[i]]) ++res[p / 2];
