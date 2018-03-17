@@ -34,7 +34,7 @@ bool Matrix::operator!=(Matrix& _matrix) const {
 }
 
 MatrixRow& Matrix::operator[](const ssize_t nrow) {
-	Assert(nrow >= 0 && nrow < nrows_, "row index " + to_string(nrow) + " is out of range", __FILE__, __LINE__);
+	Assert(nrow >= 0 && nrow < nrows_);
 
 	return data[nrow];
 }
@@ -70,7 +70,7 @@ Matrix& Matrix::operator*=(const double k) {
 }
 
 Matrix& Matrix::operator/=(const double k) {
-	Assert(k != 0, "division by zero", __FILE__, __LINE__);
+	Assert(k != 0);
 
 	for (ssize_t i = 0; i < nrows_; i++) {
 		for (ssize_t j = 0; j < ncols_; j++) {
@@ -82,7 +82,7 @@ Matrix& Matrix::operator/=(const double k) {
 }
 
 Matrix& Matrix::operator*=(const vector<double> v) {
-	Assert(ncols_ == ssize_t(v.size()), "cannot multiply matrix by vector (size mismatch)", __FILE__, __LINE__);
+	Assert(ncols_ == ssize_t(v.size()));
 
 	Matrix _matrix(nrows_, 1);
 

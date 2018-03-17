@@ -2,15 +2,15 @@
 
 #include "../src/matrix_row.cpp"
 
-typedef std::make_signed<std::size_t>::type ssize_t; // Since C++11
+typedef std::make_signed<std::size_t>::type ssize_t;
 
 class Matrix {
 
 public:
 	// BEGIN---------------------------------------------- CONSTRUCTOR ------------------------------------------------
 	Matrix(ssize_t nrows, ssize_t ncols) : nrows_(nrows), ncols_(ncols) {
-		Assert(nrows > 0, "cannot initialize matrix with " + to_string(nrows) + " rows", __FILE__, __LINE__);
-		Assert(ncols > 0, "cannot initialize matrix with " + to_string(ncols) + " columns", __FILE__, __LINE__);
+		Assert(nrows > 0);
+		Assert(ncols > 0);
 
 		for (ssize_t i = 0; i < nrows_; i++) {
 			data.push_back(MatrixRow(ncols_));
