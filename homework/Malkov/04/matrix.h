@@ -12,10 +12,7 @@ private:
         std::size_t j;
         Matrix *link;
     public:
-        Proxy(Matrix *_link, std::size_t _j) {
-            link = _link;
-            j = _j;
-        }
+        Proxy(Matrix *_link, std::size_t _j):link(_link), j(_j)  {}
 
         int &operator[](size_t _i) {
             if (_i < 0 || _i >= link->rows) {
@@ -26,9 +23,7 @@ private:
     };
 
 public:
-    Matrix(std::size_t _cols, std::size_t _rows) {
-        cols = _cols;
-        rows = _rows;
+    Matrix(std::size_t _cols, std::size_t _rows) : cols(_cols), rows(_rows){
         matrix = new int[_cols * _rows];
     }
 
