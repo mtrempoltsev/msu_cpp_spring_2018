@@ -1,109 +1,103 @@
-#include<iostream>
-#include<string>
-
-
-class Row {
+class Arr_int {
 private:
-	int *row;
+	int *arr_int;
 	int M;
 public:
-	Row() {
+	Arr_int() {
 		M = 0;
-		row = nullptr;
+		arr_int = nullptr;
 	}
-	Row(int M) {
-		this->M = M;
-		this->row = new int[M];
+	Arr_int(int m) : M(m) {
+		this->arr_int = new int[m];
 	}
 	int& operator[](int i) {
-		if (i >= this->M)
+		if (i >= this->M || i<0)
 		{
 			throw std::out_of_range(std::to_string(i) + " is " +
-				"out of Row range. max index = " + std::to_string(this->M));
+				"out of Arr_int range. max index = " + std::to_string(this->M));
 		}
-		return row[i];
+		return arr_int[i];
 	}
-	Row(const Row& other) {
+	Arr_int(const Arr_int& other) {
 		this->M = other.M;
 		int *r = new int[other.M];
 		for (int i = 0; i < other.M; i++) {
-			r[i] = other.row[i];
+			r[i] = other.arr_int[i];
 		}
-		this->row = r;
+		this->arr_int = r;
 	}
 
-	Row& operator=(const Row& other) {
+	Arr_int& operator=(const Arr_int& other) {
 		if (this != &other) {
 			int *tmp = new int[other.M];
 			for (int i = 0; i < other.M; i++) {
-				tmp[i] = other.row[i];
+				tmp[i] = other.arr_int[i];
 			}
-			delete[] this->row;
-			this->row = tmp;
+			delete[] this->arr_int;
+			this->arr_int = tmp;
 			this->M = other.M;
 		}
 		return *this;
 	}
-	~Row() {
-		delete[] row;
+	~Arr_int() {
+		delete[] arr_int;
 	}
 };
 class Matrix {
 private:
-	Row * matrix;
-	int N;
-	int M;
+	Arr_int * matrix;
+	int cols;
+	int rows;
 public:
-	Matrix(int N, int M) {
-		this->N = N;
-		this->M = M;
-		matrix = new Row[N];
-
-		for (int i = 0; i < N; i++) {
-			matrix[i] = Row(M);
+	Matrix(int co, int ro) : cols(co), rows(ro) {
+		matrix = new Arr_int[co];
+		for (int i = 0; i < co; i++) {
+			matrix[i] = Arr_int(ro);
 		}
 	}
-	Matrix(Matrix& other) {
-	}
+
 	int getColumns() {
-		return this->N;//По моей логике должно было возвращаться M но так не проходят тесты...
+		return this->cols;
 	}
 	int getRows() {
-		return this->M;// здесь так же
+		return this->rows;
 	}
-	Row& operator[](int i) {
-		if (i >= this->N)
+
+	Arr_int& operator[](int i) {
+		if (i >= this->cols || i<0)
 		{
 
 			throw std::out_of_range(std::to_string(i) + " is " +
-				"out of Col range. max index = " + std::to_string(this->N));
+				"out of Col range. max index = " + std::to_string(this->cols));
 		}
 		return matrix[i];
 
 	}
-	Row operator[](int i) const{
-		if (i >= this->N)
-		{
-
+	Arr_int& operator[](int i) const{
+		if (i >= this->cols || i<0)	{
 			throw std::out_of_range(std::to_string(i) + " is " +
-				"out of Col range. max index = " + std::to_string(this->N));
+				"out of Col range. max index = " + std::to_string(this->cols));
 		}
 		return matrix[i];
-
 	}
 
 	Matrix& operator*=(int num) {
-		for (int i = 0; i < this->N*this->M; i++)
-			(*this)[i / this->M][i%this->M] *= num;
+		for (int i = 0; i < this->cols; i++) {
+			for (int j = 0; j < this->rows; j++) {
+				matrix[i][j] *= num;
+			}
+		}
 		return *this;
 	}
 	bool operator==(const Matrix& other) {
-		if (this->M != other.M || this->N != other.N)
+		if (this->cols != other.cols || this->rows != other.rows)
 			return false;
-		for (int i = 0; i < this->N*this->M; i++)
-			if (!((*this)[i / this->M][i%this->M] == other[i / this->M][i%this->M]))
-				return false;
-
+		for (int i = 0; i < this->cols; i++) {
+			for (int j = 0; j < this->rows; j++) {
+				if ((*this)[i][j] != other[i][j])
+					return false;
+			}
+		}
 		return true;
 	}
 
