@@ -6,6 +6,7 @@ class Proxy
 public:
     Proxy(int rows_ = 0): rows(rows_) {};
     Proxy &setProxy(int delta_, int *arr_);
+    const int &operator[](int i) const;
     int &operator[](int i);
 };
 
@@ -41,19 +42,26 @@ Proxy &Proxy::setProxy(int delta_, int *arr_)
     return *this;
 }
 
-int &Proxy::operator[](int i)
+const int &Proxy::operator[](int i) const
 {
     if (i >= rows){
-        throw std::out_of_range("cols err");
+        throw std::out_of_range("Wrong row number");
     }
     return arr[delta + i];
 }
 
+int &Proxy::operator[](int i)
+{
+    if (i >= rows){
+        throw std::out_of_range("Wrong row number");
+    }
+    return arr[delta + i];
+}
 
 const Proxy &Matrix::operator[](size_t i) const
 {
     if (i >= cols) {
-        throw std::out_of_range("cols err");
+        throw std::out_of_range("Wrong column number");
     }
     return proxy->setProxy(rows * i, arr);
 }
@@ -61,7 +69,7 @@ const Proxy &Matrix::operator[](size_t i) const
 Proxy &Matrix::operator[](size_t i)
 {
     if (i >= cols) {
-        throw std::out_of_range("cols err");
+        throw std::out_of_range("Wrong column number");
     }
     return proxy->setProxy(rows * i, arr);
 }
