@@ -1,8 +1,4 @@
-#include <iostream>
-
-#define check(cond) do { if (!(cond)) std::cout << "line " << __LINE__ << ": " << #cond << '\n'; } while(0)
-#define check_throw(expr, err) do { try { expr; } catch (const err&) { break ; } catch (...) { } std::cout << "line " << __LINE__ << '\n'; } while(0)
-
+#pragma once
 class Matrix
 {
 private:
