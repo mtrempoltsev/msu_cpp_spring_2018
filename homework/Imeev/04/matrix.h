@@ -1,13 +1,13 @@
 class Proxy
 {
-    int rows;
-    int delta;
+    size_t rows;
+    size_t delta;
     int *arr;
 public:
-    Proxy(int rows_ = 0): rows(rows_) {};
-    Proxy &setProxy(int delta_, int *arr_);
-    const int &operator[](int i) const;
-    int &operator[](int i);
+    Proxy(size_t rows_ = 0): rows(rows_) {};
+    Proxy &setProxy(size_t delta_, int *arr_);
+    const int &operator[](size_t i) const;
+    int &operator[](size_t i);
 };
 
 class Matrix
@@ -35,14 +35,14 @@ public:
     const bool operator!=(const Matrix &other) const;
 };
 
-Proxy &Proxy::setProxy(int delta_, int *arr_)
+Proxy &Proxy::setProxy(size_t delta_, int *arr_)
 {
     delta = delta_;
     arr = arr_;
     return *this;
 }
 
-const int &Proxy::operator[](int i) const
+const int &Proxy::operator[](size_t i) const
 {
     if (i >= rows){
         throw std::out_of_range("Wrong row number");
@@ -50,7 +50,7 @@ const int &Proxy::operator[](int i) const
     return arr[delta + i];
 }
 
-int &Proxy::operator[](int i)
+int &Proxy::operator[](size_t i)
 {
     if (i >= rows){
         throw std::out_of_range("Wrong row number");
