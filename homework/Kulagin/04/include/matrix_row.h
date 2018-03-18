@@ -28,7 +28,7 @@ public:
 	// END------------------------------------------------ DESTRUCTOR -------------------------------------------------
 
 private:
-	vector<double> data;
+	std::vector<double> data;
 
 	ssize_t ncols_;
 };
