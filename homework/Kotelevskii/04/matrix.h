@@ -26,31 +26,31 @@ public:
 	};
 	size_t getRows() const
 	{
-		return column;
+		return row;
 	}
 	size_t getColumns() const
 	{
-		return row;
+		return column;
 	}
 	Matrix(size_t x, size_t y)
 	{
-		row = x;
-		column = y;
+		column = x;
+		row = y;
 		M = new int[row*column];
 	}
 	Helper operator[](const size_t i) const
 	{
-		if (i >= row)
+		if (i >= column)
 			throw std::out_of_range("");
 		else
-			return Helper(this->getRows(), M + i*row);
+			return Helper(this->getRows(), M + i*column);
 	}
 	bool operator==(const Matrix& other) const
 	{
 		if ((this->getRows() != other.getRows()) || (this->getColumns() != other.getColumns()))
 			return false;
-		for (size_t i = 0; i < row; ++i)
-			for (size_t j = 0; j < column;++j)
+		for (size_t i = 0; i < column; ++i)
+			for (size_t j = 0; j < row;++j)
 				if ((*this)[i][j] != other[i][j])
 					return false;
 		return true;
@@ -61,8 +61,8 @@ public:
 	}
 	Matrix& operator*=(int a)
 	{
-		for (size_t i = 0; i < row; ++i)
-			for (size_t j = 0; j < column; ++j)
+		for (size_t i = 0; i < column; ++i)
+			for (size_t j = 0; j < row; ++j)
 				(*this)[i][j] *= a;
 		return (*this);
 	}
