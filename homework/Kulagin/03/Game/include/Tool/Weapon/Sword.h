@@ -3,7 +3,6 @@
 #include "Weapon.h"
 
 class Sword : public Weapon {
-// class Sword : protected Weapon {
 
 public:
 	// BEGIN---------------------------------------------- CONSTRUCTOR ------------------------------------------------

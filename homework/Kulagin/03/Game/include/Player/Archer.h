@@ -2,7 +2,7 @@
 
 #include "Player.h"
 
-class Archer : protected Player {
+class Archer : public Player {
 
 public:
 	// BEGIN---------------------------------------------- CONSTRUCTOR ------------------------------------------------
