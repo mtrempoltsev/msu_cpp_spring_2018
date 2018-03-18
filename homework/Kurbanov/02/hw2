@@ -1,28 +1,30 @@
 #include "numbers.dat"
 #include <iostream>
 
-int check(const int& x)
+int check(int a)
 {
-	if (x == 2)
+	int i;
+	if (a == 2)
 		return 1;
-	if (x < 2 || !(x & 1))
+	if (a == 0 || a == 1 || a % 2 == 0)
 		return 0;
-	for (int i = 3; i*i <= x; i += 2)
-		if (x % i == 0)
-			return 0;
-	return 1;
+	for (i = 3; i*i <= a && a % i; i += 2)
+		;
+	return i * i > a;
 }
 
-int searchIndex(int pos, const int *data, int s, bool begin)
+int firstIndex(int pos, const int *data, int s)
 {
-	if (begin)
-	{
-		for (int i = 0; i < s; ++i)
+	
+		for (int i = 0; i < s; i++)
 			if (data[i] == pos)
 				return i;
-		return s+1;
-	}
-	for (int i = s; i > -1; --i)
+		return s;
+}
+
+int secondIndex(int pos, const int *data, int s)
+{
+	for (int i = s; i > -1; i--)
 		if (data[i] == pos)
 			return i;
 	return -1;
@@ -35,7 +37,7 @@ int main(int argc, char** argv)
 	for (int i = 1; i < argc; i += 2)
 	{
 		count = 0;
-		for (int j = searchIndex(std::atoi(argv[i]), Data, Size, true); j <= searchIndex(std::atoi(argv[i + 1]), Data, Size, false); j++)
+		for (int j = firstIndex(std::atoi(argv[i]), Data, Size); j <= secondIndex(std::atoi(argv[i + 1]), Data, Size); j++)
 			count += check(Data[j]);
 		std::cout << count << std::endl;
 	}

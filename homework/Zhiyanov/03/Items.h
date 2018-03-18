@@ -33,19 +33,33 @@ protected:
 
 class Thing : public Object{
 public:
+	int get_resource(){
+		return resource;
+	}
+
+	void set_resource(int new_resource){
+		resource = new_resource;
+	}
+
+protected:
+	int resource;
+};
+
+class Alive : public Object{
+public:
 	int get_health(){
 		return health;
 	}
 
-	void set_health(int new_heath){
-		health = new_heath;
+	void set_health(int new_health){
+		health = new_health;
 	}
 
 protected:
 	int health;
 };
 
-class Animal : public Thing{
+class Animal : public Alive{
 public:
 	int get_quality(){
 		return quality;
@@ -59,7 +73,7 @@ protected:
 	int quality;
 };
 
-class Human : public Thing{
+class Human : public Alive{
 public:
 	int get_speed(){
 		return speed;
@@ -211,6 +225,7 @@ public:
 	Shovel(Point new_location, int new_id){
 		location = new_location;
 		id = new_id;
+		resource = 10;
 		weight = 10;
 		quality = 10;
 		damage = 10;
@@ -225,6 +240,7 @@ public:
 	Arch(Point new_location, int new_id){
 		location = new_location;
 		id = new_id;
+		resource = 10;
 		weight = 10;
 		quality = 20;
 		damage = 30;
@@ -239,6 +255,7 @@ public:
 	Sword(Point new_location, int new_id){
 		location = new_location;
 		id = new_id;
+		resource = 10;
 		weight = 40;
 		quality = 30;
 		damage = 30;
@@ -253,7 +270,7 @@ public:
 class Hauberk : public Armorequipment{
 public:
 	Hauberk(Point new_location, int new_id){
-		health = 100;
+		resource = 100;
 		weight = 50;
 		quality = 2;
 		id = new_id;
@@ -267,7 +284,7 @@ public:
 class Armor : public Armorequipment{
 public:
 	Armor(Point new_location, int new_id){
-		health = 200;
+		resource = 200;
 		weight = 100;
 		quality = 3;
 		id = new_id;
