@@ -25,8 +25,6 @@ int main(int argc, char *argv[]) {
         countOfPrimeNumber[i] = countOfPrimeNumber[i - 1] + isPrime[Data[i]];
     }
     if (argc % 2 != 1 || argc == 1) {
-        free(isPrime);
-        free(countOfPrimeNumber);
         return -1;
     }
     for (int k = 1; k < argc; k += 2) {
