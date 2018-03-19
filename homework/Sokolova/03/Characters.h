@@ -11,21 +11,10 @@ File contains hierarchy of characters in the game.
 
 /**
  * @brief Base class of all characters in the game.
- * Has unique identifier and name.
- * Has some level that defines max value for characteristic.
- * Has age, power and health.
  * Can recover of damage and upgrade to new level.
  */
 
 class Character {
-    int id;
-    std::string Name;
-protected:
-    int health;
-    int power;
-    int age;
-    int sex;
-    int level;
 public:
     void recover();
     void upgrade();
@@ -34,29 +23,33 @@ public:
 
 /**
  * @brief Base class of all animal characters.
- * Has some appearance characteristics.
+ * Identified by id, name.
+ * Recovers by increasing power.
+ * Upgrades by increasing its level.
  * Can work and challenge with other animals.
  */
 class Animal: public Character {
-    int furColor;
+    int id;
+    std::string name;
+    int level;
+    int power;
 public:
     void work();
+    void challenge(Animal &);
 };
 
 /**
- * @brief Horse can carry its human and take part in horseraces.
+ * @brief Horse works by carrying its human taking part in horseraces.
  */
 class Horse: public Animal {
-public:
     void carryMan();
-    void participateHorseracaes();
+    void participateHorseraces();
 };
 
 /**
- * @brief Pig can put on weight and take part in pig exhibition.
+ * @brief Pig works by putting weight on and taking part in pig exhibition.
  */
 class Pig: public Animal {
-public:
     void growFat();
     void participateExhibition();
 };
@@ -64,13 +57,19 @@ public:
 
 /**
  * @brief Base class of human characters.
- * Has some appearance characteristics.
+ * Identified by id and name.
+ * Has level, power and health characteristics.
+ * Recovers by increasing health.
+ * Upgrades by increasing level.
  * Has money to buy items.
  * Can attack, communicate, buy items and earn money with bets.
  */
 class Human: public Character {
-    int skinColor;
-    int hairColor;
+    int id;
+    std::string name;
+    int level;
+    int power;
+    int healht;
     int money;
 public:
     void attack(Weapon *weapon, Human &enemy);

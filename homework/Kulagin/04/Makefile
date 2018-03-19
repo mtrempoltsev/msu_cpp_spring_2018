@@ -1,7 +1,14 @@
+INCLUDE=include
+SRC=src
+
+COMPILE=g++ main.cpp -std=c++11 -I$(INCLUDE) -I$(SRC) -Wall -pedantic -Wconversion -o main.x
+
+
 all:
-	g++ main.cpp -std=c++11 -Wall -pedantic -Wconversion -o main.x
+	$(COMPILE)
 
 vg:
+	$(COMPILE)
 	valgrind --leak-check=full ./main.x
 
 clean:

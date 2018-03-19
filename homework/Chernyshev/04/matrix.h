@@ -14,9 +14,17 @@ private:
         {
         }
 
-        int &operator[] (int row)
+        int &operator[] (size_t row)
         {
-            if (row < 0 || row >= rows) {
+            if (row >= rows) {
+                throw std::out_of_range("row number should be between 0 and number of rows");
+            }
+            return off[row];
+        }
+
+        int operator[] (size_t row) const
+        {
+            if (row >= rows) {
                 throw std::out_of_range("row number should be between 0 and number of rows");
             }
             return off[row];
@@ -32,10 +40,7 @@ public:
             : cols(cols_), rows(rows_)
     {
         if (cols > 0 && rows > 0) {
-            data = new int[cols * rows];
-            for (size_t i = 0; i < cols * rows; ++i) {
-                data[i] = int();
-            }
+            data = new int[cols * rows]();
         }
     }
 
@@ -49,9 +54,17 @@ public:
         return cols;
     }
 
-    Proxy operator [] (int col)
+    Proxy operator [] (size_t col)
     {
-        if (col < 0 || col >= cols) {
+        if (col >= cols) {
+            throw std::out_of_range("column number should be between 0 and number of columns");
+        }
+        return Proxy(data + col * rows, rows);
+    }
+
+    const Proxy operator [] (size_t col) const
+    {
+        if (col >= cols) {
             throw std::out_of_range("column number should be between 0 and number of columns");
         }
         return Proxy(data + col * rows, rows);

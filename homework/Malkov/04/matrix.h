@@ -12,10 +12,17 @@ private:
         std::size_t j;
         Matrix *link;
     public:
-        Proxy(Matrix *_link, std::size_t _j):link(_link), j(_j)  {}
+        Proxy(Matrix *_link, std::size_t _j) : link(_link), j(_j) {}
 
         int &operator[](size_t _i) {
-            if (_i < 0 || _i >= link->rows) {
+            if (_i >= link->rows) {
+                throw std::out_of_range("bad row index");
+            }
+            return link->matrix[_i * link->cols + j];
+        }
+
+        const int &operator[](size_t _i) const {
+            if (_i >= link->rows) {
                 throw std::out_of_range("bad row index");
             }
             return link->matrix[_i * link->cols + j];
@@ -23,7 +30,7 @@ private:
     };
 
 public:
-    Matrix(std::size_t _cols, std::size_t _rows) : cols(_cols), rows(_rows){
+    Matrix(std::size_t _cols, std::size_t _rows) : cols(_cols), rows(_rows) {
         matrix = new int[_cols * _rows];
     }
 
@@ -32,8 +39,9 @@ public:
     }
 
     Proxy operator[](std::size_t _j) {
-        if (_j < 0 || _j >= cols)
+        if (_j >= cols) {
             throw std::out_of_range("bad col index");
+        }
         return Proxy(this, _j);
     }
 

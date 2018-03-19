@@ -1,7 +1,14 @@
 #include "numbers.dat"
 #include <iostream>
 
-int check(const int& x)
+struct Index{
+	int _begin;
+	int _end;
+	Index(int b, int e):_begin(b), _end(e){}
+	~Index() {}
+};
+
+int check(int x)
 {
 	if (x == 2)
 		return 1;
@@ -12,20 +19,25 @@ int check(const int& x)
 			return 0;
 	return 1;
 }
-
-int searchIndex(int pos, const int *data, int s, bool begin)
+Index searchIndex(const int *data, int s, int first, int second)
 {
-	if (begin)
+	int i = 0;
+	if (second < first)
+		return Index(0, 0);
+	while (data[i]<s)
 	{
-		for (int i = 0; i < s; ++i)
-			if (data[i] == pos)
-				return i;
-		return s+1;
+		if (data[i] == first)
+			break;
+		i++;
 	}
-	for (int i = s; i > -1; --i)
-		if (data[i] == pos)
-			return i;
-	return -1;
+	int j = i;
+	while (data[j] < s)
+	{
+		if (data[j] == second)
+			break;
+		j++;
+	}
+	return Index(i,j);
 }
 
 int main(int argc, char** argv)
@@ -34,8 +46,9 @@ int main(int argc, char** argv)
 	if (argc < 3 || argc % 2 == 0) return -1;
 	for (int i = 1; i < argc; i += 2)
 	{
+		Index in = searchIndex(Data, Size, std::atoi(argv[i]), std::atoi(argv[i + 1]));
 		count = 0;
-		for (int j = searchIndex(std::atoi(argv[i]), Data, Size, true); j <= searchIndex(std::atoi(argv[i + 1]), Data, Size, false); j++)
+		for (int j = in._begin; j <= in._end; j++)
 			count += check(Data[j]);
 		std::cout << count << std::endl;
 	}

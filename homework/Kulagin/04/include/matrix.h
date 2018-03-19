@@ -1,16 +1,14 @@
 #pragma once
 
-#include "../src/matrix_row.cpp"
-
-typedef std::make_signed<std::size_t>::type ssize_t; // Since C++11
+#include "matrix_row.cpp"
 
 class Matrix {
 
 public:
 	// BEGIN---------------------------------------------- CONSTRUCTOR ------------------------------------------------
 	Matrix(ssize_t nrows, ssize_t ncols) : nrows_(nrows), ncols_(ncols) {
-		Assert(nrows > 0, "cannot initialize matrix with " + to_string(nrows) + " rows", __FILE__, __LINE__);
-		Assert(ncols > 0, "cannot initialize matrix with " + to_string(ncols) + " columns", __FILE__, __LINE__);
+		Assert(nrows > 0);
+		Assert(ncols > 0);
 
 		for (ssize_t i = 0; i < nrows_; i++) {
 			data.push_back(MatrixRow(ncols_));
@@ -27,14 +25,15 @@ public:
 	bool operator==(Matrix&) const;
 	bool operator!=(Matrix&) const;
 
-	MatrixRow& operator[](ssize_t nrow);
+	MatrixRow& operator[](const ssize_t nrow);
+	const MatrixRow& operator[](const ssize_t nrow) const;
 
 	Matrix& operator+=(const double k);
 
 	Matrix& operator-=(const double k);
 
 	Matrix& operator*=(const double k);
-	Matrix& operator*=(const std::vector<double>);
+	Matrix& operator*=(const std::vector<double>&);
 
 	Matrix& operator/=(const double k);
 	// END------------------------------------------------ OPERATORS --------------------------------------------------
@@ -49,5 +48,5 @@ private:
 	ssize_t nrows_;
 	ssize_t ncols_;
 
-	vector<MatrixRow> data;
+	std::vector<MatrixRow> data;
 };

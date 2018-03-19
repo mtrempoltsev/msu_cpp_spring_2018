@@ -1,0 +1,3 @@
+/home/alexmal/cpp_mail/msu_cpp_spring_2018/homework/Maltsev/04/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/alexmal/cpp_mail/msu_cpp_spring_2018/homework/Maltsev/04/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/alexmal/cpp_mail/msu_cpp_spring_2018/homework/Maltsev/04/cmake-build-debug/CMakeFiles/04.dir

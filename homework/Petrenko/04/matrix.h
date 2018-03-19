@@ -12,6 +12,13 @@ class Matrix {
     public:
         proxy(const Matrix &that, int col) : p_col(col), owner(that) {}
 
+        int operator[](int row) const {
+            if(row < 0 || row >= owner.r) {
+                throw std::out_of_range("");
+            }
+            return owner.data[row * owner.c + p_col];
+        }
+
         int& operator[](int row) {
             if(row < 0 || row >= owner.r) {
                 throw std::out_of_range("");
@@ -22,13 +29,11 @@ class Matrix {
 
 public:
 
-    explicit Matrix(int cols = 3, int rows = 3) {
-        if(rows < 0 || cols < 0) {
+    Matrix(int cols, int rows) : r(rows), c(cols) {
+        if(r < 0 || c < 0) {
             throw std::out_of_range("");
         }
         data = new int[rows * cols];
-        r = rows;
-        c = cols;
     }
 
     ~Matrix() {
@@ -43,7 +48,14 @@ public:
         return c;
     }
 
-    proxy operator[](int col) const {
+    proxy operator[](int col) {
+        if(col < 0 || col >= c) {
+            throw std::out_of_range("");
+        }
+        return proxy(*this, col);
+    }
+
+    const proxy operator[](int col) const {
         if(col < 0 || col >= c) {
             throw std::out_of_range("");
         }
@@ -69,7 +81,7 @@ public:
         return true;
     }
 
-    bool operator!=(Matrix & other) const{
-        return !(*this == other);
+    bool operator!=(const Matrix & other) const{
+        return !operator==(other);
     }
 };

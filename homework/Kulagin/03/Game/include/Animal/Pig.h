@@ -2,7 +2,7 @@
 
 #include "Animal.h"
 
-class Pig : protected Animal {
+class Pig : public Animal {
 
 public:
 	// BEGIN---------------------------------------------- CONSTRUCTOR ------------------------------------------------

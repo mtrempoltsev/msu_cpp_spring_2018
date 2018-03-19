@@ -83,7 +83,7 @@ public:
 	void set_weapon(string_t name) {
 		for (auto k : tools_) {
 			if (k.first == name && (k.second)->type() == "weapon") {
-				weapon_ = static_cast<Weapon*>(k.second);
+				weapon_ = k.second;
 				return;
 			}
 		}
@@ -96,7 +96,7 @@ public:
 		for (auto k : tools_) {
 			printf("%s %s\n", k.first, k.second->type());
 			if (k.first == name && (k.second)->type() == "armor") {
-				armor_ = static_cast<Armor*>(k.second);
+				armor_ = k.second;
 				return;
 			}
 		}
@@ -189,114 +189,8 @@ protected:
 
 	string_t attack_type_;
 
-
-	Weapon* weapon_;
-	Armor* armor_;
+	Tool* weapon_;
+	Tool* armor_;
 
 	std::map<string_t, Tool*> tools_;
 };
-
-
-
-// #pragma once
-
-// #include <cstdio>
-// #include <typeinfo>
-// #include <map>
-
-// #include "Unit.h"
-
-// class Player : Unit {
-
-// public:
-// 	// BEGIN---------------------------------------------- CONSTRUCTOR ------------------------------------------------
-// 	Player(): Unit() {
-// 		attack_rate_ = 10;
-// 		attack_speed_ = 10;
-// 		attack_type_ = "pierce";
-// 	}
-// 	// END------------------------------------------------ CONSTRUCTOR ------------------------------------------------
-
-// 	// BEGIN---------------------------------------------- SETTERS ----------------------------------------------------
-// 	void set_name(string_t name) {
-// 		name_ = name;
-// 	}
-
-// 	void set_hp(uint_t hp) {
-// 		hp_ = hp;
-// 	}
-
-// 	void set_total_hp(uint_t total_hp) {
-// 		total_hp_ = total_hp;
-// 	}
-// 	// END------------------------------------------------ SETTERS ----------------------------------------------------
-
-// 	// BEGIN---------------------------------------------- GETTERS ----------------------------------------------------
-// 	string_t name() const {
-// 		return name_;
-// 	}
-
-// 	uint_t hp() const {
-// 		return hp_;
-// 	}
-
-// 	uint_t total_hp() const {
-// 		return total_hp_;
-// 	}
-// 	// END------------------------------------------------ GETTERS ----------------------------------------------------
-
-// 	void add_tool(Tool* tool) {
-// 		tools_[tool->name()] = tool;
-// 	}
-
-// 	void remove_tool(Tool* tool) {
-// 		delete tools_[tool->name()];
-// 	}
-
-// 	void set_weapon(string_t name) {
-// 		for (auto k : tools_) {
-// 			if (k.first == name && (k.second)->type() == "weapon") {
-// 				weapon_ = (Weapon*)k.second;
-// 				return;
-// 			}
-// 		}
-
-// 		printf("No such weapon\n");
-// 		exit(1);
-// 	}
-
-// 	void set_armor(string_t name) {
-// 		for (auto k : tools_) {
-// 			if (k.first == name && (k.second)->type() == "armor") {
-// 				armor_ = (Armor*)k.second;
-// 				return;
-// 			}
-// 		}
-
-// 		printf("No such armor\n");
-// 		exit(1);
-// 	}
-
-// 	void print_tools() {
-// 		for (auto k : tools_) {
-// 			printf("%s\t", k.first);
-// 		}
-
-// 		printf("\n");
-// 	}
-
-// 	// BEGIN---------------------------------------------- DESTRUCTOR -------------------------------------------------
-// 	~Player() {}
-// 	// END------------------------------------------------ DESTRUCTOR -------------------------------------------------
-
-// private:
-// 	string_t name_;
-
-// 	uint_t hp_;
-// 	uint_t total_hp_;
-
-// 	Weapon* weapon_;
-// 	Armor* armor_;
-
-// 	std::map<string_t, Tool*> tools_;
-// };

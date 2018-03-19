@@ -129,8 +129,6 @@ class Knight : public Human
 {
 public:
 	Knight();
-	Sword* sword;
-	Lats* lats;
 	~Knight();
 };
 //класс лучников
@@ -138,8 +136,6 @@ class archer : public Human
 {
 public:
 	archer();
-	Bow* bow;
-	Hauberk* hauberk;
 	~archer();
 };
 //класс крестьян
@@ -147,7 +143,6 @@ class Peasant : public Human
 {
 public:
 	Peasant();
-	Shovel* shovel;
 	~Peasant();
 };
 

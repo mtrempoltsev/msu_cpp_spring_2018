@@ -2,7 +2,7 @@
 
 #include "Weapon.h"
 
-class Bow : protected Weapon {
+class Bow : public Weapon {
 
 public:
 	// BEGIN---------------------------------------------- CONSTRUCTOR ------------------------------------------------
