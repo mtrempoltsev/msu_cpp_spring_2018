@@ -1,8 +1,5 @@
 #include <list>
 #include <vector>
-struct ChangeListener {
-	virtual void onChange() = 0;
-};
 
 enum class UnitState{
 	NOT_SET, LIFE, DEAD
@@ -13,6 +10,13 @@ enum class ArmorType {
 enum class ItemState {
 	NOT_SET, LIFE, BROKEN
 };
+
+struct Position{
+	float x;
+	float y;
+	float z;
+};
+typedef void(*Function)();
 class Unit {
 public:
 	std::string getName() {
@@ -22,14 +26,14 @@ public:
 		return state;
 	}
 	void setState(UnitState state) {
-		(*this).state = state;
+		this->state = state;
 		notifyListener();
 	}
-	float* getPosition() {
+	Position getPosition() {
 		return position;
 	}
-	void setPosition(float position[]) {
-		*(*this).position = *position;
+	void setPosition(Position position) {
+		this->position = position;
 		notifyListener();
 	}
 	float getHp() {
@@ -39,11 +43,11 @@ public:
 		return maxHp;
 	}
 	void setHp(float hp) {
-		(*this).hp = hp;
+		this->hp = hp;
 		notifyListener();
 	}
-	void setListener(ChangeListener* listener) {
-		(*this).listener = listener;
+	void setListener(Function listener) {
+		this->listener = listener;
 		notifyListener();
 	}
 protected:
@@ -51,13 +55,13 @@ protected:
 	float maxHp;
 	void notifyListener() {
 		if (!listener)
-			(*listener).onChange();
+			listener();
 	}
 private:
 	UnitState state;
-	float position[3];
+	Position position;
 	float hp;
-	ChangeListener* listener;
+	Function listener;
 };
 
 class Armor;
@@ -82,11 +86,11 @@ public:
 		return state;
 	}
 	void setState(ItemState state) {
-		(*this).state = state;
+		this->state = state;
 		notifyListener();
 	}
 	void setHp(float hp) {
-		(*this).hp = hp;
+		this->hp = hp;
 		notifyListener();
 	}
 	float getHp() {
@@ -98,8 +102,8 @@ public:
 	float getWeight() {
 		return weight;
 	}
-	void setListener(ChangeListener* listener) {
-		(*this).listener = listener;
+	void setListener(Function listener) {
+		this->listener = listener;
 		notifyListener();
 	}
 protected:
@@ -108,12 +112,12 @@ protected:
 	float maxHp;
 	void notifyListener() {
 		if (!listener)
-			(*listener).onChange();
+			listener();
 	}
 private:
 	ItemState state;
 	float hp;
-	ChangeListener* listener;
+	Function listener;
 };
 
 class Weapon: public Item {
@@ -179,24 +183,24 @@ public:
 	int getCapacity() {
 		return capacity;
 	}
-	std::list<Bullet*>* getBulletsCharged() {
+	std::list<Bullet*> getBulletsCharged() {
 		return bulletCharged;
 	}
 	size_t getBulletsChargedCount() {
-		return (*bulletCharged).size();
+		return bulletCharged.size();
 	}
 	bool chargeBullets(std::list<Bullet*>* bullets) {
 		if (bullets->size() > getBulletsChargedCount())
 			return false;
 		else 
-			bulletCharged->splice(bulletCharged->end(), *bullets);
+			bulletCharged.splice(bulletCharged.end(), *bullets);
 	}
 	bool hasNextBullet() {
-		return bulletCharged->size() > 0;
+		return bulletCharged.size() > 0;
 	}
 	Bullet* popBoollet() {
-		Bullet* b = bulletCharged->back();
-		bulletCharged->pop_back();
+		Bullet* b = bulletCharged.back();
+		bulletCharged.pop_back();
 		return b;
 	}
 
@@ -204,10 +208,10 @@ protected:
 	std::string name;
 	int capacity;
 private:
-	std::list<Bullet*>* bulletCharged;
+	std::list<Bullet*> bulletCharged;
 };
 
-class Humanoid : public Unit, WeaponUser, ArmorUser {
+class Humanoid : public Unit, public WeaponUser, public  ArmorUser {
 public:
 	bool equipWeapon(Weapon* weapon) override {
 		this->weapon = weapon;
@@ -229,7 +233,7 @@ public:
 
 	}
 	void dropArmor(ArmorType type) override {
-		//скинуть надетую броню  снекоторой части тела
+		//скинуть надетую броню с некоторой части тела
 	}
 private:
 	Weapon* weapon;
@@ -247,5 +251,4 @@ class Sword: public Weapon{};
 class Showel: public Weapon{};
 class Mail: public Armor{};
 class Lats: public Armor{};
-class Help: public Armor{};
-
+class Helm: public Armor{};
