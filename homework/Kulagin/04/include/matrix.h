@@ -1,8 +1,6 @@
 #pragma once
 
-#include "../src/matrix_row.cpp"
-
-typedef std::make_signed<std::size_t>::type ssize_t;
+#include "matrix_row.cpp"
 
 class Matrix {
 
@@ -27,14 +25,15 @@ public:
 	bool operator==(Matrix&) const;
 	bool operator!=(Matrix&) const;
 
-	MatrixRow& operator[](ssize_t nrow);
+	MatrixRow& operator[](const ssize_t nrow);
+	const MatrixRow& operator[](const ssize_t nrow) const;
 
 	Matrix& operator+=(const double k);
 
 	Matrix& operator-=(const double k);
 
 	Matrix& operator*=(const double k);
-	Matrix& operator*=(const std::vector<double>);
+	Matrix& operator*=(const std::vector<double>&);
 
 	Matrix& operator/=(const double k);
 	// END------------------------------------------------ OPERATORS --------------------------------------------------
@@ -49,5 +48,5 @@ private:
 	ssize_t nrows_;
 	ssize_t ncols_;
 
-	vector<MatrixRow> data;
+	std::vector<MatrixRow> data;
 };

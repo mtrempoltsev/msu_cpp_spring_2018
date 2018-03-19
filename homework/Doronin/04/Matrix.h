@@ -1,37 +1,47 @@
-#ifndef MATRIX_H
-#define MATRIX_H
-
+#pragma once
 class Matrix
 {
 private:
-    int* matrix;
-    size_t _rows;
-    size_t _columns;
-    class index{
+    int* matrix = nullptr;
+    size_t _rows = 0;
+    size_t _columns = 0;
+    class index
+    {
     private:
-        size_t _j;
-        Matrix* _m;
+        size_t _j = 0;
+        Matrix* _m = nullptr;
     public:
-        index(Matrix* m, size_t j) {
-            _j=j;
-            _m=m;
-        }
+        index(Matrix* m, size_t j):
+        _j(j),
+        _m(m)
+        {}
+
         int& operator[](size_t i)
         {
             if(i >= _m->_rows)
                 throw std::out_of_range("");
             return _m->matrix[i*_m->_columns+_j];
         }
+
+	const int& operator[](size_t i) const
+        {
+            if(i >= _m->_rows)
+                throw std::out_of_range("");
+            return _m->matrix[i*_m->_columns+_j];
+        }
+
     };
 
 public:
-    Matrix(size_t columns, size_t rows)
+    Matrix(size_t columns, size_t rows):
+    _rows(rows),
+    _columns(columns)
     {
         matrix = new int[rows * columns];
-        _rows = rows;
-        _columns = columns;
     }
-    ~Matrix(){
+
+    ~Matrix()
+    {
         delete[] matrix;
     }
 
@@ -46,7 +56,7 @@ public:
         return _columns;
     }
 
-    size_t getRows()
+    size_t getRows() const
     {
         return _rows;
     }
@@ -66,11 +76,10 @@ public:
         return !(*this == other);
     }
 
-    Matrix* operator*=(int a)
+    Matrix& operator*=(const int a)
     {
         for(size_t i = 0; i < _rows*_columns; i++)
             matrix[i] *= a;
-        return this;
+        return *this;
     }
 };
-#endif MATRIX_H

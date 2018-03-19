@@ -1,9 +1,8 @@
 #include <iostream>
 
-#include "src/matrix.cpp"
+#include "matrix.cpp"
 
 #define check(cond) do { if (!(cond)) std::cout << "line " << __LINE__ << ": " << #cond << '\n'; } while(0)
-#define check_throw(expr, err) do { try { expr; } catch (const err&) { break ; } catch (...) { } std::cout << "line " << __LINE__ << '\n'; } while(0)
 
 void do_testing() {
 	Matrix A(3, 4);
@@ -25,13 +24,13 @@ void do_testing() {
 	check(A[1][0] == 5 && A[1][1] ==  6 && A[1][2] ==  7 && A[1][3] ==  8);
 	check(A[2][0] == 9 && A[2][1] == 10 && A[2][2] == 11 && A[2][3] == 12);
 
-	A[1][2] = -3;
-	check(A[1][2] == -3);
+	A[1][2] = -23;
+	check(A[1][2] == -23);
 
 	B[2][1] *= 2;
 	check(B[2][1] == 20);
 
-	vector<double> v = {1, 2, 3, 4};
+	std::vector<double> v = {1, 2, 3, 4};
 
 	A *= v;
 
@@ -39,7 +38,7 @@ void do_testing() {
 	check(A.ncols() == 1);
 
 	check(A[0][0] ==  30);
-	check(A[1][0] ==  40);
+	check(A[1][0] ==  -20);
 	check(A[2][0] == 110);
 }
 

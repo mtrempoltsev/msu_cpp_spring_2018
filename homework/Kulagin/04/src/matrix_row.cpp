@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../include/matrix_row.h"
+#include "matrix_row.h"
 
 // BEGIN---------------------------------------- OPERATORS ------------------------------------------------------------
 double& MatrixRow::operator[](const ssize_t ncol) {

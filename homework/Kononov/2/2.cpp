@@ -1,15 +1,14 @@
 //Kononov Sergey group BD-11
 //Task 2
 
+#include <cstdlib>
 #include <iostream>
 #include "numbers.dat"
 #include <vector>
 
-const int N = 100000;
-std::vector <bool> simp_numbers_array(N + 1, true);
 
 //Creation array of simple numbers using eratosthenes sieve
-void filter_numbers()
+void filter_numbers(std::vector <bool> & simp_numbers_array, const int N)
 {
 	simp_numbers_array[0] = simp_numbers_array[1] = false;
 	for (int i = 2; i <= N; ++i)
@@ -20,7 +19,7 @@ void filter_numbers()
 }
 
 //Check if current values is in array of simple numbers
-int count(const int l_pos, const int r_pos)
+int count(const int l_pos, const int r_pos, const std::vector <bool> & simp_numbers_array)
 {
 	int cnt = 0;
 
@@ -32,9 +31,9 @@ int count(const int l_pos, const int r_pos)
 }
 
 //Find positin for left and right border
-int simple_numbers(int l_bound, int r_bound)
+int simple_numbers(int l_bound, int r_bound, const std::vector <bool> & simp_numbers_array, const int N)
 {
-	int x = 0, pos = 0, l_pos = 0, r_pos = Size -1, cnt = 0;
+	int x = 0, pos = 0, l_pos = 0, r_pos, cnt = 0;
 
 	while (pos < Size)
 	{
@@ -61,7 +60,7 @@ int simple_numbers(int l_bound, int r_bound)
 		break;
 	}
 
-	return count(l_pos, r_pos);
+	return count(l_pos, r_pos, simp_numbers_array);
 };
 
 int main(int argc, char* argv[])
@@ -70,13 +69,16 @@ int main(int argc, char* argv[])
 	
 	int l_bound, r_bound, result = 0;
 
-	filter_numbers();
+	const int N = Size;
+	std::vector <bool> simp_numbers_array(N + 1, true);
+	
+	filter_numbers(simp_numbers_array, N);
 
 	int i = 1; 
 	while (i < argc)
 	{
-		l_bound = std::atoi(argv[i++]);
-		r_bound = std::atoi(argv[i++]);
+		l_bound = atoi(argv[i++]);
+		r_bound = atoi(argv[i++]);
 		
 		if (l_bound > r_bound)
 		{
@@ -84,7 +86,7 @@ int main(int argc, char* argv[])
 			return 0;
 		};
 
-		result = simple_numbers(l_bound, r_bound);
+		result = simple_numbers(l_bound, r_bound, simp_numbers_array, N);
 		std::cout << result << std::endl;
 	}
 

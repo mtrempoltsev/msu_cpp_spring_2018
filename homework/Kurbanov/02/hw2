@@ -1,33 +1,43 @@
 #include "numbers.dat"
 #include <iostream>
 
-int check(int a)
+struct Index{
+	int _begin;
+	int _end;
+	Index(int b, int e):_begin(b), _end(e){}
+	~Index() {}
+};
+
+int check(int x)
 {
-	int i;
-	if (a == 2)
+	if (x == 2)
 		return 1;
-	if (a == 0 || a == 1 || a % 2 == 0)
+	if (x < 2 || !(x & 1))
 		return 0;
-	for (i = 3; i*i <= a && a % i; i += 2)
-		;
-	return i * i > a;
+	for (int i = 3; i*i <= x; i += 2)
+		if (x % i == 0)
+			return 0;
+	return 1;
 }
-
-int firstIndex(int pos, const int *data, int s)
+Index searchIndex(const int *data, int s, int first, int second)
 {
-	
-		for (int i = 0; i < s; i++)
-			if (data[i] == pos)
-				return i;
-		return s;
-}
-
-int secondIndex(int pos, const int *data, int s)
-{
-	for (int i = s; i > -1; i--)
-		if (data[i] == pos)
-			return i;
-	return -1;
+	int i = 0;
+	if (second < first)
+		return Index(0, 0);
+	while (data[i]<s)
+	{
+		if (data[i] == first)
+			break;
+		i++;
+	}
+	int j = i;
+	while (data[j] < s)
+	{
+		if (data[j] == second)
+			break;
+		j++;
+	}
+	return Index(i,j);
 }
 
 int main(int argc, char** argv)
@@ -36,8 +46,9 @@ int main(int argc, char** argv)
 	if (argc < 3 || argc % 2 == 0) return -1;
 	for (int i = 1; i < argc; i += 2)
 	{
+		Index in = searchIndex(Data, Size, std::atoi(argv[i]), std::atoi(argv[i + 1]));
 		count = 0;
-		for (int j = firstIndex(std::atoi(argv[i]), Data, Size); j <= secondIndex(std::atoi(argv[i + 1]), Data, Size); j++)
+		for (int j = in._begin; j <= in._end; j++)
 			count += check(Data[j]);
 		std::cout << count << std::endl;
 	}
