@@ -89,8 +89,6 @@ int main(int argc, char* argv[])
     int sum = 0;
     int* arr_prime = array_of_primes();
 
-    std::cout << Size << " " << Data[0] << std::endl;
-
     if(argc%2 == 0 || argc < 3)
         return -1;
         
@@ -109,7 +107,6 @@ int main(int argc, char* argv[])
     
         left = binary_search(Data, Size, num_left, 1);
         right = binary_search(Data, Size, num_right, 0);
-        std::cout <<left << " " << right << std::endl;       
         if(left == -1 || right == -1)
             return 0;
             
