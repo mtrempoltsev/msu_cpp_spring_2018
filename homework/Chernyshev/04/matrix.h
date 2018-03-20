@@ -9,7 +9,7 @@ private:
     class Proxy
     {
     public:
-        explicit Proxy(int *off_, size_t rows_)
+        Proxy(int *off_, size_t rows_)
                 : off(off_), rows(rows_)
         {
         }
