@@ -9,7 +9,7 @@ class Matrix
 	public:
 		Proxy(size_t col, Matrix* d):
 			_col(col), data(d) {}
-		int& operator[](size_t row) const
+		int& operator[](const size_t row) const
 		{
 			if (row >= data->_rows)
 				throw std::out_of_range("");
@@ -22,7 +22,7 @@ public:
 	~Matrix() {delete[] _m;}
 	int getRows() {return _rows;}
 	int getColumns() {return _cols;}
-	Proxy operator[](size_t col)
+	Proxy operator[](const size_t col)
 	{
 		if (col >= _cols)
 			throw std::out_of_range("");
