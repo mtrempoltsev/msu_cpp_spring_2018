@@ -1,33 +1,44 @@
 #pragma once
 
+#include "../types.h"
+#include "../constants.h"
+
 class Tool {
 
 public:
-	Tool(const char* name, bool broken = false): name_(name), broken_(broken) {}
+	// BEGIN---------------------------------------------- CONSTRUCTOR ------------------------------------------------
+	Tool(string_t type = UNKNOWN, string_t name = UNKNOWN, bool broken = false):
+		type_(type),
+		name_(name),
+		broken_(broken) {
+	}
+	// END------------------------------------------------ CONSTRUCTOR ------------------------------------------------
 
-	void broke() {}
+	// BEGIN---------------------------------------------- SETTERS ----------------------------------------------------
+	// END------------------------------------------------ SETTERS ----------------------------------------------------
 
 	// BEGIN---------------------------------------------- GETTERS ----------------------------------------------------
-	const char* name() {
-		return name_;
+	string_t type() const {
+		return type_;
 	}
 
-	const char* type() const {
-		return type_;
+	string_t name() const {
+		return name_;
 	}
 	// END------------------------------------------------ GETTERS ----------------------------------------------------
 
-	bool broken() const {
-		return broken_;
-	}
+	// BEGIN---------------------------------------------- METHODS ----------------------------------------------------
+	void broke() {}
+	// END------------------------------------------------ METHODS ----------------------------------------------------
 
 	// BEGIN---------------------------------------------- DESTRUCTOR -------------------------------------------------
 	virtual ~Tool() {}
 	// END------------------------------------------------ DESTRUCTOR -------------------------------------------------
 
 protected:
-	const char* name_;
-	const char* type_;
+	string_t type_;
+
+	string_t name_;
 
 	bool broken_;
 };

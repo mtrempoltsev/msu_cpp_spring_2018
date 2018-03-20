@@ -4,7 +4,6 @@ private:
 	int** data;
 	size_t row_size;
 	size_t col_size;
-public:
 	class Array
 	{
 	private:
@@ -18,12 +17,9 @@ public:
 			else
 				throw std::out_of_range("");
 		}
-		Array(int* data, size_t size)
-		{
-			this->data = data;
-			this->size = size;
-		}
+		Array(int* data, size_t size) : data(data), size(size) {}
 	};
+public:
 	Array operator[](size_t i)
 	{
 		if (i < col_size)
@@ -31,19 +27,17 @@ public:
 		else
 			throw std::out_of_range("");
 	}
-	Matrix(size_t cols, size_t rows)
+	Matrix(size_t cols, size_t rows) : col_size(cols), row_size(rows)
 	{
-		row_size = rows;
-		col_size = cols;
 		data = new int*[cols];
 		for (size_t i = 0; i < cols; i++)
 			data[i] = new int[rows];
 	}
-	size_t getRows(void)
+	size_t getRows()
 	{
 		return row_size;
 	}
-	size_t getColumns(void)
+	size_t getColumns()
 	{
 		return col_size;
 	}

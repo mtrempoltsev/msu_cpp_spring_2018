@@ -16,40 +16,39 @@
 using namespace std;
 
 int main() {
-	Weapon wp("Sword1", 1, 1, "magic");
-	Armor arm("Sword1", 1, "magic");
-
-	// Unit Player1();
-
-	cout << wp.attack_type() << endl;
-
+	// Weapon wp("Sword1", 1, 1, "magic");
+	// Armor arm("Sword1", 1, "magic");
 	Pig pig;
 
-	Peasant peasant;
-	Knight knight;
-	Archer archer;
+	Peasant peasant("Kyle");
+	Knight knight("Eric Cartman");
+	Archer archer("Kenny");
 
-	Bow b1("cool bow", 1, 1, "pierce");
-	Sword b2("cool sword", 1, 1, "magic");
-	Showel b3("cool showel", 1, 1, "pierce");
+	Bow bow("cool bow", 1, 1, "pierce");
+	Sword sword("cool sword", 1, 1, "magic");
+	Showel showel("cool showel", 1, 1, "pierce");
 
-	Lats l3("cool lats", 1, "pierce");
-	Hauberk h3("cool hauberk", 1, "pierce");
+	Lats lats("cool lats", 1, "pierce");
+	Hauberk hauberk("cool hauberk", 1, "pierce");
 
-	// Player player;
+	// Tool tool;
+	// Sword sw("sd");
+	// knight.add_tool(&tool);
+	knight.add_tool(&sword);
+	knight.add_tool(&lats);
 
-	// Tool sw("sword");
-	// Weapon sword("sword", 1, 1, "d");
+	knight.set_weapon("cool sword");
+	knight.set_armor("cool lats");
 
-	// player.add_tool(&sword);
+	knight.unset_weapon();
+	// knight.unset_armor();
 
-	// player.print_tools();
+	knight.print_tools("Tools:");
 
-	// player.set_weapon("sword");
-	// player.set_armor("sword");
-	// player.remove_tool(&sword);
+	knight.print_weapon("Weapon:");
+	knight.print_armor("Armor:");
 
-	// player.print_tools();
+	knight.info();
 
 	return 0;
 }
