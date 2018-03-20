@@ -9,25 +9,25 @@ private:
     {
     private:
         size_t _j = 0;
-        Matrix* _m = nullptr;
+        const Matrix& _m;
     public:
-        index(Matrix* m, size_t j):
+        index(const Matrix& m, size_t j):
         _j(j),
         _m(m)
         {}
 
         int& operator[](size_t i)
         {
-            if(i >= _m->_rows)
+            if(i >= _m._rows)
                 throw std::out_of_range("");
-            return _m->matrix[i*_m->_columns+_j];
+            return _m.matrix[i*_m._columns+_j];
         }
 
 	const int& operator[](size_t i) const
         {
-            if(i >= _m->_rows)
+            if(i >= _m._rows)
                 throw std::out_of_range("");
-            return _m->matrix[i*_m->_columns+_j];
+            return _m.matrix[i*_m._columns+_j];
         }
 
     };
@@ -49,8 +49,16 @@ public:
     {
         if(j >= _columns)
             throw std::out_of_range("");
-        return index(this, j);
+        return index(*this, j);
     }
+    
+    const index operator[](size_t j) const
+    {
+        if(j >= _columns)
+            throw std::out_of_range("");
+        return index(*this, j);
+    }
+
     size_t getColumns() const
     {
         return _columns;
