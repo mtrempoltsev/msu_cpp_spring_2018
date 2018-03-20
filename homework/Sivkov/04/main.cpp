@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 class Matrix {
 public:
@@ -6,8 +7,6 @@ public:
     public:
         explicit Vector(size_t size) : size(size) {
             data = new int(size);
-            for (size_t i = 0; i < size; ++i)
-                data[i] = 1;
         }
 
         size_t GetSize() const {
@@ -15,13 +14,13 @@ public:
         }
 
         const int &operator[](size_t index) const {
-            if (index < 0 || index >= size)
+            if (index >= size)
                 throw std::out_of_range("");
             return data[index];
         }
 
         int &operator[](size_t index) {
-            if (index < 0 || index >= size)
+            if (index >= size)
                 throw std::out_of_range("");
             return data[index];
         }
@@ -47,7 +46,7 @@ public:
         }
 
         ~Vector() {
-            delete[] data;
+            delete data;
         }
 
     private:
@@ -56,22 +55,23 @@ public:
     };
 
     Matrix(size_t cols, size_t rows) : cols(cols), rows(rows) {
-        data = static_cast<Vector *>(operator new[](cols * sizeof(Vector)));
+        data.reserve(cols);
+        data.resize(cols);
         for (size_t i = 0; i < cols; ++i) {
-            new(data + i) Vector(rows);
+            data[i] = new Vector(rows);
         }
     }
 
     const Vector &operator[](size_t index) const {
-        if (index < 0 || index >= cols)
+        if (index >= cols)
             throw std::out_of_range("");
-        return data[index];
+        return *data[index];
     }
 
     Vector &operator[](size_t index) {
-        if (index < 0 || index >= cols)
+        if (index >= cols)
             throw std::out_of_range("");
-        return data[index];
+        return *data[index];
     }
 
     bool operator==(const Matrix &other) const {
@@ -79,7 +79,7 @@ public:
             return false;
         bool flag = true;
         for (size_t i = 0; i < cols; ++i)
-            if (data[i] != other[i])
+            if (*data[i] != other[i])
                 flag = false;
         return flag;
     }
@@ -90,7 +90,7 @@ public:
 
     Matrix &operator*=(int factor) {
         for (size_t i = 0; i < cols; ++i)
-            data[i] *= factor;
+            *data[i] *= factor;
         return *this;
     }
 
@@ -101,13 +101,15 @@ public:
     size_t getColumns() const {
         return cols;
     }
-    
+
     ~Matrix() {
-        delete[] data;
+        for (size_t i = 0; i < cols; ++i) {
+            delete data[i];
+        }
     }
 
 private:
-    Vector *data;
+    std::vector<Vector *> data;
     size_t cols;
     size_t rows;
 };

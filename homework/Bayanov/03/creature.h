@@ -27,14 +27,19 @@ namespace game {
         std::string name_;
         uint8_t age_;
 
+        Shavel shavel_;
+        Bow bow_;
+        Sword sword_;
+
+        Lats lats_;
+        Hauberk hauberk_;
+
     public:
         void speak(std::string phrase = "Hello, unfamiliar traveler!");
 
         void eat();
 
         void sleep();
-
-        virtual void change_state() = 0;
     };
 
     class Peasant : Human {
@@ -42,10 +47,7 @@ namespace game {
         Gender gender_;
 
         enum State { eating, sleeping, digging, nothin_doing };
-
         State state_;
-
-        Shavel shavel_;
 
     public:
         void dig();
@@ -57,10 +59,7 @@ namespace game {
 
     class Knight : Human {
         enum State { eating, sleeping, fighting, nothin_doing };
-
         State state_;
-
-        Sword sword_;
 
     public:
         void hit();
@@ -74,10 +73,7 @@ namespace game {
 
     class Archer : Human {
         enum State { eating, sleeping, fighting, nothin_doing };
-
         State state_;
-
-        Bow bow_;
 
     public:
         void shot();
@@ -101,7 +97,6 @@ namespace game {
 
     class Pig : Pet {
         enum State { eating, sleeping, lying_in_dirty, grunting, nothing_doing };
-
         State state_;
 
     public:
@@ -116,7 +111,6 @@ namespace game {
 
     class Dog : Pet {
         enum State { eating, sleeping, guarding, barking, nothing_doing };
-
         State state_;
 
     public:
