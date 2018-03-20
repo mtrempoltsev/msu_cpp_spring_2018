@@ -4,26 +4,23 @@ public:
     class Proxy
     {
         size_t rows;
-        size_t delta = 0;
         int *arr = nullptr;
     public:
-        Proxy(size_t rows_ = 0): rows(rows_) {};
-        Proxy &setProxy(size_t delta_, int *arr_);
+        Proxy(size_t rows_ = 0, int *arr_ = nullptr): rows(rows_), arr(arr_) {};
         const int &operator[](size_t i) const;
         int &operator[](size_t i);
     };
     Matrix(size_t cols_ = 0, size_t rows_ = 0): cols(cols_), rows(rows_), len(rows_ * cols_)
     {
-        proxy = new Proxy(rows);
         arr = new int [len];
     }
-    ~Matrix() { delete proxy; delete[] arr; }
+    ~Matrix() { delete[] arr; }
 
     size_t getColumns() const { return cols; }
     size_t getRows() const { return rows; }
 
-    const Proxy &operator[](size_t i) const;
-    Proxy &operator[](size_t i);
+    const Proxy operator[](size_t i) const;
+    Proxy operator[](size_t i);
     Matrix &operator*=(int num);
     bool operator==(const Matrix &other) const;
     bool operator!=(const Matrix &other) const;
@@ -31,23 +28,15 @@ private:
     size_t cols;
     size_t rows;
     size_t len;
-    Proxy *proxy = nullptr;
     int *arr = nullptr;
 };
-
-Matrix::Proxy &Matrix::Proxy::setProxy(size_t delta_, int *arr_)
-{
-    delta = delta_;
-    arr = arr_;
-    return *this;
-}
 
 const int &Matrix::Proxy::operator[](size_t i) const
 {
     if (i >= rows){
         throw std::out_of_range("Wrong row number");
     }
-    return arr[delta + i];
+    return arr[i];
 }
 
 int &Matrix::Proxy::operator[](size_t i)
@@ -55,23 +44,23 @@ int &Matrix::Proxy::operator[](size_t i)
     if (i >= rows){
         throw std::out_of_range("Wrong row number");
     }
-    return arr[delta + i];
+    return arr[i];
 }
 
-const Matrix::Proxy &Matrix::operator[](size_t i) const
+const Matrix::Proxy Matrix::operator[](size_t i) const
 {
     if (i >= cols) {
         throw std::out_of_range("Wrong column number");
     }
-    return proxy->setProxy(rows * i, arr);
+    return Proxy(rows, arr + rows * i);
 }
 
-Matrix::Proxy &Matrix::operator[](size_t i)
+Matrix::Proxy Matrix::operator[](size_t i)
 {
     if (i >= cols) {
         throw std::out_of_range("Wrong column number");
     }
-    return proxy->setProxy(rows * i, arr);
+    return Proxy(rows, arr + rows * i);
 }
 
 Matrix &Matrix::operator*= (int num)
