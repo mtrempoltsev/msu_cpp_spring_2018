@@ -1,22 +1,22 @@
 class Item {
 
 	protected:
-		std::string name; //имя предмета
-		int full_strength; //прочность предмета
-		int strength; //текущая прочность предмета
-		double weight; //вес предмета
-		int cost; //стоимомть предмета
+		std::string name;
+		int full_strength;
+		int strength;
+		double weight;
+		int cost;
 
 };
 
 class Weapon : Item {
 
 	protected:
-		int damage_min, damage_max; //минимальный и максимальный урон
-		double distance; //длина аттаки. -1 если оружие ближнего боя
+		int damage_min, damage_max;
+		double distance;
 	
 	public:
-		int hit(){} //возвращает урон нанесенное этим оружием. -1 если промазал 
+		int hit(){} 
 
 };
 
@@ -41,10 +41,10 @@ class Shirt : Equipment {};
 class Living_Creature {
 
 	protected:
-		std::string name; //имя существа
-		int full_life; //максимальное здоровье
-		int life; // текущее здоровье
-		double speed; // скорость существа
+		std::string name;
+		int full_life;
+		int life;
+		double speed;
 
 };
 
@@ -53,13 +53,13 @@ class Animal : Living_Creature {};
 class Pig : Animal {
 	
 	public:
-		void heal(); //Лечит героя
+		void heal();
 
 };
 class Hourse : Animal {
 
 	public:
-		void jump(); //Прыгает
+		void jump();
 
 };
 class Dog : Animal {
@@ -68,7 +68,7 @@ class Dog : Animal {
 		int min_damage, max_damage;
 
 	public:
-		void hit(Living_Creature creature); //Аттакует выбранное существо
+		void hit(Living_Creature creature);
 
 };
 
@@ -104,7 +104,7 @@ class Knight : Hero {
 			sword,
 			two_handed_sword;
 		};
-		Main_weapon main_weapon; //оружие, которое в руках
+		Main_weapon main_weapon;
 		
 };
 
@@ -120,7 +120,7 @@ class Archer{
 			bow,
 			crossbow;
 		};
-		Main_weapon main_weapon; //оружие, которое в руках
+		Main_weapon main_weapon;
 
 };
 
@@ -136,6 +136,6 @@ class Peasant : Hero {
 			pitchfork,
 			rollin_pin;
 		};
-		Main_weapon main_weapon; //оружие, которое в руках
+		Main_weapon main_weapon;
 
 };
