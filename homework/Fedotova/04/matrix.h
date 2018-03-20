@@ -13,7 +13,7 @@ private:
     private:
         std::vector<int> data;
     public:
-        Column(size_t cols): data(cols) {}
+        Column(size_t rows): data(rows) {}
 
         int& operator[](size_t i) {
             if (i < data.size())
