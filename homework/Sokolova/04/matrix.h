@@ -1,6 +1,5 @@
 #include <cstdlib>
 #include <stdexcept>
-//#include <iostream>
 
 class Matrix {
     size_t rows_, cols_;
@@ -27,12 +26,21 @@ class Matrix {
         }
         Column(const Column&) = default;
         Column& operator=(const Column&) = default;
-        ~Column() = default;
+        ~Column() {
+            col_ = nullptr;
+        }
     };
 public:
+    Matrix() {
+        cols_ = rows_ = 0;
+        data_ = nullptr;
+    }
+
     Matrix(size_t cols, size_t rows): cols_(cols), rows_(rows) {
-        if (rows_ == 0 || cols_ == 0) {
+        if (rows_ <= 0 || cols_ <= 0) {
             data_ = nullptr;
+            rows_ = 0;
+            cols_ = 0;
         } else {
             int *data_int = new int[rows_*cols_];
             data_ = new int*[cols_];
@@ -40,8 +48,8 @@ public:
                 data_[i] = data_int + rows_ * i;
             }
 
-            for (int i = 0; i < rows_; i++) {
-                for (int j = 0; j < cols_; j++) {
+            for (int i = 0; i < cols_; i++) {
+                for (int j = 0; j < rows_; j++) {
                     data_[i][j] = 0;
                 }
             }
@@ -66,10 +74,14 @@ public:
         }
     }
 
-    Matrix& operator=(const Matrix& other) { /// \todo check a = a;
-        if (this->data_ != nullptr) {
+    Matrix& operator=(const Matrix& other) {
+        if (&other == this) {
+            return *this;
+        }
+        if ( ((cols_ != other.cols_) || (rows_ != other.rows_)) && (cols_ != 0) && (rows_ != 0)) {
             delete[] *data_;
             delete[] data_;
+            data_ = nullptr;
         }
         cols_ = other.cols_;
         rows_ = other.rows_;
@@ -95,6 +107,7 @@ public:
         if (cols_ && rows_){
             delete[] *data_;
             delete[] data_;
+            data_ = nullptr;
         }
     }
 
@@ -107,6 +120,9 @@ public:
     }
 
     bool operator==(const Matrix& other) const {
+        if (&other == this) {
+            return true;
+        }
         if (cols_ != other.cols_) {
             return false;
         }
