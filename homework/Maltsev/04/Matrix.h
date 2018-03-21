@@ -40,9 +40,9 @@ public:
         return rows_;
     }
 
-    const Col &operator[](uint32_t col) const {
+    const Col operator[](uint32_t col) const {
         if (col < cols_) {
-            const Col &tmp = Col(matrix_[col], rows_);
+            const Col tmp = Col(matrix_[col], rows_);
             return tmp;
         } else {
             throw std::out_of_range("");
