@@ -21,6 +21,8 @@ int main() {
     check(m1[1][1] == 5);
     check(m1[2][1] == 6);
 
+//    std::cout << m1 << std::endl;
+
     check(m1.getColumns() == 3);
     check(m1.getRows() == 2);
 
