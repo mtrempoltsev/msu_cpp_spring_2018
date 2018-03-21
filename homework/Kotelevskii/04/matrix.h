@@ -20,7 +20,7 @@ private:
 			else
 				return L[i];
 		}
-		int& operator[](const size_t i) const
+		const int& operator[](const size_t i) const
 		{
 			if (i >= c)
 				throw std::out_of_range("");
@@ -44,14 +44,14 @@ public:
 	{
 		M = new int[column*row];
 	}
-	Helper operator[](const size_t i)
+	Helper& operator[](const size_t i)
 	{
 		if (i >= column)
 			throw std::out_of_range("");
 		else
 			return Helper(M + i*row, this->getRows());
 	}
-	Helper operator[](const size_t i) const
+	const Helper& operator[](const size_t i) const
 	{
 		if (i >= column)
 			throw std::out_of_range("");

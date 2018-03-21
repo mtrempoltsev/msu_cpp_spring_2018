@@ -23,24 +23,33 @@ private:
 	};
 
 public:
+
+
 	proxy operator[](int id) {
-		if (id < this->cols) {
+		if (id < this->cols && id >= 0) {
 			return proxy(arr[id], this->rows);
 		}
 		else {
 			throw std::out_of_range("");
 		}
-
 	}
-	Matrix(int _cols, int _rows) {
-		cols = _cols;
-		rows = _rows;
-		arr = new int* [cols];
+	
+	proxy operator[](int id) const {
+		if (id < this->cols && id >= 0) {
+			return proxy(arr[id], this->rows);
+		}
+		else {
+			throw std::out_of_range("");
+		}
+	}
+
+	Matrix(int _cols, int _rows) : cols(_cols), rows(_rows) {
+		arr = new int*[cols];
 		for (int i = 0; i < cols; i++)
 			arr[i] = new int[rows];
 	}
 
-	const Matrix& operator*=(const int& n) {
+	Matrix& operator*=(const int& n) {
 		for (int i = 0; i < this->cols; i++) {
 			for (int j = 0; j < this->rows; j++)
 				arr[i][j] *= n;

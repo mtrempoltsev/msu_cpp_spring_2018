@@ -14,6 +14,12 @@ private:
             }
             return *(ptr + ind);
         }
+        int& operator[](size_t ind) const{
+            if (ind >= rows) {
+                throw std::out_of_range("");
+            }
+            return *(ptr + ind);
+        }
     };
 public:
     Matrix(size_t _cols, size_t _rows): cols(_cols), rows(_rows) {
@@ -35,6 +41,12 @@ public:
         return cols;
     }
     Matrix_proxy operator[](size_t ind) {
+        if (ind >= cols) {
+            throw std::out_of_range("");
+        }
+        return Matrix_proxy(*(ptr + ind), rows);
+    }
+    Matrix_proxy operator[](size_t ind) const{
         if (ind >= cols) {
             throw std::out_of_range("");
         }
