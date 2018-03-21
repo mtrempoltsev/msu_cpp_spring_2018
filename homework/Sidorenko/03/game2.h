@@ -10,7 +10,7 @@ protected:
 public:	
 	Thing(const std::string& _name);
 	Human* GetOwner();
-	void SetOwner(const Human *h);
+	void SetOwner(const Human &h);
 	std::string& GetName();
 };
 
