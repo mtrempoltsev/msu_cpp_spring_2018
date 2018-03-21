@@ -46,46 +46,46 @@ namespace game {
 
         void sleep();
 
-        virtual void take_weapon() = 0;
+        virtual void takeWeapon() = 0;
 
-        virtual void throw_out_weapon() = 0;
+        virtual void throwOutWeapon() = 0;
 
         virtual void act() = 0;
 
-        virtual void train_action() = 0;
+        virtual void trainAction() = 0;
     };
 
     class Peasant : Human {
     public:
-        void take_weapon();
+        void takeWeapon();
 
-        void throw_out_weapon();
+        void throwOutWeapon();
 
         void act();
 
-        void train_action();
+        void trainAction();
     };
 
     class Knight : Human {
     public:
-        void take_weapon();
+        void takeWeapon();
 
-        void throw_out_weapon();
+        void throwOutWeapon();
 
         void act();
 
-        void train_action();
+        void trainAction();
     };
 
     class Archer : Human {
     public:
-        void take_weapon();
+        void takeWeapon();
 
-        void throw_out_weapon();
+        void throwOutWeapon();
 
         void act();
 
-        void train_action();
+        void trainAction();
     };
 
     class Pet : Creature {
