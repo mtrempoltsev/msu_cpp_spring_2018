@@ -33,7 +33,7 @@ public:
 				a[i] = new int[cols];
 			} 
 			catch(std::bad_alloc &ex) {
-				for(size_t j = 0; j < i; j++) delete a[i];
+				for(size_t j = 0; j < i; j++) delete [] a[i];
 				throw ex;
 			}
 		}
