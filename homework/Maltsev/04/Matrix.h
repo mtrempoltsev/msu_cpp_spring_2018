@@ -2,7 +2,6 @@
 // Created by alexmal on 3/19/18.
 //
 #include <iostream>
-#include <stdint-gcc.h>
 
 class Col {
 private:
@@ -33,14 +32,6 @@ public:
         }
     }
 
-    void matrix_zero() {
-        for (int row = 0; row < rows_; ++row) {
-            for (int col = 0; col < cols_; ++col) {
-                matrix_[col][row] = 0;
-            }
-        }
-    }
-
     uint32_t getColumns() {
         return cols_;
     }
@@ -49,9 +40,9 @@ public:
         return rows_;
     }
 
-    const Col &operator[](uint32_t col) {
+    const Col operator[](uint32_t col) const {
         if (col < cols_) {
-            const Col &tmp = Col(matrix_[col], rows_);
+            const Col tmp = Col(matrix_[col], rows_);
             return tmp;
         } else {
             throw std::out_of_range("");
@@ -96,6 +87,7 @@ public:
             }
             os << std::endl;
         }
+        return os;
     }
 
     ~Matrix() {

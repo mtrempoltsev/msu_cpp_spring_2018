@@ -1,84 +1,70 @@
 #include <iostream>
+#include <vector>
 
 class Matrix {
-    class Row {
-        int* row_;
-        int columns_;
+    class Column {
+        std::vector<int> column_;
+        size_t rows_;
 
     public:
-        Row(){};
+        Column(size_t rows) : rows_(rows), column_(rows){};
 
-        ~Row() { delete[] row_; }
+        ~Column() {}
 
-        void allocate(size_t columns) {
-            columns_ = columns;
-            row_ = new int[columns_];
-        }
-
-        const int& operator[](size_t column) const {
-            if (columns_ <= column) {
+        const int& operator[](size_t row) const {
+            if (rows_ <= row) {
                 throw std::out_of_range("matrix indexes is out of range");
             }
-            return row_[column];
+            return column_[row];
         }
 
-        int& operator[](size_t column) {
-            if (columns_ <= column) {
+        int& operator[](size_t row) {
+            if (rows_ <= row) {
                 throw std::out_of_range("matrix indexes is out of range");
             }
-            return row_[column];
+            return column_[row];
         }
     };
 
     size_t rows_;
     size_t columns_;
-    Row* matrix_;
+    std::vector<Column> matrix_;
 
 public:
-    Matrix(size_t rows, size_t columns) : rows_(rows), columns_(columns) {
-        matrix_ = new Row[rows_];
-        for (size_t it = 0; it < rows_; ++it) {
-            matrix_[it].allocate(columns_);
-        }
-    }
+    Matrix(size_t columns, size_t rows)
+            : columns_(columns), rows_(rows), matrix_(columns, rows) {}
 
-    Matrix(const Matrix& other) : rows_(other.rows_), columns_(other.columns_) {
-        matrix_ = new Row[rows_];
-        for (size_t row = 0; row < rows_; ++row) {
-            matrix_[row].allocate(columns_);
-        }
-        for (size_t row = 0; row < rows_; ++row) {
-            for (size_t column = 0; column < columns_; ++column) {
-                matrix_[row][column] = other.matrix_[row][column];
+    Matrix(const Matrix& other) : columns_(other.columns_), rows_(other.rows_) {
+        for (size_t column = 0; column < columns_; ++column) {
+            for (size_t row = 0; row < rows_; ++row) {
+                matrix_[column][row] = other.matrix_[column][row];
             }
         }
     }
 
-    ~Matrix() { delete[] matrix_; }
+    ~Matrix() {}
 
-    const Row& operator[](size_t row) const {
-        if (rows_ <= row) {
+    const Column& operator[](size_t column) const {
+        if (columns_ <= column) {
             throw std::out_of_range("matrix indexes is out of range");
         }
-        return matrix_[row];
+        return matrix_[column];
     }
 
-    Row& operator[](size_t row) {
-        if (rows_ <= row) {
+    Column& operator[](size_t column) {
+        if (columns_ <= column) {
             throw std::out_of_range("matrix indexes is out of range");
         }
-        return matrix_[row];
+        return matrix_[column];
     }
 
-    Matrix&& operator*=(int mult) {
-        Matrix return_matrix(rows_, columns_);
-        for (size_t row = 0; row < rows_; ++row) {
-            for (size_t column = 0; column < columns_; ++column) {
-                matrix_[row][column] *= mult;
-                return_matrix.matrix_[row][column] = matrix_[row][column];
+    Matrix& operator*=(int mult) {
+        for (size_t column = 0; column < columns_; ++column) {
+            for (size_t row = 0; row < rows_; ++row) {
+                matrix_[column][row] *= mult;
             }
         }
-        return std::move(return_matrix);
+        return *this;
     }
 
     bool operator==(const Matrix& other) const {
@@ -86,9 +72,9 @@ public:
             return false;
         }
 
-        for (size_t row = 0; row < rows_; ++row) {
-            for (size_t column = 0; column < columns_; ++column) {
-                if (matrix_[row][column] != other.matrix_[row][column]) {
+        for (size_t column = 0; column < columns_; ++column) {
+            for (size_t row = 0; row < rows_; ++row) {
+                if (matrix_[column][row] != other.matrix_[column][row]) {
                     return false;
                 }
             }
@@ -97,33 +83,19 @@ public:
         return true;
     }
 
-    bool operator!=(const Matrix& other) const {
-        if (rows_ != other.rows_ || columns_ != other.columns_) {
-            return true;
-        }
-
-        for (size_t row = 0; row < rows_; ++row) {
-            for (size_t column = 0; column < columns_; ++column) {
-                if (matrix_[row][column] != other.matrix_[row][column]) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
+    bool operator!=(const Matrix& other) const { return !(*this == other); }
 
     friend std::ostream& operator<<(std::ostream& out, const Matrix& matrix) {
-        for (size_t row = 0; row < matrix.rows_; ++row) {
-            for (size_t column = 0; column < matrix.columns_; ++column) {
-                out << matrix[row][column] << " ";
+        for (size_t column = 0; column < matrix.columns_; ++column) {
+            for (size_t row = 0; row < matrix.rows_; ++row) {
+                out << matrix[column][row] << " ";
             }
             out << "\n";
         }
         return out;
     }
 
-    size_t getRows() { return columns_; }
+    size_t getRows() { return rows_; }
 
-    size_t getColumns() { return rows_; }
+    size_t getColumns() { return columns_; }
 };

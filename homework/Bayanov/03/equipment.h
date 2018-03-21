@@ -14,64 +14,69 @@ namespace game {
         void change_presense();
     };
 
-    class Shavel : Equipment {
-        uint8_t digging_level_;
-
-    public:
-        void change_diggin_level();
-    };
 
     class Armor : Equipment {
     protected:
         uint8_t protection_level_;
 
     public:
-        virtual void change_protection_level() = 0;
+        virtual void changeProtectionLevel() = 0;
     };
 
     class Lats : Armor {
     public:
-        void change_protection_level();
+        void changeProtectionLevel();
     };
 
     class Hauberk : Armor {
     public:
-        void change_protection_level();
+        void changeProtectionLevel();
     };
 
     class Weapon : Equipment {
     protected:
-        uint8_t damage_lats_level_;
-        uint8_t damage_hauberk_;
+        uint8_t action_level_;
+        uint8_t action_speed_;
+        uint8_t action_radius_;
 
     public:
-        virtual void change_damage_lats_level() = 0;
+        virtual void changeActionLevel() = 0;
 
-        virtual void change_damage_hauberk_level() = 0;
+        virtual void changeActionSpeed() = 0;
+
+        virtual void changeActionRadius() = 0;
+
+        uint8_t getActionLevel();
+
+        uint8_t getActionSpeed();
+
+        uint8_t getActionRadius();
+    };
+
+    class Shavel : Weapon {
+    public:
+        void changeActionLevel();
+
+        void changeActionSpeed();
+
+        void changeActionRadius();
     };
 
     class Bow : Weapon {
-        uint8_t fire_range_;
-        uint8_t shot_frequency_;
-
     public:
-        void change_fire_range();
+        void changeActionLevel();
 
-        void change_shot_frequency();
+        void changeActionSpeed();
 
-        void change_damage_lats_level();
-
-        void change_damage_hauberk_level();
+        void changeActionRadius();
     };
 
     class Sword : Weapon {
-        uint8_t hit_frequency_;
-
     public:
-        void change_hit_freauency();
+        void changeActionLevel();
 
-        void change_damage_lats_level();
+        void changeActionSpeed();
 
-        void change_damage_hauberk_level();
+        void changeActionRadius();
     };
 }

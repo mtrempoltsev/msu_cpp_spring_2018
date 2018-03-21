@@ -4,7 +4,8 @@
 
 
 Matrix::Matrix(int rows, int cols):
-    matrix(std::vector<std::vector<int>> (rows, std::vector<int> (cols, 1))) {
+    matrix(rows, std::vector<int>(cols)),
+    ptr(nullptr){
     countRows = rows;
     countColunmns = cols;
 }
@@ -26,8 +27,7 @@ void Matrix::operator *= (const int value) {
 }
 
 bool Matrix::operator != (const Matrix& m1) const {
-    if(*this == m1) return false;
-    return true;
+    return !(*this == m1);
 }
 
 void Matrix::print() const {
@@ -51,19 +51,39 @@ bool Matrix::operator == (const Matrix& m1) const {
     return false;
 }
 
-Matrix::Proxy::Proxy(std::vector<int> &_array): _array(&_array) {}
+Matrix::Proxy::Proxy(std::vector<int>* vector_ptr): _array(vector_ptr) {}
+
+void Matrix::Proxy::set(const std::vector<int> *vector_ptr){
+    _array = const_cast<std::vector<int>*>(vector_ptr);
+}
 
 int& Matrix::Proxy::operator [] (int index) {
-    if(index > (*_array).size() - 1) {
+    if(index >= 0 && index > (*_array).size() - 1) {
         throw std::out_of_range("");
     }
     return (*_array)[index];
 }
 
 Matrix::Proxy Matrix::operator [] (int index) {
-    if(index > countRows - 1) {
+    if(index >= 0 && index > countRows - 1) {
         throw std::out_of_range("");
     }
-    return matrix[index];
+    return &matrix[index];
+}
+
+const int& Matrix::Proxy::operator [] (int index) const {
+    if(index >= 0 && index > (*_array).size() - 1) {
+        throw std::out_of_range("");
+    }
+    return (*_array)[index];
+}
+
+
+const Matrix::Proxy Matrix::operator [] (int index) const{
+    if(index >= 0 && index > countRows - 1) {
+        throw std::out_of_range("");
+    }
+    ptr.set(&matrix[index]);
+    return ptr;
 }
 
