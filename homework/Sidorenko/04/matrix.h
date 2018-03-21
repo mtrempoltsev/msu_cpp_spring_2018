@@ -19,7 +19,7 @@ public:
 				delete [] a;
 			}
 
-			int& operator[](int ind) 
+			int& operator[](size_t ind) 
 			{
 				if ( (-1 >= ind) || (ind >= cols) )
 					throw std::out_of_range("");
@@ -59,7 +59,7 @@ public:
 		return s;
 	}
 
-	void operator*=(int mult)
+	const Matrix& operator*=(int mult)
 	{
 		for(size_t i = 0; i < rows; i++)
 		{
@@ -68,6 +68,7 @@ public:
 				a[i][j] *= mult;
 			}
 		}
+		return *this;
 	}
 
 	bool operator==(const Matrix &b) const
