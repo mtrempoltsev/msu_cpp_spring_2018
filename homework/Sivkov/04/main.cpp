@@ -6,7 +6,8 @@ public:
     class Vector {
     public:
         explicit Vector(size_t size) : size(size) {
-            data = new int(size);
+            data.reserve(size);
+            data.resize(size);
         }
 
         size_t GetSize() const {
@@ -45,33 +46,28 @@ public:
             return *this;
         }
 
-        ~Vector() {
-            delete data;
-        }
-
     private:
-        int *data;
+        std::vector<int> data;
         size_t size;
     };
 
     Matrix(size_t cols, size_t rows) : cols(cols), rows(rows) {
         data.reserve(cols);
-        data.resize(cols);
         for (size_t i = 0; i < cols; ++i) {
-            data[i] = new Vector(rows);
+            data.emplace_back(Vector(rows));
         }
     }
 
     const Vector &operator[](size_t index) const {
         if (index >= cols)
             throw std::out_of_range("");
-        return *data[index];
+        return data[index];
     }
 
     Vector &operator[](size_t index) {
         if (index >= cols)
             throw std::out_of_range("");
-        return *data[index];
+        return data[index];
     }
 
     bool operator==(const Matrix &other) const {
@@ -79,7 +75,7 @@ public:
             return false;
         bool flag = true;
         for (size_t i = 0; i < cols; ++i)
-            if (*data[i] != other[i])
+            if (data[i] != other[i])
                 flag = false;
         return flag;
     }
@@ -90,7 +86,7 @@ public:
 
     Matrix &operator*=(int factor) {
         for (size_t i = 0; i < cols; ++i)
-            *data[i] *= factor;
+            data[i] *= factor;
         return *this;
     }
 
@@ -102,14 +98,8 @@ public:
         return cols;
     }
 
-    ~Matrix() {
-        for (size_t i = 0; i < cols; ++i) {
-            delete data[i];
-        }
-    }
-
 private:
-    std::vector<Vector *> data;
+    std::vector<Vector> data;
     size_t cols;
     size_t rows;
 };
