@@ -44,14 +44,14 @@ public:
 	{
 		M = new int[column*row];
 	}
-	Helper& operator[](const size_t i)
+	Helper operator[](const size_t i)
 	{
 		if (i >= column)
 			throw std::out_of_range("");
 		else
 			return Helper(M + i*row, this->getRows());
 	}
-	const Helper& operator[](const size_t i) const
+	const Helper operator[](const size_t i) const
 	{
 		if (i >= column)
 			throw std::out_of_range("");
