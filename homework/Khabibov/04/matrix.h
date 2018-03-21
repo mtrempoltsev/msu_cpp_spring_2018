@@ -1,9 +1,19 @@
+#include <new>
+
 class proxy
 {
 	int* proxyArray;
 	size_t size;
 public:
-	proxy() : size(0) {}
+	proxy() : size(0)
+	{
+		proxyArray = NULL;
+	}
+
+	proxy(size_t a) : size(a)
+	{
+		proxyArray = new int[a];
+	}
 
 	~proxy()
 	{
@@ -12,22 +22,16 @@ public:
 
 	int& operator[](size_t a)
 	{
-		if ((a < 0) || (a >= size))
+		if (a >= size)
 			throw std::out_of_range("");
 		return proxyArray[a];
 	}
 
 	const int& operator[](size_t a) const
 	{
-		if ((a < 0) || (a >= size))
+		if (a >= size)
 			throw std::out_of_range("");
 		return proxyArray[a];
-	}
-
-	void setArray(size_t a)
-	{
-		size = a;
-		proxyArray = new int[a];
 	}
 };
 
@@ -39,14 +43,16 @@ class Matrix
 public:
 	Matrix(size_t c, size_t r) : columns(c), rows(r)
 	{
-		matrix = new proxy[columns];
-		for (size_t i = 0; i < columns; i++)
-			matrix[i].setArray(rows);
+		matrix = static_cast<proxy*>(operator new[] (columns * sizeof(proxy(rows))));
+		 for (size_t i = 0; i < columns; i++)
+			 new (matrix + i) proxy(rows); //здесь память для объекта не выделяется, но инициализируется
 	}
 
 	~Matrix()
 	{
-		delete[] matrix;
+		 for (size_t i = 0; i < columns; i++)
+			 matrix[i].~proxy();
+		 operator delete[] (matrix);
 	}
 
 	int getColumns() const
@@ -61,14 +67,14 @@ public:
 
 	proxy& operator[](size_t a)
 	{
-		if ((a < 0) || (a >= columns))
+		if (a >= columns)
 			throw std::out_of_range("");
 		return matrix[a];
 	}
 
 	const proxy& operator[](size_t a) const
 	{
-		if ((a < 0) || (a >= columns))
+		if (a >= columns)
 			throw std::out_of_range("");
 		return matrix[a];
 	}
