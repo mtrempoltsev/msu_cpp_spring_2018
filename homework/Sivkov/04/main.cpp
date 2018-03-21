@@ -1,13 +1,13 @@
 #include <iostream>
+#include <vector>
 
 class Matrix {
 public:
     class Vector {
     public:
         explicit Vector(size_t size) : size(size) {
-            data = new int(size);
-            for (size_t i = 0; i < size; ++i)
-                data[i] = 1;
+            data.reserve(size);
+            data.resize(size);
         }
 
         size_t GetSize() const {
@@ -15,13 +15,13 @@ public:
         }
 
         const int &operator[](size_t index) const {
-            if (index < 0 || index >= size)
+            if (index >= size)
                 throw std::out_of_range("");
             return data[index];
         }
 
         int &operator[](size_t index) {
-            if (index < 0 || index >= size)
+            if (index >= size)
                 throw std::out_of_range("");
             return data[index];
         }
@@ -46,30 +46,26 @@ public:
             return *this;
         }
 
-        ~Vector() {
-            delete[] data;
-        }
-
     private:
-        int *data;
+        std::vector<int> data;
         size_t size;
     };
 
     Matrix(size_t cols, size_t rows) : cols(cols), rows(rows) {
-        data = static_cast<Vector *>(operator new[](cols * sizeof(Vector)));
+        data.reserve(cols);
         for (size_t i = 0; i < cols; ++i) {
-            new(data + i) Vector(rows);
+            data.emplace_back(Vector(rows));
         }
     }
 
     const Vector &operator[](size_t index) const {
-        if (index < 0 || index >= cols)
+        if (index >= cols)
             throw std::out_of_range("");
         return data[index];
     }
 
     Vector &operator[](size_t index) {
-        if (index < 0 || index >= cols)
+        if (index >= cols)
             throw std::out_of_range("");
         return data[index];
     }
@@ -101,13 +97,9 @@ public:
     size_t getColumns() const {
         return cols;
     }
-    
-    ~Matrix() {
-        delete[] data;
-    }
 
 private:
-    Vector *data;
+    std::vector<Vector> data;
     size_t cols;
     size_t rows;
 };

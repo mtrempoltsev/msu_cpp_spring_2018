@@ -23,20 +23,21 @@ Index searchIndex(const int *data, int s, int first, int second)
 {
 	int i = 0;
 	if (second < first)
-		return Index(0, 0);
-	while (data[i]<s)
+		return Index(-1, -1);
+	while (i<s)
 	{
 		if (data[i] == first)
 			break;
 		i++;
 	}
 	int j = i;
-	while (data[j] < s)
+	while (j< s)
 	{
 		if (data[j] == second)
 			break;
 		j++;
 	}
+	if(i==s) return Index(-1,-1);
 	return Index(i,j);
 }
 

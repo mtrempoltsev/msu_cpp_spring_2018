@@ -91,14 +91,6 @@ public:
 		damage = new_damage;
 	}
 
-	int get_type(){
-		return type;
-	}
-	
-	void set_type(int new_type){
-		type = new_type;
-	}
-
 	Weapon* get_weapon(){
 		return weapon;
 	}
@@ -116,7 +108,6 @@ public:
 protected:
 	int speed;
 	int damage;
-	int type;
 	Weapon *weapon;
 	Armorequipment *armorequipment;
 };
@@ -158,13 +149,8 @@ public:
 		return damage;
 	}
 
-	int get_type(){
-		return type;
-	}
-
 protected:
 	int damage;
-	int type;
 };
 
 /*------------------------------------------*/
@@ -188,7 +174,6 @@ public:
 		id = new_id;
 		health = 50;
 		speed = 50;
-		type = 0;
 	}
 
 	~Farmer(){}
@@ -201,7 +186,6 @@ public:
 		id = new_id;
 		health = 100;
 		speed = 100;
-		type = 1;
 	}
 
 	~Archer(){}
@@ -214,7 +198,6 @@ public:
 		id = new_id;
 		health = 200;
 		speed = 30;
-		type = 2;
 	}
 
 	~Knight(){}
@@ -229,7 +212,6 @@ public:
 		weight = 10;
 		quality = 10;
 		damage = 10;
-		type = 0;
 	}
 
 	~Shovel() {}
@@ -244,7 +226,6 @@ public:
 		weight = 10;
 		quality = 20;
 		damage = 30;
-		type = 1;
 	}
 
 	~Arch() {}
@@ -259,7 +240,6 @@ public:
 		weight = 40;
 		quality = 30;
 		damage = 30;
-		type = 2;
 	}
 
 	~Sword() {}
