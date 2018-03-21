@@ -20,6 +20,12 @@ private:
 			else
 				throw std::out_of_range("");
 		}
+		const int& operator[](int id) const {
+			if (id < this->size)
+				return mas[id];
+			else
+				throw std::out_of_range("");
+		}
 	};
 
 public:
@@ -34,7 +40,7 @@ public:
 		}
 	}
 	
-	proxy operator[](int id) const {
+	const proxy operator[](int id) const {
 		if (id < this->cols && id >= 0) {
 			return proxy(arr[id], this->rows);
 		}
