@@ -47,6 +47,12 @@ public:
         }
         return Matrix_proxy(*(ptr + ind), rows);
     }
+    const Matrix_proxy operator[](size_t ind) const{
+        if (ind >= cols) {
+            throw std::out_of_range("");
+        }
+        return Matrix_proxy(*(ptr + ind), rows);
+    }
     Matrix& operator*=(int x) {
         for (size_t i = 0; i < cols; i++) {
             for (size_t j = 0; j < rows; j++) {
