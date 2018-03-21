@@ -1,5 +1,6 @@
 #include <list>
 #include <vector>
+#include <functional>
 
 enum class UnitState{
 	NOT_SET, LIFE, DEAD
@@ -16,7 +17,6 @@ struct Position{
 	float y;
 	float z;
 };
-typedef void(*Function)();
 class Unit {
 public:
 	std::string getName() {
@@ -46,7 +46,7 @@ public:
 		this->hp = hp;
 		notifyListener();
 	}
-	void setListener(Function listener) {
+	void setListener(std::function<void()> listener) {
 		this->listener = listener;
 		notifyListener();
 	}
@@ -61,9 +61,8 @@ private:
 	UnitState state;
 	Position position;
 	float hp;
-	Function listener;
+	std::function<void()> listener;
 };
-
 class Armor;
 class Weapon;
 struct WeaponUser {
@@ -102,7 +101,7 @@ public:
 	float getWeight() {
 		return weight;
 	}
-	void setListener(Function listener) {
+	void setListener(std::function<void()> listener) {
 		this->listener = listener;
 		notifyListener();
 	}
@@ -117,7 +116,7 @@ protected:
 private:
 	ItemState state;
 	float hp;
-	Function listener;
+	std::function<void()> listener;
 };
 
 class Weapon: public Item {
@@ -183,7 +182,7 @@ public:
 	int getCapacity() {
 		return capacity;
 	}
-	std::list<Bullet*> getBulletsCharged() {
+	const std::list<Bullet*>& getBulletsCharged() {
 		return bulletCharged;
 	}
 	size_t getBulletsChargedCount() {
