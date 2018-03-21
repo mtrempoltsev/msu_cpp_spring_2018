@@ -34,12 +34,12 @@ public:
 	Matrix(size_t _rows, size_t _cols): rows(_rows), cols(_cols) 
 	{
 		a = new int*[rows];
-		for(int i = 0; i < rows; i++) {
+		for(size_t i = 0; i < rows; i++) {
 			try {
 				a[i] = new int[cols];
 			} 
 			catch(std::bad_alloc &ex) {
-				for(int j = 0; j < i; j++) delete a[i];
+				for(size_t j = 0; j < i; j++) delete a[i];
 				throw ex;
 			}
 		}
@@ -47,7 +47,7 @@ public:
 
 	~Matrix()
 	{
-		for(int i = 0; i < rows; i++) delete a[i];
+		for(size_t i = 0; i < rows; i++) delete a[i];
 		delete [] a;
 	}
 
@@ -61,9 +61,9 @@ public:
 
 	void operator*=(int mult)
 	{
-		for(int i = 0; i < rows; i++)
+		for(size_t i = 0; i < rows; i++)
 		{
-			for(int j = 0; j < cols; j++)
+			for(size_t j = 0; j < cols; j++)
 			{
 				a[i][j] *= mult;
 			}
@@ -73,9 +73,9 @@ public:
 	bool operator==(const Matrix &b) const
 	{
 		bool flag = true;
-		for(int i = 0; (i < rows) && flag; i++)
+		for(size_t i = 0; (i < rows) && flag; i++)
 		{
-			for(int j = 0; (j < cols) && flag; j++)
+			for(size_t j = 0; (j < cols) && flag; j++)
 			{
 				flag = (a[i][j] == b[i][j]);
 			}
@@ -86,9 +86,9 @@ public:
 	bool operator!=(const Matrix &b) const
 	{
 		bool flag = true;
-		for(int i = 0; (i < rows) && flag; i++)
+		for(size_t i = 0; (i < rows) && flag; i++)
 		{
-			for(int j = 0; (j < cols) && flag; j++)
+			for(size_t j = 0; (j < cols) && flag; j++)
 			{
 				flag = (a[i][j] != b[i][j]);
 			}
