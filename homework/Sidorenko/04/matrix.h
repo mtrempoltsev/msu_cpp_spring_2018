@@ -13,14 +13,9 @@ public:
 		public:
 			str(size_t _s, int *_arr): cols(_s), a(_arr) {}
 
-			~str()
-			{
-				delete [] a;
-			}
-
 			int& operator[](size_t ind) 
 			{
-				if ( (-1 >= ind) || (ind >= cols) )
+				if ( (0 > ind) || (ind >= cols) )
 					throw std::out_of_range("");
 				return a[ind];
 			}
@@ -46,13 +41,13 @@ public:
 
 	~Matrix()
 	{
-		for(size_t i = 0; i < rows; i++) delete a[i];
+		for(size_t i = 0; i < rows; i++) delete [] a[i];
 		delete [] a;
 	}
 
 	str operator[](int ind) const
 	{
-		if ( (-1 >= ind) || (ind >= rows) )
+		if ( (0 > ind) || (ind >= rows) )
 			throw std::out_of_range("");
 		str s(cols, a[ind]);
 		return s;
