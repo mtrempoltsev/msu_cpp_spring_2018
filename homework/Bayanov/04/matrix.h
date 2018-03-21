@@ -20,7 +20,6 @@ class Matrix {
 
         int& operator[](size_t row) {
             if (rows_ <= row) {
-                // std::cout << row <<  " there\n";
                 throw std::out_of_range("matrix indexes is out of range");
             }
             return column_[row];
