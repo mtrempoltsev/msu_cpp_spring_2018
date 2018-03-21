@@ -5,7 +5,6 @@ class Matrix
 {
 	const size_t rows;
 	const size_t cols;
-	friend class str;
 public:
 	class str
 	{
