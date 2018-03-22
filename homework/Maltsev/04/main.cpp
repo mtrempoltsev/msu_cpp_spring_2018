@@ -8,6 +8,11 @@ int main() {
     int n = 0;
 
     Matrix m1(3, 2);
+    
+//    const Matrix cm(3, 2);
+//    cm[1][1] = 1;
+//    std::cout << cm << std::endl;
+
     for (int i = 0; i < 2; ++i) {
         for (int j = 0; j < 3; ++j) {
             m1[j][i] = ++n;

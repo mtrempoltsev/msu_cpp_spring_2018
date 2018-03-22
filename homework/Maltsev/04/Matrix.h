@@ -10,7 +10,7 @@ private:
 public:
     explicit Col(int *col, uint32_t rows) : col_(col), rows_(rows) {}
 
-    int &operator[](const uint32_t row) const {
+    const int &operator[](const uint32_t row) const {
         if (row < rows_) {
             return col_[row];
         } else {
