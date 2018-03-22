@@ -5,9 +5,9 @@ class Array
         int *ptr;
         int ar_sz;
     public:
-        Array();
+        Array(int);
         ~Array();
-        SetSize(int);
+        const int &operator[](int ) const;
         int &operator[] (int );
         int GetSize() const;
 };
@@ -19,28 +19,19 @@ class Matrix
         int mRows;
     public:
         Matrix(int, int );
-        Matrix( Matrix &MatrixToCopy);
         ~Matrix();
+        const Array &operator[](int ) const;
         Array &operator[] (int );
         int getRows() const;
         int getColumns() const;
         Matrix &operator*= (int);
         bool operator== (const Matrix&) const;
         bool operator!= (const Matrix&) const;
-        const Matrix &operator= (const Matrix& );
+        Matrix &operator= (const Matrix& );
 };
 
-Array::Array()
+Array::Array(int cols)
 {
-    ar_sz = 1;
-    ptr = new int[1];
-}
-
-Array::SetSize(int cols)
-{
-    if(cols < 0)
-        throw std::out_of_range("");
-    delete [] ptr;
     ar_sz = cols;
     ptr = new int[cols];
 }
@@ -48,6 +39,13 @@ Array::SetSize(int cols)
 Array::~Array()
 {
     delete [] ptr;
+}
+
+const int &Array::operator[] (int i) const
+{
+    if(i < 0 || i >= ar_sz)
+        throw std::out_of_range("");
+    return ptr[i];
 }
 
 int &Array::operator[] (int i)
@@ -67,15 +65,24 @@ Matrix::Matrix(int rows,int cols)
     if(rows < 0 || cols < 0)
         throw std::out_of_range("");
     mRows = rows;
-    ptr = new Array[rows];
-    for(int i = 0; i < rows; ++i){
-        ptr[i].SetSize(cols);
-    }
+    ptr = static_cast<Array*>(operator new[] (rows*sizeof(Array)));
+    for (int i = 0; i < rows; ++i)
+        new (ptr + i) Array(cols);
 }
 
 Matrix::~Matrix()
 {
-    delete [] ptr;
+    for (int i = 0; i < mRows; i++){
+        ptr[i].~Array();
+    }
+    operator delete[] (ptr);
+}
+
+const Array &Matrix::operator[] (int i) const
+{
+    if(i < 0 || i >= mRows)
+        throw std::out_of_range("");
+    return ptr[i];
 }
 
 Array &Matrix::operator[] (int i)
@@ -109,7 +116,7 @@ bool Matrix::operator== (const Matrix &right) const
         return false;
     for(int i = 0; i < mRows; ++i)
         for(int j = 0; j < getColumns(); ++j)
-            if(ptr[i][j] != right.ptr[i][j])
+            if(ptr[i][j] != right[i][j])
                 return false;
     return true;
 }
@@ -119,20 +126,22 @@ bool Matrix::operator!= (const Matrix &right) const
     return !(*this == right);
 }
 
-const Matrix &Matrix::operator= (const Matrix &right)
+Matrix &Matrix::operator= (const Matrix &right)
 {
     if(this != &right){
         if(mRows != right.mRows || getColumns() != right.getColumns()){
-            delete [] ptr;
+            for (int i = 0; i < mRows; i++){
+                ptr[i].~Array();
+            }
+            operator delete[] (ptr);
             mRows = right.mRows;
-            ptr = new Array[mRows];
-            for(int i = 0; i < mRows; ++i){
-                ptr[i].SetSize(right.getColumns());
+            Array* Place = static_cast<Array*>(operator new[] (mRows*sizeof(Array)));
+            for (int i = 0; i < mRows; ++i)
+                new (Place + i) Array(right.getColumns());
             }
         for(int i = 0; i < mRows; ++i)
             for(int j = 0; j < getColumns(); ++j)
-                ptr[i][j] = right.ptr[i][j];
-        }
+                (*this)[i][j] = right[i][j];
     }
     return *this;
 }
