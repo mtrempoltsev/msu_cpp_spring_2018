@@ -12,6 +12,9 @@ namespace game {
 
     class Creature {
     protected:
+        enum Gender { male, fimale };
+        Gender gender_;
+
         uint8_t satiety_;
         uint8_t health_;
         uint8_t drowsiness_;
@@ -22,104 +25,106 @@ namespace game {
         virtual void sleep() = 0;
     };
 
+    class Pet;
+
     class Human : Creature {
     protected:
+        enum State { eating, sleeping, acting, training, nothin_doing };
+        State state_;
+
         std::string name_;
         uint8_t age_;
 
-        Shavel shavel_;
-        Bow bow_;
-        Sword sword_;
+        Weapon* weapon_;
+        Armor* armor_;
 
-        Lats lats_;
-        Hauberk hauberk_;
-
+        Pet* pet_;
     public:
         void speak(std::string phrase = "Hello, unfamiliar traveler!");
 
         void eat();
 
         void sleep();
+
+        virtual void takeWeapon() = 0;
+
+        virtual void throwOutWeapon() = 0;
+
+        virtual void act() = 0;
+
+        virtual void trainAction() = 0;
     };
 
     class Peasant : Human {
-        enum Gender { male, fimale };
-        Gender gender_;
-
-        enum State { eating, sleeping, digging, nothin_doing };
-        State state_;
-
     public:
-        void dig();
+        void takeWeapon();
 
-        void throw_out_shavel();
+        void throwOutWeapon();
 
-        void take_shavel();
+        void act();
+
+        void trainAction();
     };
 
     class Knight : Human {
-        enum State { eating, sleeping, fighting, nothin_doing };
-        State state_;
-
     public:
-        void hit();
+        void takeWeapon();
 
-        void throw_out_sword();
+        void throwOutWeapon();
 
-        void take_sword();
+        void act();
 
-        void train_hitting();
+        void trainAction();
     };
 
     class Archer : Human {
-        enum State { eating, sleeping, fighting, nothin_doing };
-        State state_;
-
     public:
-        void shot();
+        void takeWeapon();
 
-        void throw_out_bow();
+        void throwOutWeapon();
 
-        void take_bow();
+        void act();
 
-        void train_shotting();
+        void trainAction();
     };
 
     class Pet : Creature {
     protected:
+        enum State { eating, sleeping, acting, sounding, nothing_doing };
+        State state_;
+
         std::string owner_;
+        std::string moniker_;
 
     public:
         virtual void eat() = 0;
 
         virtual void sleep() = 0;
+
+        virtual void act() = 0;
+
+        virtual void sound() = 0;
     };
 
     class Pig : Pet {
-        enum State { eating, sleeping, lying_in_dirty, grunting, nothing_doing };
-        State state_;
-
     public:
-        void grunt();
-
         void eat();
 
         void sleep();
 
-        void lie_in_dirty();
+        void act();
+
+        void sound();
     };
 
     class Dog : Pet {
-        enum State { eating, sleeping, guarding, barking, nothing_doing };
-        State state_;
-
     public:
-        void bark();
-
         void eat();
 
         void sleep();
 
-        void guard();
+        void act();
+
+        void sound();
     };
 }
