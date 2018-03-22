@@ -19,7 +19,7 @@ public:
 					throw std::out_of_range("");
 				return a[ind];
 			}
-			const int& operator[](size_t ind) 
+			const int& operator[](size_t ind) const
 			{
 				if ( (0 > ind) || (ind >= cols) )
 					throw std::out_of_range("");
@@ -59,7 +59,15 @@ public:
 		return s;
 	}
 
-	void operator*=(int mult)
+	const str operator[](int ind) const
+	{
+		if ( (0 > ind) || (ind >= rows) )
+			throw std::out_of_range("");
+		str s(cols, a[ind]);
+		return s;
+	}
+
+	Matrix& operator*=(int mult)
 	{
 		for(size_t i = 0; i < rows; i++)
 		{
