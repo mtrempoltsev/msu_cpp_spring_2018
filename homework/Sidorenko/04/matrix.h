@@ -76,6 +76,7 @@ public:
 				a[i][j] *= mult;
 			}
 		}
+		return *this;
 	}
 
 	bool operator==(const Matrix &b) const
