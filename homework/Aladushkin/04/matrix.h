@@ -62,29 +62,29 @@ public:
         int getRows() { return row; }
         int getColumns() { return col; }
 
-        Matrix(const int row_, const int col_)
+        Matrix(const int col_, const int row_)
         {
                 row = row_;
                 col = col_;
 
-                matrix.resize(row);
+                matrix.resize(col);
 
-                for (int i = 0; i < row; i++)
-                        matrix[i].resize(col);
+                for (int i = 0; i < col; i++)
+                        matrix[i].resize(row);
         }
 
-        const Array& operator[](int row_) const
+        const Array& operator[](int col_) const
         {
-                if (row_ > row - 1)
+                if (col_ > col - 1)
                         throw std::out_of_range("");
-                return matrix[row_];
+                return matrix[col_];
         }
 
-        Array& operator[](int row_)
+        Array& operator[](int col_)
         {
-                if (row_ > row - 1)
+                if (col_ > col - 1)
                         throw std::out_of_range("");
-                return matrix[row_];
+                return matrix[col_];
         }
 
         Matrix& operator*=(int val)
@@ -98,7 +98,7 @@ public:
                 if (!(row == other.row && col == other.col))
                         return false;
 
-                for (int i = 0; i < row; i++)
+                for (int i = 0; i < col; i++)
                 {
                         if (!(matrix[i] == other[i]))
                                 return false;
