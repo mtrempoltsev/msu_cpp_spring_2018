@@ -91,6 +91,6 @@ public:
     ~Matrix(){
         for (int t = 0; t < cols_num; t++)
             delete elems[t];
-        delete elems;
+        delete[] elems;
     }
 };
