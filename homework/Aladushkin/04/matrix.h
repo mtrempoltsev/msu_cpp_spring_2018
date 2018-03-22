@@ -54,12 +54,12 @@ class Matrix
 private:
         std::vector<Array> matrix;
 
-        int col;
-        int row;
+        size_t col;
+        size_t row;
 
 public:
 
-        Matrix(const unsigned int col_, const unsigned int row_) : col(col_), row(row_)
+        Matrix(const size_t col_, const size_t row_) : col(col_), row(row_)
         {
                 matrix.resize(col);
 
@@ -67,8 +67,8 @@ public:
                         matrix[i].resize(row);
         }
 
-        int getRows() { return row; }
-        int getColumns() { return col; }
+        size_t getRows() { return row; }
+        size_t getColumns() { return col; }
 
         const Array& operator[](int col_) const
         {
