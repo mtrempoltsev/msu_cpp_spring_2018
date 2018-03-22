@@ -25,7 +25,7 @@ class Matrix
 public:
 	Matrix(size_t c, size_t r) :
 		_cols(c), _rows(r), _m(new int*[c]) {
-		for (size_t i = 0; i < _cols; i++) {
+		for (size_t i = 0; i < c; i++) {
 			_m[i] = new int[r];
 		}
 	}
