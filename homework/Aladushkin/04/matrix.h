@@ -54,24 +54,21 @@ class Matrix
 private:
         std::vector<Array> matrix;
 
-        int row;
         int col;
+        int row;
 
 public:
 
-        int getRows() { return row; }
-        int getColumns() { return col; }
-
-        Matrix(const int col_, const int row_)
+        Matrix(const int col_, const int row_) : col(col_), row(row_)
         {
-                row = row_;
-                col = col_;
-
                 matrix.resize(col);
 
                 for (int i = 0; i < col; i++)
                         matrix[i].resize(row);
         }
+
+        int getRows() { return row; }
+        int getColumns() { return col; }
 
         const Array& operator[](int col_) const
         {
