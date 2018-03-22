@@ -14,7 +14,7 @@ private:
             }
             return *(ptr + ind);
         }
-        const int& operator[](size_t ind) const {
+        int operator[](size_t ind) const {
             if (ind >= rows) {
                 throw std::out_of_range("");
             }
