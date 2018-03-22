@@ -17,7 +17,6 @@ private:
 		{
 			arr_len = len;
 			arr = a;
-			//printf("rows = %d\n",rows );
 		};
 
 		int &operator[](int i)
