@@ -1,13 +1,13 @@
 #ifndef MATRIX_H_INCLUDED
 #define MATRIX_H_INCLUDED
 #include <iostream>
+
 class Matrix
 {
     int** matr;
     int cols;
     int rows;
 
-public:
     class Array
     {
         int* a;
@@ -15,28 +15,40 @@ public:
 
     public:
         Array(int* a, int size)
-        {
-            this->a = a;
-            this->size = size;
-        }
+            : a(a)
+            , size(size)
+        {}
 
-        int& operator[](int j){
-            if(j < size){
+        int& operator[](const int j)
+        {
+            if (j >= 0 && j < size)
+            {
                 return a[j];
             }
             else
-                throw std::out_of_range("");
+                throw std::out_of_range("Out of range");
+        }
+
+        const int& operator[](const int j) const
+        {
+            if (j >= 0 && j < size)
+            {
+                return a[j];
+            }
+            else
+                throw std::out_of_range("Out of range");
         }
     };
 
+public:
     Matrix(int col, int row)
+        : cols(col)
+        , rows(row)
     {
-        cols = col;
-        rows = row;
-        matr = new int* [cols];
-        for(int i=0; i<cols; i++)
+        matr = new int*[cols];
+        for (int i = 0; i < cols; i++)
         {
-            matr[i] = new int [rows];
+            matr[i] = new int[rows];
         }
     }
 
@@ -50,45 +62,58 @@ public:
         return rows;
     }
 
-    Array operator[](int i)
+    Array operator[](const int i)
     {
-        if(i<cols){
+        if (i >= 0 && i < cols)
+        {
+            return Array(matr[i], rows);
+        }
+        else
+            throw std::out_of_range("Out of range");
+    }
+
+    const Array operator[](const int i) const
+    {
+        if (i >= 0 && i < cols)
+        {
             return Array(matr[i], rows);
         }
         else
             throw std::out_of_range("");
     }
 
-    void operator *= (int a)
+    Matrix& operator*=(const int a)
     {
-        for(int i=0; i<cols; i++)
-            for(int j=0; j<rows; j++)
+        for (int i = 0; i < cols; i++)
+            for (int j = 0; j < rows; j++)
                 matr[i][j] *= a;
+        return *this;
     }
 
-    bool operator == (const Matrix& other) const
+    bool operator==(const Matrix& other) const
     {
-        if(cols != other.cols && rows != other.rows)
+        if (cols != other.cols && rows != other.rows)
             return false;
 
-        for(int i=0; i<cols; i++)
-            for(int j=0; j<rows; j++)
+        for (int i = 0; i < cols; i++)
+            for (int j = 0; j < rows; j++)
             {
-                if (matr[i][j]!=other.matr[i][j])
+                if (matr[i][j] != other.matr[i][j])
                     return false;
             }
         return true;
     }
 
-    bool operator != (const Matrix& other) const
+    bool operator!=(const Matrix& other) const
     {
-        return !(*this==other);
+        return !(*this == other);
     }
 
     ~Matrix()
     {
-        for(int i=0; i<cols; i++){
-            delete[]matr[i];
+        for (int i = 0; i < cols; i++)
+        {
+            delete[] matr[i];
         }
         delete[] matr;
     }

@@ -8,10 +8,11 @@
 namespace game {
 
     class Equipment {
-        bool presense;
+    protected:
+        bool presense_;
 
     public:
-        void change_presense();
+        void changePresense();
     };
 
 
