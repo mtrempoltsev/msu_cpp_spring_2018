@@ -9,7 +9,7 @@ public:
         const int& operator[](int row_) const
         {
                 size_t row = array.size();
-                if (row_ > row - 1)
+                if (row_ >= row)
                         throw std::out_of_range("");
 
                 return array[row_];
@@ -18,7 +18,7 @@ public:
         int& operator[](int row_)
         {
                 size_t row = array.size();
-                if (row_ > row - 1)
+                if (row_ >= row)
                         throw std::out_of_range("");
 
                 return array[row_];
@@ -59,7 +59,7 @@ private:
 
 public:
 
-        Matrix(const int col_, const int row_) : col(col_), row(row_)
+        Matrix(const unsigned int col_, const unsigned int row_) : col(col_), row(row_)
         {
                 matrix.resize(col);
 
@@ -72,14 +72,14 @@ public:
 
         const Array& operator[](int col_) const
         {
-                if (col_ > col - 1)
+                if (col_ >= col)
                         throw std::out_of_range("");
                 return matrix[col_];
         }
 
         Array& operator[](int col_)
         {
-                if (col_ > col - 1)
+                if (col_ >= col)
                         throw std::out_of_range("");
                 return matrix[col_];
         }
