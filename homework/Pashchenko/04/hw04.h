@@ -2,101 +2,99 @@
 
 #include <stdexcept>
 #include <iostream>
+#include <cstddef>
 #include <vector>
 
 class Matrix
 {
 private:
-    std::vector< std::vector<int> > matrix;
-    std::vector<int> zerov;
-
-    class ProxyMatrix
+    class Column
     {
     private:
-        size_t len;
-        std::vector<int> rm;
+        std::vector<int> col;
 
     public:
-        ProxyMatrix(std::vector<int> r, size_t l) : rm(r), len(l) {}
+        Column(size_t nrows): col(nrows) {}
 
-        const int operator[](const int rown) const
+        bool operator==(const Column &other) const
         {
-            if(rown < 0 || rown >= len)
-                throw std::out_of_range("");
-            else
-                return rm[rown];
+            return col == other.col;
         }
 
-        int& operator[](const int rown)
+        bool operator!=(const Column& other) const
         {
-            if(rown < 0 || rown >= len)
-                throw std::out_of_range("");
+            return col != other.col;
+        }
+
+
+        Column& operator*=(int mult)
+        {
+            for (size_t i = 0; i < col.size(); i++)
+                col[i] *= mult;
+            return *this;
+        }
+
+        int& operator[](size_t i)
+        {
+            if (i < col.size())
+                return col[i];
             else
-                return rm[rown];
+                throw std::out_of_range("");
+        }
+
+        const int& operator[](size_t i) const
+        {
+            if (i < col.size())
+                return col[i];
+            else
+                throw std::out_of_range("");
         }
     };
 
+    const size_t nrows, ncols;
+    std::vector<Column> matrix;
+
 public:
-    Matrix(const size_t cols, const size_t rows)
+    Matrix(size_t cols, size_t rows): nrows(rows), ncols(cols), matrix(cols, rows) {}
+
+    size_t getRows() const
     {
-        zerov.push_back(0);
-        matrix.resize(cols, zerov);
-        for(int i = 0; i < cols; i++)
-            matrix[i].resize(rows, 0);
+        return nrows;
     }
 
-    size_t getColumns(void) const
+    size_t getColumns() const
     {
-        return matrix.size();
+        return ncols;
     }
 
-    size_t getRows(void) const
+    bool operator==(const Matrix& other) const
     {
-        return matrix[0].size();
+        return matrix == other.matrix;
     }
 
-    Matrix operator*=(const int mult)
+    bool operator!=(const Matrix& other) const
     {
-        for(int i = 0; i < this->getRows(); i++)
-        {
-            for(int j = 0; j < this->getColumns(); j++)
-                this->matrix[j][i] = this->matrix[j][i] * 2;
-        }
+        return matrix != other.matrix;
+    }
+
+    Matrix& operator*=(int mult)
+    {
+        for (size_t i = 0; i < matrix.size(); i++)
+            matrix[i] *= mult;
         return *this;
     }
 
-    bool operator==(const Matrix &other) const
+    Column& operator[](size_t i)
     {
-        if(this->getColumns() == other.getColumns() && this->getRows() == other.getRows())
-        {
-            for(int i = 0; i < this->getRows(); i++)
-            {
-                for(int j = 0; j < this->getColumns(); j++)
-                    if(this->matrix[j][i] != other.matrix[j][i])
-                        return false;
-            }
-        }
-        else
-            return false;
-        return true;
+        if (i < matrix.size())
+            return matrix[i];
+        throw std::out_of_range("");
     }
 
-    bool operator!=(const Matrix &other) const
+    const Column& operator[](size_t i) const
     {
-        return !(*this == other);
-    }
-
-    const ProxyMatrix operator[](int i) const
-    {
-        if(i >= this->getColumns() || i < 0)
-            throw std::out_of_range("");
-        return ProxyMatrix(matrix[i], this->getColumns());
-    }
-
-    ProxyMatrix operator[](int i)
-    {
-        if(i >= this->getColumns() || i < 0)
-            throw std::out_of_range("");
-        return ProxyMatrix(matrix[i], this->getColumns());
+        if (i < matrix.size())
+            return matrix[i];
+        throw std::out_of_range("");
     }
 };
