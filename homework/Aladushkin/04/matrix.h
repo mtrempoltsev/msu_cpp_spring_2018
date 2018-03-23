@@ -8,9 +8,6 @@ class Array
 public:
         const int& operator[](size_t row_) const
         {
-                if (row_ < 0)
-                        throw std::out_of_range("");
-
                 size_t row = array.size();
                 if (row_ >= row)
                         throw std::out_of_range("");
@@ -20,9 +17,6 @@ public:
 
         int& operator[](size_t row_)
         {
-                if (row_ < 0)
-                        throw std::out_of_range("");
-
                 size_t row = array.size();
                 if (row_ >= row)
                         throw std::out_of_range("");
@@ -64,7 +58,6 @@ private:
         size_t row;
 
 public:
-
         Matrix(const size_t col_, const size_t row_) : col(col_), row(row_)
         {
                 matrix.resize(col);
@@ -78,9 +71,6 @@ public:
 
         const Array& operator[](size_t col_) const
         {
-                if (col_ < 0)
-                        throw std::out_of_range("");
-
                 if (col_ >= col)
                         throw std::out_of_range("");
                 return matrix[col_];
@@ -88,9 +78,6 @@ public:
 
         Array& operator[](size_t col_)
         {
-                if (col_ < 0)
-                        throw std::out_of_range("");
-
                 if (col_ >= col)
                         throw std::out_of_range("");
                 return matrix[col_];
