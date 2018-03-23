@@ -8,48 +8,44 @@ protected:
 	Human *owner; //nullptr means thing does not belong to anybody
 	std::string name; 
 public:	
-	thing(std::string& _name);
+	Thing(const std::string& _name);
 	Human* GetOwner();
-	friend void Human::SetWearpon(Wearpon *w);
-	friend void Human::SetArmor(Armor *ar);
+	void SetOwner(const Human &h);
 	std::string& GetName();
 };
 
-class Wearpon: public Thing
+class Weapon: public Thing
 {
 	int attack;
 public:
-	Wearpon(std::string& _name, int _attack);
+	Weapon(const std::string& _name, int _attack);
 	int GetAttack();
 	void SetAttack(int _a);
 };
 
-class Shovel: public Wearpon
+class Shovel: public Weapon
 {
 public:
-	Shovel(std::string& _name, int _attack);
-	std::string& GetType(); //выдаёт тип оружия (здесь: Shovel)
+	Shovel(const std::string& _name, int _attack);
 };
 
-class Bow: public Wearpon
+class Bow: public Weapon
 {
 public:
-	Bow(std::string& _name, int _attack);
-	std::string& GetType();
+	Bow(const std::string& _name, int _attack);
 };
 
-class Sword: public Wearpon
+class Sword: public Weapon
 {
 public:
-	Sword(std::string& _name, int _attack);
-	std::string& GetType();
+	Sword(const std::string& _name, int _attack);
 };
 
 class Armor: public Thing
 {
 	int defense;
 public:
-	Wearpon(std::string& _name, int _def);
+	Armor(const std::string& _name, int _def);
 	int GetDefense();
 	void SetDefense(int _d);
 };
@@ -57,15 +53,13 @@ public:
 class Hauberk: public Armor
 {
 public:
-	Hauberk(std::string& _name, int _def);
-	std::string& GetType(); //выдаёт тип брони (здесь Hauberk)
+	Hauberk(const std::string& _name, int _def);
 };
 
 class Lats: public Armor
 {
 public:
-	Lats(std::string& _name, int _def);
-	std::string& GetType();
+	Lats(const std::string& _name, int _def);
 };
 
 //описание класса живого создания: человека или животного
@@ -75,7 +69,7 @@ protected:
 	int health;
 	std::string name;
 public:
-	Creature(std::string _name, int _health);
+	Creature(const std::string _name, int _health);
 	void heal(int _h);
 	void damage(int _d);
 	bool IsDead();
@@ -86,40 +80,39 @@ public:
 class Human: public Creature
 {
 protected:
-	Wearpon *w; //w == nullptr - нет оружия
+	Weapon *w; //w == nullptr - нет оружия
 	Armor *ar; //ar == nullptr - нет брони
 	int hp;
 public:
 	//create a man without anything
-	Human(std::string name, int _health); 
-	void SetWearpon(Wearpon *w);
+	Human(const std::string name, int _health); 
+	void SetWeapon(Weapon *w);
 	void SetArmor(Armor *ar);
-	Wearpon* GetWearpon();
+	Weapon* GetWeapon();
 	Armor* GetArmor();
 	bool IsEquipped(); 
 	bool IsArmored();
 	void IncHp(int _gift);
-	void DestroyArmor(); //destruct the structure of wearpon 
-	void DestroyWearpon();
+	void DestroyArmor(); //destruct the structure of weapon 
+	void DestroyWeapon();
 };
 
 class Peasant: public Human
 {
 public:
-	Peasant(std::string _name, int _health);
-	std::string& GetType(); //выдаёт сословие (здесь: Peasant)
+	Peasant(const std::string _name, int _health);
 };	
+
 class Archer: public Human
 {
 public:
-	Archer(std::string _name, int _health);
-	std::string& GetType();
+	Archer(const std::string _name, int _health);
 };	
+
 class Knight: public Human
 {
 public:
-	Knight(std::string _name, int _health);
-	std::string& GetType();
+	Knight(const std::string _name, int _health);
 };	
 
 class Animal
@@ -127,7 +120,7 @@ class Animal
 protected:
 	int attack, defense;
 public:
-	Animal(std::string& _name, int health, int _a, int _d);
+	Animal(const std::string& _name, int health, int _a, int _d);
 	int GetAttack();
 	int GetDefense();
 	void SetAttack(int _a);
@@ -137,9 +130,8 @@ public:
 class Pig: public Animal
 {
 public:
-	Pig(std::string& _name, int health, int _a, int _d);
-	std::string& GetType();
-}
+	Pig(const std::string& _name, int health, int _a, int _d);
+};
 	
 
 

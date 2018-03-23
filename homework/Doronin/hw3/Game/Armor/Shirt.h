@@ -7,12 +7,21 @@
 
 class Shirt
 {
-private:
-    const uint armor = 0;
+protected:
+    uint armor;
+    uint count_use;
 public:
-    virtual uint get_armor()
+    Shirt():armor(0), count_use(0){}
+    uint get_armor()
     {
-        return this->armor;
+        count_use -= 1;
+        if(count_use !=0)
+        {
+            count_use -= 1;
+            return armor;
+        }
+        else
+            return 0;
     }
 };
 

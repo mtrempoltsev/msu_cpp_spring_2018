@@ -3,8 +3,7 @@
 class object {
     std::pair<int, int> position;
 public:
-    object(int x = 0, int y = 0) {
-        position = std::tie(x, y);
+    object(int x = 0, int y = 0) : position(x, y) {
     }
     std::pair<int, int> get_position() {
         return position;
@@ -104,6 +103,11 @@ protected:
         if(wpn != nullptr) {
             has_weapon = true;
         }
+    }
+public:
+    ~human() {
+        if(wpn != nullptr) delete wpn;
+        if(clth != nullptr) delete clth;
     }
 };
 

@@ -3,148 +3,147 @@
 #include <string>
 
 // класс одушевленных объектов
-class animate
+class Animate
 {
 protected:
-	int health; //у каждого есть здоровье, если оно становится <=0, существо погибает
+	int health; //у каждого есть какое-то здоровье, если оно <= то существо погибает
 	void set_health(int q);
 	std::string personal_name; 
-	void set_personal_name(std::string N_name);
-	int damage_without_weapon; //урон без оружия ( у людей может быть ещё за счёт оружия )
+	void set_personal_name(std::string & const N_name);
+	int damage_without_weapon; //урон существа без оружия ( у людей ещё отдельно может быть урон от оружия )
 	void set_damage_without_weapon(int d);
 public:
-	animate();
-	~animate();
+	Animate();
+	~Animate();
 };
 
-// класс неодушевленных
-class inanimate
+// класс неодушевленных объектов
+class Inanimate
 {
 protected:
-	int weigth; //вес предмета, который занимает место в рюкзаке
-	int condition; //100- целый, 0 - сломался
+	int weigth; //вес предмета, которые он будет занимать в рюкзаке у человека
+	int condition; //100- идеальное состояние, 0 - сломан
 	void set_weigth(int q);
-	void change_condition();//после использования предмета его целостность как-то меняется
+	void change_condition();//после использования предмета его качество будет меняться
 public:
-	inanimate();
-	~inanimate();
+	Inanimate();
+	~Inanimate();
 };
-
-// класс людей
-class human: public animate
-{
-protected:
-	bool gender; //0 - женщина, 1 - мужчина
-	int age; 
-	int full_damage; // полный урон,включая оружие, если оно есть
-	void set_full_damage(int d);
-	void set_gender(bool g);
-	void set_age(int a);
-public:
-	human();
-	~human();
-};
-
-//класс животных
-class animal : public animate
-{
-public:
-	animal();
-	~animal();
-};
-
-//класс свиней
-class pig : public animal
-{
-public:
-	pig();
-	~pig();
-};
-
 
 //класс оружия
-class weapon : public inanimate
-{
-protected:
-	int weapon_damage; //урон от оружия
-	void set_weapon_damage(int d);
-public:
-	weapon();
-	~weapon();
-};
-
-//класс рыцарей
-class knight : public human
+class Weapon : public Inanimate
 {
 public:
-	knight();
-	sword* Sword;
-	lats* Lats;
-	~knight();
-};
-//класс лучников
-class archer : public human
-{
-public:
-	archer();
-	bow* Bow;
-	hauberk* Hauberk;
-	~archer();
-};
-//класс крестьян
-class peasant : public human
-{
-public:
-	peasant();
-	shovel* Shovel;
-	~peasant();
+	Weapon();
+	~Weapon();
 };
 
 //класс мечей
-class sword :public weapon
+class Sword :public Weapon
 {
 public:
-	sword();
-	~sword();
+	Sword();
+	~Sword();
 };
 //класс луков
-class bow :public weapon
+class Bow :public Weapon
 {
 public:
-	bow();
-	~bow();
+	Bow();
+	~Bow();
 };
 //класс лопат
-class shovel :public weapon
+class Shovel :public Weapon
 {
 public:
-	shovel();
-	~shovel();
+	Shovel();
+	~Shovel();
 };
 
-class armor : public inanimate
+class Armor : public Inanimate
 {
-protected:
-	int protection;
-	void set_protection(int p);
 public:
-	armor();
-	~armor();
+	Armor();
+	~Armor();
 };
 
 //латы
-class lats : public armor
+class Lats : public Armor
 {
 public:
-	lats();
-	~lats();
+	Lats();
+	~Lats();
 };
 
 //кольчуга
-class hauberk : public armor
+class Hauberk : public Armor
 {
 public:
-	hauberk();
-	~hauberk();
+	Hauberk();
+	~Hauberk();
 };
+
+// класс людей
+class Human: public Animate
+{
+private:
+	bool have_weapon;
+	bool have_armor;
+	Armor* armor;
+	Weapon* weapon;
+protected:
+	bool gender; //0-женщина, 1-мужчина
+	int age; //возраст может меняться
+	int full_damage; // полный урон, учитывающий урон оружия и силу человека
+	void set_full_damage(int d);
+	void set_gender(bool g);
+	void set_age(int a);
+	void set_weapon();
+	void set_armor();
+public:
+	bool check_weapon();
+	bool check_armor();
+	Human();
+	~Human();
+};
+
+//класс животных
+class Animal : public Animate
+{
+public:
+	Animal();
+	~Animal();
+};
+
+//класс свиней
+class Pig : public Animal
+{
+public:
+	Pig();
+	~Pig();
+};
+
+
+//класс рыцарей
+class Knight : public Human
+{
+public:
+	Knight();
+	~Knight();
+};
+//класс лучников
+class archer : public Human
+{
+public:
+	archer();
+	~archer();
+};
+//класс крестьян
+class Peasant : public Human
+{
+public:
+	Peasant();
+	~Peasant();
+};
+
 

@@ -32,10 +32,8 @@ void Thing::set_strength(int _strength)
 	strength = _strength;
 }
 
-Weapon::Weapon(int _strength, int _damage, int _accuracy)
+Weapon::Weapon(int _strength, int _damage, int _accuracy): damage(_damage), accuracy(_accuracy)
 {
-	damage = _damage;
-	accuracy = _accuracy;
 	strength = _strength;
 }
 
@@ -50,9 +48,9 @@ int Weapon::get_accuracy() const
 }
 
 Shovel::Shovel(Being* _owner):Weapon(100,10,10)
-{
-	name = "Shovel" + (rand() % 99 + 1);		
-	owner = _owner;				
+{		
+	name = "Shovel" + (rand() % 99 + 1);
+	owner = _owner;
 }
 
 Sword::Sword(Being* _owner):Weapon(200, 30, 10)
@@ -67,10 +65,9 @@ Bow::Bow(Being* _owner):Weapon(200, 30, 100)
 	owner = _owner;
 }
 
-Armor::Armor(int _strength, int _protection)
+Armor::Armor(int _strength, int _protection):protection(_protection)
 {
-	strength = _strength;
-	protection = _protection;
+	strength = _strength;	
 }
 
 int Armor::get_protection() const
@@ -122,9 +119,8 @@ void Being::set_ability(int _ability)
 	ability = _ability;
 }
 
-Animal::Animal(int _helplessness, int _hp, int _strength, int _ability)
+Animal::Animal(int _helplessness, int _hp, int _strength, int _ability): helplessness(_helplessness)
 {
-	helplessness = _helplessness;
 	hp = _hp;
 	strength = _strength;
 	ability = _ability;
@@ -149,6 +145,12 @@ Peasant::Peasant(const std::string& _name):Human(100, 10, 10)
 	armor = NULL;
 }
 
+Peasant::~Peasant()
+{
+	delete weapon;
+	delete armor;
+}
+
 Archer::Archer(const std::string& _name):Human(100, 50, 60)
 {
 	name = _name;
@@ -156,11 +158,23 @@ Archer::Archer(const std::string& _name):Human(100, 50, 60)
 	armor = new Hauberk(this);
 }
 
+Archer::~Archer()
+{
+	delete weapon;
+	delete armor;
+}
+
 Knight::Knight(const std::string& _name) :Human(100, 50, 50)
 {
 	name = _name;
 	weapon = new Sword(this);
 	armor = new Lats(this);
+}
+
+Knight::~Knight()
+{
+	delete weapon;
+	delete armor;
 }
 
 Pig::Pig(const std::string& _name):Animal(80, 100, 10, 5)
@@ -173,4 +187,3 @@ int main()
 	srand(time(NULL));
 	return 0;
 }
-
