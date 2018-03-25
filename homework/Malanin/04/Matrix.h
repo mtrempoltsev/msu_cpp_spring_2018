@@ -4,7 +4,7 @@
 
 class Proxy
 {
-	int *col;
+	int *col = nullptr;
 	int num;
 public:
 	Proxy();
@@ -16,13 +16,14 @@ public:
 
 Proxy::Proxy()
 {
-	num = 0;
+	num = 0;	
 }
 
 void Proxy::setnum(int _num)
 {
-	num = _num;
-	col = new int[num];
+	num = _num;	
+	if (col == NULL)
+	col = new int[num];	
 }
 
 
@@ -41,6 +42,7 @@ const int& Proxy::operator[](int i) const
 
 Proxy::~Proxy()
 {
+	if (col != NULL)
 	delete[] col;
 }
 

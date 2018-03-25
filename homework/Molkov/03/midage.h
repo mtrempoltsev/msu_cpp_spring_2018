@@ -13,7 +13,8 @@ protected:
 
 class Unit {
 protected:
-	Item* owner;
+	Armor* armor;
+	Weapon* weapon;
 	const std::string name;
 	unsigned hp, attack, defense;
 };
@@ -66,19 +67,17 @@ class Lats : public Armor
 ////
 class Farmer : public Unit
 {
-	Shovel* shovel;
+
 };
 
 class Archer : public Unit
 {
-	Bow* bow;
-	Hauberk* hauberk;
+
 };
 
 class Knight : public Unit
 {
-	Sword* sword;
-	Lats* lats;
+
 };
 
 

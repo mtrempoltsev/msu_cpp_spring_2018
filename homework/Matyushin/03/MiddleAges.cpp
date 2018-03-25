@@ -18,68 +18,86 @@ class Entity : public DynamicEnvironment {
 class Man : public Entity {
     private:
         bool gender;
-        (const &Man)[2] parents;
-        (const &Horse[]) horses; 
+        const Man** parents;
+        const Horse** horses; 
     public:
         bool getGender(void);
-        bool getParents(void);
+        const Man** getParents(void);
         void die(void);
     protected:
 };
 
 class Environment {
     private:
-    public: 
+        bool visible;
+    public:
+        bool setVisibility(bool vis);
     protected:
-        int xPos;
-        int yPos;
-        int zPos;
+        Point pos;
 };
 
 class StaticEnvironment : public Environment {
     private:
-        bool visible; 
     public:
-        bool setVisibility(bool vis);
     protected:
 };
 
 class DynamicEnvironment : public Environment {
     private:
-        bool visible;
         double mass;
-        double speed[3];
+        Vector speed;
     public:
-        bool setVisibility(bool vis);
-        void move(int x, int y, int z);
-        void moveDelta(int delta_x, int delta_y, int delta_z);
+        void move(Point newpos);
+        void moveDelta(Vector deltapos);
         double getMass(void);
-        double[3] getSpeed(void);
-        void setSpeed(double[3] speed);
-        void setSpeedDelta(double[3] speed);
+        Vector getSpeed(void);
+        void setSpeed(Vector speed);
+        void setSpeedDelta(Vector deltaspeed);
     protected:
 };
 
 class Bag : public DynamicEnvironment {
     private:
-        (const &Item[]) content;
-        const &Man owner;
+        const Item** content;
+        const Man** owner;
     public:
-        const &Item[] getContent(void);
+        const Item* getContent(void);
         void dropItem(int id);
         void drop(void);
-        const &Man getOwner(void);
-        void setOwner(const &Man);
+        const Man* getOwner(void);
+        void setOwner(const Man* man);
+    protected:
+};
+
+class Point {
+    private:
+    public:
+        double x;
+        double y;
+        double z;
+    protected:
+};
+
+class Vector : public Point {
+    private:
+    public:
+        void normalize(void);
+    protected:
+};
+
+class ColorRGB : public Point {
+    private:
+    public:
     protected:
 };
 
 class Eyes : public DynamicEnvironment {
     private:
-        double[3] sightDirection;
+        Vector sightDirection;
         bool closed;
     public:
-        void setSightDirection(double[3] direction);
-        double[3] getSightDirection(void);
+        void setSightDirection(Vector direction);
+        Vector getSightDirection(void);
         void blink(void);
         void wink(void);
         void close(void);
@@ -89,19 +107,19 @@ class Eyes : public DynamicEnvironment {
 
 class Horse : public Machine, public DynamicEnvironment {
     private:
-        int[3] maneColor;
-        int[3] tailColor;
+        ColorRGB maneColor;
+        ColorRGB tailColor;
         int lear;
         double height;
         int size;
-        const &Man owner;
+        const Man* owner;
     public:
-        int[3] getManeColor(void);
-        int[3] getTailColor(void);
+        ColorRGB getManeColor(void);
+        ColorRGB getTailColor(void);
         int getLear(void);
         double getHeight(void);
         int getSize(void);
-        void setOwner(const &Man man);
+        void setOwner(const Man* man);
         void setFree(void);
         void getCaught(void);
     protected:
@@ -129,17 +147,17 @@ class FruitfulTree : public Tree {
 
 class Item : public DynamicEnvironment {
     private:
-        const &Man owner;
+        const Man* owner;
         int durability;
         bool broken;
     public:
-        const &Man getOwner(void);
-        void setOwner(const &Man);
+        const Man* getOwner(void);
+        void setOwner(const Man*);
         void spoil(int value);
     protected:
 };
 
-class Hauberk : public Item {
+class Armor : public Item {
     private:
         int armor; 
     public:
@@ -147,23 +165,19 @@ class Hauberk : public Item {
     protected:
 };
 
-class Lats : public Item {
+class Hauberk : public Armor {
     private:
-        int armor; 
     public:
-        int getArmor(void);
     protected:
 };
 
-class Shovel : public Item {
-    private:
-        int damage; 
+class Lats : public Armor {
+    private: 
     public:
-        int getDamage(void);
     protected:
 };
 
-class Bow : public Item {
+class Tool : public Item {
     private:
         int strength; 
     public:
@@ -171,7 +185,7 @@ class Bow : public Item {
     protected:
 };
 
-class Sword : public Item {
+class Weapon : public Item {
     private:
         int damage; 
     public:
@@ -179,42 +193,54 @@ class Sword : public Item {
     protected:
 };
 
-class Archer : public Man {
+class Shovel : public Tool {
     private:
-        const &Item tool;
-        const &Item dress; 
     public:
-        void shoot(int[3] direction);
-        void putOn(const &Item);
+    protected:
+};
+
+class Bow : public Weapon {
+    private:
+    public:
+    protected:
+};
+
+class Sword : public Weapon {
+    private:
+    public:
+    protected:
+};
+
+class SkilledMan : public Man {
+    private:
+        const Item* tool;
+        const Item* dress;
+    public:
+        void putOn(const Item* cloth);
         void putOff(void);
-        void takeTool(const &Item);
+        void takeTool(const Item* t);
         void dropTool(void);
     protected:
 };
 
-class Peasant : public Man {
+class Archer : public SkilledMan {
+    public:
+    public:
+        void shoot(Vector direction);
+    protected:
+};
+
+class Peasant : public SkilledMan {
     private:
-        const &Item tool;
-        const &Item dress; 
     public:
         void plowHere(void);
-        void putOn(const &Item);
-        void putOff(void);
-        void takeTool(const &Item);
-        void dropTool(void);
     protected:
 };
 
-class Knight : public Man {
+class Knight : public SkilledMan {
     private:
-        const &Item tool;
-        const &Item dress; 
     public:
-        void attack(int[3] direction);
-        void putOn(const &Item);
-        void putOff(void);
-        void takeTool(const &Item);
-        void dropTool(void);
+        void attack(Vector direction);
     protected:
 };
 

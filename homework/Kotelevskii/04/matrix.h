@@ -1,21 +1,26 @@
 class Matrix
 {
 private:
-	int*M;
-	size_t row, column;
-public:
+	size_t column, row;
+	int* M;
 	class Helper
 	{
 	private:
 		int* L;
 		size_t c;
 	public:
-		Helper(size_t cc, int*line)
+		Helper(int*line, size_t cc)
+			: L(line)
+			, c(cc)
+		{}
+		int& operator[](const size_t i)
 		{
-			c = cc;
-			L = line;
+			if (i >= c)
+				throw std::out_of_range("");
+			else
+				return L[i];
 		}
-		int& operator[](const size_t i) const
+		const int& operator[](const size_t i) const
 		{
 			if (i >= c)
 				throw std::out_of_range("");
@@ -24,6 +29,7 @@ public:
 		}
 		~Helper() {}
 	};
+public:
 	size_t getRows() const
 	{
 		return row;
@@ -33,17 +39,24 @@ public:
 		return column;
 	}
 	Matrix(size_t x, size_t y)
+		: column(x)
+		, row(y)
 	{
-		column = x;
-		row = y;
-		M = new int[row*column];
+		M = new int[column*row];
 	}
-	Helper operator[](const size_t i) const
+	Helper operator[](const size_t i)
 	{
 		if (i >= column)
 			throw std::out_of_range("");
 		else
-			return Helper(this->getRows(), M + i*column);
+			return Helper(M + i*row, this->getRows());
+	}
+	const Helper operator[](const size_t i) const
+	{
+		if (i >= column)
+			throw std::out_of_range("");
+		else
+			return Helper(M + i*row, this->getRows());
 	}
 	bool operator==(const Matrix& other) const
 	{
@@ -66,5 +79,8 @@ public:
 				(*this)[i][j] *= a;
 		return (*this);
 	}
-	~Matrix() {}
+	~Matrix()
+	{
+		delete [] M;
+	}
 };
