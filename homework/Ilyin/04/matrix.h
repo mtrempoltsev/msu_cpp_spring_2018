@@ -12,11 +12,6 @@ Row_proxy(size_t n){
     storage.reset(new int [rows]);
 }
 
-void * reset(size_t n){
-        rows = n;
-        storage.reset(new int [rows]);
-}
-
 int &operator [](size_t i){
     if (i >= rows){
         throw std::out_of_range("Out of range, rows");
