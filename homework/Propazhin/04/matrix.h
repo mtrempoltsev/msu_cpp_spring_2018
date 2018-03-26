@@ -32,7 +32,7 @@ public:
     bool operator == (const Matrix &m);
     bool operator != (const Matrix &m);
     Row operator[] (size_t i);
-    Row operator[] (size_t i) const;
+    const Row operator[] (size_t i) const;
 };
 
 class Row
@@ -43,5 +43,5 @@ public:
     int *row;
     size_t rows;
     int& operator[](size_t i);
-    int& operator[](size_t i) const;
+    const int& operator[](size_t i) const;
 };
