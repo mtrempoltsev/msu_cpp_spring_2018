@@ -7,8 +7,9 @@ struct Row_proxy{
 size_t rows;
 std::unique_ptr<int []> storage;
 
-Row_proxy(){
-    rows = 0;
+Row_proxy(size_t n){
+    rows = n;
+    storage.reset(new int [rows]);
 }
 
 void * reset(size_t n){
@@ -63,13 +64,21 @@ size_t getRows() const{
 Matrix(const size_t n, const size_t m){
     rows = m;
     cols = n;
-    data.reset(new Row_proxy [cols]);
+    data.reset(static_cast<Row_proxy*>(operator new [] (cols * sizeof(Row_proxy))));
+
     for (size_t i = 0; i < cols; i++){
-        data[i].reset(rows);
+        new(data.get() + i) Row_proxy(rows);
     }
 }
 
-Matrix & operator *=(const int &mult){
+~Matrix(){
+    for (size_t i = 0; i < cols; i++){
+       data[i].~Row_proxy();
+    }
+    data.release();
+}
+
+Matrix & operator *=(int mult){
     for (size_t i = 0; i < rows; i++){
         for (size_t j = 0; j < cols; j++){
             data[j][i] *= mult;
