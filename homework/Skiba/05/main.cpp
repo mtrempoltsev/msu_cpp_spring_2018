@@ -6,8 +6,8 @@
 class BigInt{
     int sig = 1;
     int sz, cp = 100;
-    int base = 10;
-    int out_len = 1;
+    int base = 1000;
+    int out_len = 3;
     int *ptr;
     int getlen(int x) {
         if (x == 0) {
