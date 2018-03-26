@@ -12,7 +12,13 @@ private:
     public:
         Proxy(size_t cols) : data(cols) {}
 
-        int &operator[](size_t i) {
+        int& operator[](size_t i) {
+            if (i < data.size())
+                return data[i];
+            throw std::out_of_range("");
+        }
+        
+        int operator[](size_t i) const {
             if (i < data.size())
                 return data[i];
             throw std::out_of_range("");
@@ -38,7 +44,13 @@ private:
 public:
     Matrix(size_t cols, size_t rows) : rows(rows), cols(cols), data(cols, rows) {}
 
-    Proxy &operator[](size_t i) {
+    Proxy& operator[](size_t i) {
+        if (i < data.size())
+            return data[i];
+        throw std::out_of_range("");
+    }
+    
+    Proxy operator[](size_t i) const {
         if (i < data.size())
             return data[i];
         throw std::out_of_range("");

@@ -26,9 +26,6 @@ public:
     void operator *= (const int);
     bool operator == (const Matrix&) const;
     bool operator != (const Matrix&) const;
-    
-    
-    
     Proxy operator [] (int index);
     const Proxy operator [] (int index) const;
 };
