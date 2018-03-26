@@ -10,13 +10,13 @@ public:
 		~Array(){}
 
 		int& operator[](int ind){
-			if (ind >= size)
+			if (ind >= size || ind < 0)
 				throw std::out_of_range("");
 			return arr[ind];
 		}
 
 		const int& operator[](int ind) const{
-			if (ind >= size)
+			if (ind >= size || ind < 0)
 				throw std::out_of_range("");
 
 			return arr[ind];
@@ -51,7 +51,7 @@ public:
         
         for (int i = 0; i < rows; ++i)
         	for (int j = 0; j < cols; ++j)
-        		if (arr[i * cols + j] != other[i][j])
+        		if (arr[i * cols + j] != other.arr[i * cols + j])
         			return false;
 
         return true;
@@ -64,7 +64,7 @@ public:
         
         for (int i = 0; i < rows; ++i)
         	for (int j = 0; j < cols; ++j)
-        		if (arr[i * cols + j] != other[i][j])
+        		if (arr[i * cols + j] != other.arr[i * cols + j])
         			return true;
 
         return false;
@@ -79,17 +79,16 @@ public:
     }
 
     const Array operator[](int ind) const{
-    	if (ind >= rows)
+    	if (ind >= rows || ind < 0)
     		throw std::out_of_range("");
     	const Array tmp_arr(arr + ind * cols, cols);
     	return tmp_arr;
     }
 
     Array operator[](int ind){
-    	if (ind >= rows)
+    	if (ind >= rows || ind < 0)
     		throw std::out_of_range("");
-    	Array tmp_arr(arr + ind * cols, cols);
-    	return tmp_arr;
+    	return Array(arr + ind * cols, cols);;
     }
 
 private:
