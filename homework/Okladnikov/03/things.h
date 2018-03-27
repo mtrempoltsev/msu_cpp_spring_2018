@@ -31,12 +31,12 @@ class knight : public people {}; //рыцарь
 
 class stuff
 {
-    private:
+private:
     std::string name;
     weapon weapon; //оружие
     armour armour; //броня
     animal animal; //животное
-    public:
+public:
     stuff(std::string _name) : name(_name) {};
 };
 
