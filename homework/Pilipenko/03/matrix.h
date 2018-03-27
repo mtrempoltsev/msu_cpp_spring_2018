@@ -50,7 +50,7 @@ public:
         throw std::out_of_range("");
     }
     
-    Proxy operator[](size_t i) const {
+    const Proxy operator[](size_t i) const {
         if (i < data.size())
             return data[i];
         throw std::out_of_range("");
