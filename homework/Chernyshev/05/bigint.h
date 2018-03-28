@@ -3,9 +3,10 @@
 #pragma once
 
 
-#include <string>
+#include <algorithm>
 #include <iostream>
 #include <iomanip>
+#include <string>
 
 
 template<class T>
@@ -258,12 +259,6 @@ public:
         }
     }
 
-    // Constructor from const char *
-    BigInt(const char *$number):
-            BigInt(std::string($number))
-    {
-    }
-
     // Constructor from long long
     BigInt(long long $number = 0)
     {
@@ -277,12 +272,6 @@ public:
             number.push_back($number % BASE);
             $number /= BASE;
         } while ($number > 0);
-    }
-
-    // For correct convertion of '0' to BigInt (there's problem with const char* constructor)
-    BigInt(int $number)
-            : BigInt(static_cast<long long>($number))
-    {
     }
 
     // Copy constructors
