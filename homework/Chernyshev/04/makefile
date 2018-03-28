@@ -10,4 +10,4 @@ check: check.cpp matrix.h
 	$(CPPC) $(CPPFLAGS) $< -o $@
 
 clean:
-	rm -f check check.o
+	rm -f check
