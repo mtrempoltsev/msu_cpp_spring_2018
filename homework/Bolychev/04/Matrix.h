@@ -10,15 +10,9 @@ public:
     size_t rows;
     size_t cols;
 
-    Shape() {
-        rows = cols = 0;
-    }
+    Shape() : rows{0}, cols{0} {}
 
-
-    Shape(size_t n_cols, size_t n_rows) {
-        rows = n_rows;
-        cols = n_cols;
-    }
+    Shape(const size_t n_cols, const size_t n_rows) : rows{n_rows}, cols{n_cols} {}
 
     bool operator==(const Shape& other) const {
         return other.cols == cols && other.rows == rows;
@@ -29,19 +23,15 @@ public:
     }
 };
 
-class Matrix {
+class Matrix : public Shape {
 private:
     class Column { //Proxy
         int* data = nullptr;
         size_t rows;
     public:
-        Column() : rows(0) {
-            data = nullptr;
-        }
+        Column() : rows{0}, data{nullptr} {}
 
-        Column(const size_t rows) : rows(rows) {
-            data = new int[rows];
-        }
+        explicit Column(const size_t rows) : rows{rows}, data{new int[rows]} {}
 
         ~Column() {
             delete[] data;
@@ -54,7 +44,7 @@ private:
         const int& operator[](const size_t i) const
         {
             if (i >= rows) {
-                throw std::out_of_range("Matrix::coloumn: index is out of range");
+                throw std::out_of_range("Matrix::column: index is out of range");
             }
 
             return data[i];
@@ -91,9 +81,8 @@ private:
     };
 
     Column* data;
-    Shape shape;
 public:
-    Matrix(const size_t n_cols, const size_t n_rows) : shape(n_cols, n_rows)
+    Matrix(const size_t n_cols, const size_t n_rows) : Shape(n_cols, n_rows)
     {
         // Выделяем память
         data = static_cast<Column*>(operator new[] (n_cols * sizeof(Column)));
@@ -106,26 +95,24 @@ public:
 
     ~Matrix()
     {
-        for (size_t i = 0; i < shape.cols; ++i) {
+        for (size_t i = 0; i < cols; ++i) {
             data[i].~Column();
         }
 
         operator delete[] (data);
     }
 
-    size_t getRows()
-    {
-        return shape.rows;
+    const size_t getRows() const {
+        return rows;
     }
 
-    size_t getColumns()
-    {
-        return shape.cols;
+    const size_t getColumns() const {
+        return cols;
     }
 
     const Column& operator[](const size_t i) const
     {
-        if (i >= shape.cols) {
+        if (i >= cols) {
             throw std::out_of_range("Matrix:: index >= shape.cols");
         }
 
@@ -134,7 +121,7 @@ public:
 
     Column& operator[](const size_t i)
     {
-        if (i >= shape.cols) {
+        if (i >= cols) {
             throw std::out_of_range("Matrix:: index >= shape.cols");
         }
 
@@ -143,9 +130,9 @@ public:
 
     Matrix& operator*=(const int number)
     {
-        for (size_t i = 0; i < shape.cols; ++i)
+        for (size_t i = 0; i < cols; ++i)
         {
-            for (size_t j = 0; j < shape.rows; ++j)
+            for (size_t j = 0; j < rows; ++j)
             {
                 data[i][j] *= number;
             }
@@ -156,11 +143,11 @@ public:
 
     bool operator==(const Matrix &other) const
     {
-        if (shape != other.shape) {
+        if (this->Shape::operator!=(other)) {
             return false;
         }
 
-        for (size_t i = 0; i < shape.cols; ++i) {
+        for (size_t i = 0; i < cols; ++i) {
             if (other[i] != (*this)[i]) {
                 return false;
             }
@@ -169,11 +156,9 @@ public:
         return true;
     }
 
-    bool operator!=(const Matrix &other) const
-    {
+    bool operator!=(const Matrix &other) const {
         return !(*this == other);
     }
 };
-
 
 #endif //MATRIX_MATRIX_H
