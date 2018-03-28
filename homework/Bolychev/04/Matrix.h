@@ -6,10 +6,10 @@
 
 class Shape
 {
-public:
+protected:
     size_t rows;
     size_t cols;
-
+public: 
     Shape() : rows{0}, cols{0} {}
 
     Shape(const size_t n_cols, const size_t n_rows) : rows{n_rows}, cols{n_cols} {}
@@ -143,7 +143,7 @@ public:
 
     bool operator==(const Matrix &other) const
     {
-        if (this->Shape::operator!=(other)) {
+        if (Shape::operator!=(other)) {
             return false;
         }
 
