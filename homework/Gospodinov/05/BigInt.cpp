@@ -110,7 +110,7 @@ std::ostream& operator<<(std::ostream& out, const BigInt& value)
 
 bool BigInt::operator==(const BigInt& number) const
 {
-	if (size != number.size || isNegative != isNegative)
+	if (size != number.size || isNegative != number.isNegative)
 		return false;
 	for (size_t i = 0; i < size; i++)
 	{
@@ -179,6 +179,7 @@ BigInt BigInt::operator-() const
 {
 	BigInt number(*this);
 	number.isNegative = !isNegative;
+	number.check_zero();
 	return number;
 }
 
@@ -192,33 +193,30 @@ BigInt BigInt::abs() const
 
 BigInt BigInt::operator+(const BigInt& number) const
 {
-	BigInt result(*this);
-	BigInt num(number);
-	if (result.isNegative != num.isNegative)
+	if (isNegative != number.isNegative)
 	{
-		if (result.isNegative)
+		if (isNegative)
 		{
 			// num - (-result)
-			result.isNegative = false;
-			return num - result;
+			return number - this->abs();
 		}
 		else
 		{
 			// result - (-num)
-			num.isNegative = false;
-			return result - num;
+			return *this - number.abs();
 		}
 	}
-	for (size_t i = result.size; i < num.size; i++)
+	BigInt result(*this);
+	for (size_t i = result.size; i < number.size; i++)
 		result.push_back(0);
 	cell_type to_next = 0;
-	for (size_t i = 0; i < num.size; i++)
+	for (size_t i = 0; i < number.size; i++)
 	{
 		cell_type sum = result.data[i] + number.data[i] + to_next;
 		result.data[i] = sum % 10;
 		to_next = sum / 10;
 	}
-	for (size_t i = num.size; i < result.size; i++)
+	for (size_t i = number.size; i < result.size; i++)
 	{
 		cell_type sum = result.data[i] + to_next;
 		result.data[i] = sum % 10;
@@ -233,51 +231,26 @@ BigInt BigInt::operator+(const BigInt& number) const
 
 BigInt BigInt::operator-(const BigInt& number) const
 {
-	BigInt result(*this);
-	BigInt num(number);
-	if (result.isNegative != num.isNegative)
+	if (isNegative != number.isNegative)
 	{
-		if (result.isNegative)
-		{
+		if (isNegative)
 			// -(-result + number)
-			result.isNegative = false;
-			BigInt sum = result + num;
-			sum.isNegative = true;
-			sum.delete_zero();
-			sum.check_zero();
-			return sum;
-		}
+			return -(this->abs() + number);
 		else
-		{
 			// result + (-num)
-			num.isNegative = false;
-			return result + num;
-		}
+			return *this + number.abs();
 	}
-	if (result.isNegative) // sign_1 = -, sign_2 = -
-	{
-		// -((-result) - (-number))
-		result.isNegative = false;
-		num.isNegative = false;
-		BigInt difference = result - num;
-		difference.isNegative = !difference.isNegative;
-		difference.delete_zero();
-		difference.check_zero();
-		return difference;
-	}
-	if (result < num) // sign_1 = +, sign_2 = +
-	{
+	if (isNegative) // sign_1 = -, sign_2 = -
+		// (-result) - (-number) = number + (-result)
+		return number.abs() + *this;
+	if (*this < number) // sign_1 = +, sign_2 = +
 		// -(num - result)
-		BigInt difference = num - result;
-		difference.isNegative = true;
-		difference.delete_zero();
-		difference.check_zero();
-		return difference;
-	}
+		return -(number - *this);
+	BigInt result(*this);
 	cell_type to_next = 0;
-	for (size_t i = 0; i < num.size; i++)
+	for (size_t i = 0; i < number.size; i++)
 	{
-		cell_type difference = result.data[i] - num.data[i] - to_next;
+		cell_type difference = result.data[i] - number.data[i] - to_next;
 		if (difference < 0)
 		{
 			result.data[i] = difference + 10;
@@ -289,7 +262,7 @@ BigInt BigInt::operator-(const BigInt& number) const
 			to_next = 0;
 		}
 	}
-	for (size_t i = num.size; i < result.size; i++)
+	for (size_t i = number.size; i < result.size; i++)
 	{
 		cell_type difference = result.data[i] - to_next;
 		if (difference < 0)
