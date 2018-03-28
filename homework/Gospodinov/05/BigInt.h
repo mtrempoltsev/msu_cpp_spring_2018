@@ -33,7 +33,7 @@ public:
 	BigInt operator+(const BigInt& number) const;
 	BigInt operator-(const BigInt& number) const;
 	BigInt operator*(const BigInt& number) const;
-	cell_type binSearch(const BigInt &dividend, const BigInt &divisor) const;
+	cell_type binSearch(const BigInt& dividend, const BigInt& divisor) const;
 	BigInt operator/(const BigInt& number) const;
 	friend std::ostream& operator<<(std::ostream& out, const BigInt& number);
 };
