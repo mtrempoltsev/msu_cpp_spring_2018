@@ -10,43 +10,71 @@ using namespace std;
 // bool fair = true;
 bool fair = false;
 
+int LOG2(int64_t x) {
+	int cnt = 0;
+
+	do {
+		x >>= 1;
+		cnt++;
+	} while (x);
+
+	return cnt - 1;
+}
+
 class BigInt {
 
 public:
-	BigInt(int64_t value = 0) {
-		sign_ = value < 0;
+	void alloc() {
+		try {
+			data_ = new bool[size_];
+		} catch (std::bad_alloc) {
+			cout << "bad_alloc" << endl;
+			exit(1);
+		}
+	}
 
+	BigInt(int64_t value = 0) {
+		// cout << value << " " << size_ << endl;
+
+		sign_ = value < 0;
 		value = abs(value);
 
-		size_ = (value) ? (log2(value) + 1) : 1;
+		size_ = (value) ? (LOG2(value) + 1) : 1;
 
-		data_ = new bool[size_];
+		if (size_) {
+			alloc();
 
-		size_t i = 0;
+			size_t i = 0;
 
-		do {
-			data_[i++] = value & 1;
-			value >>= 1;
-		} while (value);
+			do {
+				data_[i++] = value & 1;
+				value >>= 1;
+			} while (value);
+		}
 	}
 
 
-	BigInt(const BigInt& value) : size_(value.size_), sign_(value.sign_) {
-		data_ = new bool[size_];
+	BigInt(const BigInt& value) {
+		size_ = value.size_;
+		sign_ = value.sign_;
+
+		alloc();
 
 		memcpy(data_, value.data_, size_);
 	}
 
 	BigInt& operator=(const BigInt& value) {
-		size_ = value.size();
-
-		if (data_)
+		if (size_)
 			delete[] data_;
 
-		data_ = new bool[size_];
-		sign_ = value.sign_;
+		size_ = value.size();
 
-		memcpy(data_, value.data_, size_);
+		if (size_) {
+			data_ = new bool[size_];
+			sign_ = value.sign_;
+
+			memcpy(data_, value.data_, size_);
+		}
 
 		return (*this);
 	}
