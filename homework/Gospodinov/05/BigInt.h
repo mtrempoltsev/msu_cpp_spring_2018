@@ -1,23 +1,26 @@
 #pragma once
 #include <iostream>
 
-typedef char T;
+typedef char cell_type;
 
 class BigInt
 {
 private:
-	T* data;
+	cell_type* data;
 	size_t size = 0;
 	bool isNegative = false;
 	size_t capacity = 32;
 public:
 	BigInt();
 	BigInt(const BigInt& number);
-	BigInt(int value);
+	BigInt(int64_t value);
 	~BigInt();
-	void push_back(T element);
-	void push_front(T element);
+	void push_back(cell_type element);
+	cell_type pop();
+	void push_front(cell_type element);
 	void allocate();
+	void delete_zero();
+	void check_zero();
 	BigInt& operator=(const BigInt& number);
 	bool operator==(const BigInt& number) const;
 	bool operator!=(const BigInt& number) const;
@@ -26,10 +29,11 @@ public:
 	bool operator<=(const BigInt& number) const;
 	bool operator>=(const BigInt& number) const;
 	BigInt operator-() const;
+	BigInt abs() const;
 	BigInt operator+(const BigInt& number) const;
 	BigInt operator-(const BigInt& number) const;
 	BigInt operator*(const BigInt& number) const;
-	T binSearch(const BigInt &dividend, const BigInt &divisor) const;
+	cell_type binSearch(const BigInt& dividend, const BigInt& divisor) const;
 	BigInt operator/(const BigInt& number) const;
 	friend std::ostream& operator<<(std::ostream& out, const BigInt& number);
 };

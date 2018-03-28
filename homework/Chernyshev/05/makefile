@@ -1,13 +1,12 @@
-
 CPPC = g++
 CPPFLAGS = -O2 -std=c++14
 
 %PHONY: all clean
 
-all: check
+all: test
 
-check: check.cpp matrix.h
+test: test.cpp bigint.h
 	$(CPPC) $(CPPFLAGS) $< -o $@
 
 clean:
-	rm -f check
+	rm -f test
