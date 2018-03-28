@@ -7,10 +7,7 @@ public:
 	struct Proxy {
 		size_t len;
 		int* row;
-		Proxy(int row[], size_t len) {
-			this->len = len;
-			this->row = row;
-		}
+		Proxy(int row[], size_t len) : row(row), len(len) {};
 		int& operator[](size_t i) const{
 			if (i >= len)
 				throw std::out_of_range("index out of range");
