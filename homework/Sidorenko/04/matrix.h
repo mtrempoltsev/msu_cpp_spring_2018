@@ -19,6 +19,12 @@ public:
 					throw std::out_of_range("");
 				return a[ind];
 			}
+			const int& operator[](size_t ind) const
+			{
+				if ( (0 > ind) || (ind >= cols) )
+					throw std::out_of_range("");
+				return a[ind];
+			}
 			
 	};
 
@@ -45,7 +51,7 @@ public:
 		delete [] a;
 	}
 
-	str operator[](int ind) const
+	str operator[](int ind) 
 	{
 		if ( (0 > ind) || (ind >= rows) )
 			throw std::out_of_range("");
@@ -53,7 +59,15 @@ public:
 		return s;
 	}
 
-	const Matrix& operator*=(int mult)
+	const str operator[](int ind) const
+	{
+		if ( (0 > ind) || (ind >= rows) )
+			throw std::out_of_range("");
+		str s(cols, a[ind]);
+		return s;
+	}
+
+	Matrix& operator*=(int mult)
 	{
 		for(size_t i = 0; i < rows; i++)
 		{
@@ -80,23 +94,15 @@ public:
 
 	bool operator!=(const Matrix &b) const
 	{
-		bool flag = true;
-		for(size_t i = 0; (i < rows) && flag; i++)
-		{
-			for(size_t j = 0; (j < cols) && flag; j++)
-			{
-				flag = (a[i][j] != b[i][j]);
-			}
-		}
-		return flag;	
+		return !(*this == b);	
 	}
 
-	int getRows() const
+	size_t getRows() const
 	{
 		return rows;
 	}
 
-	int getColumns() const
+	size_t getColumns() const
 	{
 		return cols;
 	}

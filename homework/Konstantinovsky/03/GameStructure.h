@@ -108,7 +108,7 @@ class Knight : Hero {
 		
 };
 
-class Archer{
+class Archer : Hero{
 
 	protected:
 		Bow bow;

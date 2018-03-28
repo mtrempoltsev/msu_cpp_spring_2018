@@ -19,14 +19,14 @@ private:
 			arr = a;
 		};
 
-		int &operator[](int i)
+		int &operator[](int i) const
 		{
 			if(i < arr_len && i > -1)
 			{
 				return arr[i];
 			}
 			else 
-				throw std::out_of_range("12");
+				throw std::out_of_range("");
 		}
 	};
 
@@ -54,7 +54,7 @@ public:
 		return cols;
 	}
 
-	Array operator[](int j)
+	const Array operator[](int j) const
 	{
 		if(j < cols && j >-1)
 		{
@@ -62,7 +62,7 @@ public:
 			return arr;
 		}
 		else
-			throw std::out_of_range("1234");
+			throw std::out_of_range("");
 	}
 
 
@@ -87,9 +87,7 @@ public:
 
     bool operator != (const Matrix &matr_2) const
     {
-        if ((*this) == matr_2)
-            return false;
-        else return true;
+        return !((*this) == matr_2);
     }
 
 	void operator *= (int C)
@@ -97,7 +95,7 @@ public:
 		for (int i = 0; i < cols; i ++)
 			for (int j = 0; j < rows; j++)
 			{
-				matr[i][j] *= C;
+				(*this)[i][j] *= C;
 			}
 	}
 };

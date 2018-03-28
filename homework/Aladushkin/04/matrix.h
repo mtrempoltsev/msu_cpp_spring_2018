@@ -6,7 +6,7 @@
 class Array
 {
 public:
-        const int& operator[](int row_) const
+        const int& operator[](size_t row_) const
         {
                 size_t row = array.size();
                 if (row_ >= row)
@@ -15,7 +15,7 @@ public:
                 return array[row_];
         }
 
-        int& operator[](int row_)
+        int& operator[](size_t row_)
         {
                 size_t row = array.size();
                 if (row_ >= row)
@@ -58,7 +58,6 @@ private:
         size_t row;
 
 public:
-
         Matrix(const size_t col_, const size_t row_) : col(col_), row(row_)
         {
                 matrix.resize(col);
@@ -70,14 +69,14 @@ public:
         size_t getRows() { return row; }
         size_t getColumns() { return col; }
 
-        const Array& operator[](int col_) const
+        const Array& operator[](size_t col_) const
         {
                 if (col_ >= col)
                         throw std::out_of_range("");
                 return matrix[col_];
         }
 
-        Array& operator[](int col_)
+        Array& operator[](size_t col_)
         {
                 if (col_ >= col)
                         throw std::out_of_range("");

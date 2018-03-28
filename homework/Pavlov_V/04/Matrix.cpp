@@ -58,29 +58,29 @@ void Matrix::Proxy::set(const std::vector<int> *vector_ptr){
 }
 
 int& Matrix::Proxy::operator [] (int index) {
-    if(index >= 0 && index > (*_array).size() - 1) {
+    if(index < 0 || index > (*_array).size() - 1) {
         throw std::out_of_range("");
     }
     return (*_array)[index];
 }
 
 Matrix::Proxy Matrix::operator [] (int index) {
-    if(index >= 0 && index > countRows - 1) {
+    if(index < 0 || index > countRows - 1) {
         throw std::out_of_range("");
     }
     return &matrix[index];
 }
 
 const int& Matrix::Proxy::operator [] (int index) const {
-    if(index >= 0 && index > (*_array).size() - 1) {
+    if(index < 0 || index > (*_array).size() - 1) {
         throw std::out_of_range("");
     }
     return (*_array)[index];
 }
 
 
-const Matrix::Proxy Matrix::operator [] (int index) const{
-    if(index >= 0 && index > countRows - 1) {
+const Matrix::Proxy Matrix::operator [] (int index) const {
+    if(index < 0 || index > countRows - 1) {
         throw std::out_of_range("");
     }
     ptr.set(&matrix[index]);
