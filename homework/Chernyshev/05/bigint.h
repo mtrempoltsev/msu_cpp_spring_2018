@@ -596,8 +596,9 @@ BigInt abs(const BigInt &a)
 
 BigInt pow(const BigInt &a, unsigned n)
 {
-    if (n == 0)
+    if (n == 0) {
         return 1;
+    }
     
     BigInt tmp = pow(a, n / 2);
 
