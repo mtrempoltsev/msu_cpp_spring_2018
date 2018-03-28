@@ -7,8 +7,8 @@
 
 using namespace std;
 
-bool fair = true;
-// bool fair = false;
+// bool fair = true;
+bool fair = false;
 
 class BigInt {
 
@@ -39,6 +39,9 @@ public:
 
 	BigInt& operator=(const BigInt& value) {
 		size_ = value.size();
+
+		if (data_)
+			delete[] data_;
 
 		data_ = new bool[size_];
 		sign_ = value.sign_;

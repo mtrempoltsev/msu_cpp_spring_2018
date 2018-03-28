@@ -57,9 +57,6 @@ int main()
 {
     auto t1 = std::chrono::high_resolution_clock::now();
     BigInt x = 3;
-    // x.bit_print();
-    // x.resize(10);
-    // x.bit_print();
     checkEqual(x, "3");
     BigInt y = x;
     checkEqual(y, "3");
