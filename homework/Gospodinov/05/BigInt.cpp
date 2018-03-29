@@ -7,30 +7,35 @@ BigInt::BigInt()
 	this->push_back(0);
 }
 
-BigInt::BigInt(const BigInt& number) : size(number.size), isNegative(number.isNegative), capacity(number.capacity)
+BigInt::BigInt(const BigInt& number) 
+	: size(number.size)
+	, isNegative(number.isNegative)
+	, capacity(number.capacity)
 {
 	data = new cell_type[capacity];
 	memcpy(data, number.data, size);
 }
 
-BigInt::BigInt(int64_t value)
+BigInt::BigInt(BigInt&& number) 
+	: size(number.size)
+	, isNegative(number.isNegative)
+	, capacity(number.capacity)
+	, data(number.data)
 {
-	if (value < 0)
-	{
-		isNegative = true;
-		value *= -1;
-	}
-	data = new cell_type[capacity];
-	if (value == 0)
-	{
-		this->push_back(0);
-		return;
-	}
-	for (size_t i = 0; value > 0; i++)
-	{
-		this->push_back(value % 10);
-		value /= 10;
-	}
+	number.data = nullptr;
+}
+
+BigInt& BigInt::operator=(BigInt&& number)
+{
+	if (this == &number)
+		return *this;
+	size = number.size;
+	isNegative = number.isNegative;
+	capacity = number.capacity;
+	delete[] data;
+	data = number.data;
+	number.data = nullptr;
+	return *this;
 }
 
 void BigInt::push_back(cell_type element)
@@ -42,8 +47,7 @@ void BigInt::push_back(cell_type element)
 
 cell_type BigInt::pop()
 {
-	if (size > 0)
-		return data[--size];
+	return data[--size];
 }
 
 void BigInt::push_front(cell_type element)
@@ -185,10 +189,9 @@ BigInt BigInt::operator-() const
 
 BigInt BigInt::abs() const
 {
-	if (*this < 0)
-		return -*this;
-	else
-		return *this;
+	BigInt tmp = *this;
+	tmp.isNegative = false;
+	return tmp;
 }
 
 BigInt BigInt::operator+(const BigInt& number) const
@@ -196,15 +199,11 @@ BigInt BigInt::operator+(const BigInt& number) const
 	if (isNegative != number.isNegative)
 	{
 		if (isNegative)
-		{
 			// num - (-result)
 			return number - this->abs();
-		}
 		else
-		{
 			// result - (-num)
 			return *this - number.abs();
-		}
 	}
 	BigInt result(*this);
 	for (size_t i = result.size; i < number.size; i++)

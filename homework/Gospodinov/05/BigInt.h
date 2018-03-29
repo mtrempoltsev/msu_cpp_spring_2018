@@ -13,7 +13,9 @@ private:
 public:
 	BigInt();
 	BigInt(const BigInt& number);
-	BigInt(int64_t value);
+	BigInt(BigInt&& number);
+	template <class T>
+	BigInt(T value);
 	~BigInt();
 	void push_back(cell_type element);
 	cell_type pop();
@@ -22,6 +24,7 @@ public:
 	void delete_zero();
 	void check_zero();
 	BigInt& operator=(const BigInt& number);
+	BigInt& operator=(BigInt&& number);
 	bool operator==(const BigInt& number) const;
 	bool operator!=(const BigInt& number) const;
 	bool operator<(const BigInt& number) const;
@@ -37,3 +40,24 @@ public:
 	BigInt operator/(const BigInt& number) const;
 	friend std::ostream& operator<<(std::ostream& out, const BigInt& number);
 };
+
+template <class T>
+BigInt::BigInt(T value)
+{
+	if (value < 0)
+	{
+		isNegative = true;
+		value *= -1;
+	}
+	data = new cell_type[capacity];
+	if (value == 0)
+	{
+		this->push_back(0);
+		return;
+	}
+	for (size_t i = 0; value > 0; i++)
+	{
+		this->push_back(value % 10);
+		value /= 10;
+	}
+}
