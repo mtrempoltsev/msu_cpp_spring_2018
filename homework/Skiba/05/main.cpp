@@ -100,7 +100,7 @@ public:
         for (int i = sz - 1; i >= 0; i--) {
             if (ptr[i] == mid.ptr[i])
                 continue;
-            return ptr[i] < mid.ptr[i];
+            return sig * ptr[i] < mid.sig * mid.ptr[i];
         }
         return false;
     }
@@ -120,7 +120,7 @@ public:
         for (int i = sz - 1; i >= 0; i--) {
             if (ptr[i] == mid.ptr[i])
                 continue;
-            return ptr[i] > mid.ptr[i];
+            return sig * ptr[i] > mid.sig * mid.ptr[i];
         }
         return false;
     }
@@ -140,7 +140,7 @@ public:
         for (int i = sz - 1; i >= 0; i--) {
             if (ptr[i] == mid.ptr[i])
                 continue;
-            return ptr[i] < mid.ptr[i];
+            return sig * ptr[i] < mid.sig * mid.ptr[i];
         }
         return true;
     }
@@ -160,7 +160,7 @@ public:
         for (int i = sz - 1; i >= 0; i--) {
             if (ptr[i] == mid.ptr[i])
                 continue;
-            return ptr[i] > mid.ptr[i];
+            return sig * ptr[i] > mid.sig * mid.ptr[i];
         }
         return true;
     }
@@ -186,6 +186,12 @@ public:
     friend BigInt operator*(const BigInt& a, const BigInt& b);
     friend BigInt operator/(const BigInt& a, const BigInt& b);
     friend BigInt operator%(const BigInt& a, const BigInt& b);
+    friend bool operator==(int b, const BigInt& a);
+    friend bool operator!=(int b, const BigInt& a);
+    friend bool operator<(int b, const BigInt& a);
+    friend bool operator>(int b, const BigInt& a);
+    friend bool operator<=(int b, const BigInt& a);
+    friend bool operator>=(int b, const BigInt& a);
     friend std::ostream& operator<<(std::ostream& out, const BigInt& mid);
 };
 
@@ -199,6 +205,24 @@ std::ostream& operator<<(std::ostream& out, const BigInt& mid)
         out << std::setw(mid.out_len) << std::setfill('0') << mid.ptr[i];
     }
     return out;
+}
+bool operator==(int b, const BigInt& a) {
+    return a.operator==(b);
+}
+bool operator!=(int b, const BigInt& a) {
+    return a.operator!=(b);
+}
+bool operator>(int b, const BigInt& a) {
+    return a.operator>(b);
+}
+bool operator<(int b, const BigInt& a) {
+    return a.operator<(b);
+}
+bool operator<=(int b, const BigInt& a) {
+    return a.operator<=(b);
+}
+bool operator>=(int b, const BigInt& a) {
+    return a.operator>=(b);
 }
 BigInt abs(const BigInt& a) {
     BigInt mid = a;
@@ -281,6 +305,9 @@ BigInt operator/(const BigInt& a, const BigInt& b) {
         ans = ans + one;
         mid_a = mid_a - mid_b;
     }
+    if ((ans.sz == 1) && (ans.ptr[ans.sz - 1] == 0)) {
+        ans.sig = 1;
+    }
     return ans;
 }
 BigInt operator%(const BigInt& a, const BigInt& b) {
@@ -290,14 +317,6 @@ BigInt operator%(const BigInt& a, const BigInt& b) {
 }
 
 int main(int argc, char *argv[]) {
-    BigInt a(-100000);
-    BigInt b(-23);
-    BigInt c(0);
-    std::cout << a << std::endl;
-    std::cout << b << std::endl;
-    c = a / b;
-    std::cout << c << std::endl;
-    c = a % b;
-    std::cout << c << std::endl;
+    std::cout << (3 != BigInt(3)) << std::endl;
     return 0;
 }
