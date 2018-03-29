@@ -1,8 +1,8 @@
 #include <iostream>
 #include <limits>
 #include <sstream>
-#include <chrono>
 
+// #include "BigInt_blocks.h"
 #include "BigInt.h"
 
 std::string toString(const BigInt& value)
@@ -55,7 +55,6 @@ void doCheckEqual(const BigInt& actual, const char* expected, size_t line)
 
 int main()
 {
-    auto t1 = std::chrono::high_resolution_clock::now();
     BigInt x = 3;
     checkEqual(x, "3");
     BigInt y = x;
@@ -138,8 +137,6 @@ int main()
             check(i, j);
         }
     }
-    auto t2 = std::chrono::high_resolution_clock::now();
-    auto t = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
-    std::cout << "Time: " << t / 1e6 << std::endl;
+
     return 0;
 }

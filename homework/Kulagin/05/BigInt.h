@@ -8,8 +8,8 @@
 using namespace std;
 #include <chrono>
 
-// bool fair = true;
-bool fair = false;
+bool fair = true;
+// bool fair = false;
 
 int CNT = 0;
 
@@ -263,22 +263,17 @@ public:
 		}
 	}
 	BigInt& operator>>=(int pos) {
-		try {
-			for (size_t i = 0; i < size_ - pos; i++) {
-				std::swap(data_[i + pos], data_[i]);
-			}
-
-			if (size_ - pos <= 0) {
-				cout << "err";
-			}
-
-			size_ = size_ - pos;
-
-			return *this;
-		} catch (const std::exception& e) {
-			cout << e.what() << endl;
-			exit(1);
+		for (size_t i = 0; i < size_ - pos; i++) {
+			std::swap(data_[i + pos], data_[i]);
 		}
+
+		if (size_ - pos <= 0) {
+			cout << "err";
+		}
+
+		size_ = size_ - pos;
+
+		return *this;
 	}
 
 	void clear() {
@@ -299,30 +294,25 @@ public:
 	}
 
 	BigInt operator*(const BigInt& other) const {
-		try {
-			if (!fair) {
-				return tol() * other.tol();
-			}
-
-			BigInt a_tmp(*this);
-			BigInt c(*this);
-			c.clear();
-
-			for (size_t i = 0; i < other.size_; i++) {
-				if (other.at(i)) {
-					c = c + a_tmp;
-				}
-
-				a_tmp <<= 1;
-			}
-
-			c.sign_ = sign_ xor other.sign_;
-
-			return c;
-		} catch (const std::exception& e) {
-			cout << e.what() << endl;
-			exit(1);
+		if (!fair) {
+			return tol() * other.tol();
 		}
+
+		BigInt a_tmp(*this);
+		BigInt c(*this);
+		c.clear();
+
+		for (size_t i = 0; i < other.size_; i++) {
+			if (other.at(i)) {
+				c = c + a_tmp;
+			}
+
+			a_tmp <<= 1;
+		}
+
+		c.sign_ = sign_ xor other.sign_;
+
+		return c;
 	}
 
 	int64_t tol() const {
@@ -345,144 +335,124 @@ public:
 	}
 
 	BigInt operator/(const BigInt& other) const {
-		try {
-			if (!fair) {
-				return tol() / other.tol();
-			}
+		if (!fair) {
+			return tol() / other.tol();
+		}
 
-			BigInt a_tmp(*this);
-			BigInt b_tmp(other);
+		BigInt a_tmp(*this);
+		BigInt b_tmp(other);
 
-			a_tmp.sign_ = false;
-			b_tmp.sign_ = false;
+		a_tmp.sign_ = false;
+		b_tmp.sign_ = false;
 
-			if (a_tmp < b_tmp) {
-				BigInt c(0);
-				c.sign_ = sign_ xor other.sign_;
-				return c;
-			}
+		if (a_tmp < b_tmp) {
+			BigInt c(0);
+			c.sign_ = sign_ xor other.sign_;
+			return c;
+		}
 
-			BigInt b_tmp_l(b_tmp);
+		BigInt b_tmp_l(b_tmp);
 
-			BigInt c(a_tmp);
+		BigInt c(a_tmp);
 
-			int res = 0;
+		int res = 0;
 
-			b_tmp <<= (a_tmp.size_ - other.size_);
+		b_tmp <<= (a_tmp.size_ - other.size_);
 
-			while (b_tmp >= b_tmp_l && b_tmp.size_) {
-				if (c < b_tmp) {
-					b_tmp >>= 1;
-
-					res <<= 1;
-
-					continue;
-				}
-
-				c = c - b_tmp;
+		while (b_tmp >= b_tmp_l && b_tmp.size_) {
+			if (c < b_tmp) {
+				b_tmp >>= 1;
 
 				res <<= 1;
-				res ++;
 
-				if (c.is_zero()) {
-					for (int t = 0; t < b_tmp.size() - other.size(); t++) {
-						res <<= 1;
-					}
-
-					break;
-				}
-
-				b_tmp >>= 1;
+				continue;
 			}
 
-			c = BigInt(res);
-			c.sign_ = sign_ xor other.sign_;
+			c = c - b_tmp;
 
-			return c;
-		} catch (const std::exception& e) {
-			cout << e.what() << endl;
-			exit(1);
+			res <<= 1;
+			res ++;
+
+			if (c.is_zero()) {
+				for (int t = 0; t < b_tmp.size() - other.size(); t++) {
+					res <<= 1;
+				}
+
+				break;
+			}
+
+			b_tmp >>= 1;
 		}
+
+		c = BigInt(res);
+		c.sign_ = sign_ xor other.sign_;
+
+		return c;
 	}
 
 	BigInt operator-() const {
-		try {
-			BigInt tmp(*this);
+		BigInt tmp(*this);
 
-			tmp.sign_ = !sign_;
+		tmp.sign_ = !sign_;
 
-			return tmp;
-		} catch (const std::exception& e) {
-			cout << e.what() << endl;
-			exit(1);
-		}
+		return tmp;
 	}
 
 	bool is_zero() const {
-		try {
-			for (size_t i = 0; i < size_; i++) {
-				if (at(i)) {
-					return false;
-				}
+		for (size_t i = 0; i < size_; i++) {
+			if (at(i)) {
+				return false;
 			}
-
-			return true;
-		} catch (const std::exception& e) {
-			cout << e.what() << endl;
-			exit(1);
 		}
+
+		return true;
 	}
 
 	BigInt operator+(const BigInt& other) const {
-		try {
-			if (!fair) {
-				return tol() + other.tol();
-			}
-
-			// A < 0 | B < 0
-			if (negative() && other.negative()) {
-				return -(-(*this) + -other);
-			}
-
-			// A < 0 | B > 0
-			if (negative() && other.positive()) {
-				return other - (-(*this));
-			}
-
-			// A > 0 | B < 0
-			if (positive() && other.negative()) {
-				return (*this) - (-other);
-			}
-
-			if (size_ < other.size_) {
-				return other + (*this);
-			}
-
-			BigInt c = (*this);
-
-			c.resize(size_ + 2);
-			// c.bit_print();
-			bool bubble = false;
-
-			for (size_t i = 0; i < other.size(); i++) {
-				int sum = (c.at(i) + other.at(i) + bubble);
-				c.data_[i] = sum & 1;
-				bubble = sum >> 1;
-			}
-
-			for (size_t i = other.size(); i < c.size() - 1; i++) {
-				int sum = (c.at(i) + bubble);
-				c.data_[i] = sum & 1;
-				bubble = sum >> 1;
-			}
-
-			c.sign_ = sign_ xor other.sign_;
-
-			return c;
-		} catch (const std::exception& e) {
-			cout << e.what() << endl;
-			exit(1);
+		if (!fair) {
+			return tol() + other.tol();
 		}
+
+		// A < 0 | B < 0
+		if (negative() && other.negative()) {
+			return -(-(*this) + -other);
+		}
+
+		// A < 0 | B > 0
+		if (negative() && other.positive()) {
+			return other - (-(*this));
+		}
+
+		// A > 0 | B < 0
+		if (positive() && other.negative()) {
+			return (*this) - (-other);
+		}
+
+		if (size_ < other.size_) {
+			return other + (*this);
+		}
+
+		BigInt c = (*this);
+
+		c.resize(size_ + 2);
+		// c.bit_print();
+		bool bubble = false;
+
+		for (size_t i = 0; i < other.size(); i++) {
+			int sum = (c.at(i) + other.at(i) + bubble);
+			c.data_[i] = sum & 1;
+			bubble = sum >> 1;
+		}
+
+		for (size_t i = other.size(); i < c.size() - 1; i++) {
+			int sum = (c.at(i) + bubble);
+			c.data_[i] = sum & 1;
+			bubble = sum >> 1;
+		}
+
+		c.sign_ = sign_ xor other.sign_;
+
+		return c;
 	}
 
 	size_t size() const {
@@ -490,101 +460,80 @@ public:
 	}
 
 	void bit_flip(const size_t pos) {
-		try {
-			data_[pos] = !data_[pos];
-		} catch (const std::exception& e) {
-			cout << e.what() << endl;
-			exit(1);
-		}
+		data_[pos] = !data_[pos];
 	}
 
 	BigInt operator-(const BigInt & other) const {
-		try {
-			if (!fair) {
-				return tol() - other.tol();
-			}
-
-			if (negative() && other.negative()) {
-				return ((*this) + (-other));
-			}
-
-			if (negative() && other.positive()) {
-				return -(-(*this) + other);
-			}
-
-			if (positive() && other.negative()) {
-				return (*this) + (-other);
-			}
-
-			if (positive() && other.positive()) {
-				if (*this < other) {
-					return -(other - (*this));
-				}
-			}
-
-			BigInt c(*this);
-
-			for (size_t i = 0; i < other.size(); i++) {
-				bool bubble = !c.at(i) && other.at(i);
-
-				if (bubble) {
-					for (size_t j = i + 1; j < c.size_; j++) {
-						if (c.at(j)) {
-							c.bit_flip(j);
-							break;
-						} else {
-							c.bit_flip(j);
-						}
-					}
-				}
-
-				c.data_[i] -= other.at(i);
-			}
-
-			return c;
-		} catch (const std::exception& e) {
-			cout << e.what() << endl;
-			exit(1);
+		if (!fair) {
+			return tol() - other.tol();
 		}
 
+		if (negative() && other.negative()) {
+			return ((*this) + (-other));
+		}
+
+		if (negative() && other.positive()) {
+			return -(-(*this) + other);
+		}
+
+		if (positive() && other.negative()) {
+			return (*this) + (-other);
+		}
+
+		if (positive() && other.positive()) {
+			if (*this < other) {
+				return -(other - (*this));
+			}
+		}
+
+		BigInt c(*this);
+
+		for (size_t i = 0; i < other.size(); i++) {
+			bool bubble = !c.at(i) && other.at(i);
+
+			if (bubble) {
+				for (size_t j = i + 1; j < c.size_; j++) {
+					if (c.at(j)) {
+						c.bit_flip(j);
+						break;
+					} else {
+						c.bit_flip(j);
+					}
+				}
+			}
+
+			c.data_[i] -= other.at(i);
+		}
+
+		return c;
 	}
 
 	bool at(size_t index) const {
-		try {
-			return data_[index];
-		} catch (const std::exception& e) {
-			cout << e.what() << endl;
-			exit(1);
-		}
+		return data_[index];
 	}
 
 	friend std::ostream& operator<<(std::ostream & out, const BigInt & mid) {
-		try {
-			if (mid.size_ == 0) {
-				return out;
-			}
-
-			size_t i = mid.size_ - 1;
-
-			int64_t v = 0;
-
-			bool sign = mid.at(mid.size_ - 1) == 1;
-
-			if (mid.sign_ && !mid.is_zero()) {
-				out << "-";
-			}
-
-			do {
-				v <<= 1;
-				v += mid.at(i);
-			} while (i-- != 0);
-
-			out << v;
+		if (mid.size_ == 0) {
 			return out;
-		} catch (const std::exception& e) {
-			cout << e.what() << endl;
-			exit(1);
 		}
+
+		size_t i = mid.size_ - 1;
+
+		int64_t v = 0;
+
+		bool sign = mid.at(mid.size_ - 1) == 1;
+
+		if (mid.sign_ && !mid.is_zero()) {
+			out << "-";
+		}
+
+		do {
+			v <<= 1;
+			v += mid.at(i);
+		} while (i-- != 0);
+
+		out << v;
+		return out;
 	}
 
 	void bit_print() const {
@@ -598,13 +547,7 @@ public:
 	}
 
 	~BigInt() {
-		if (CNT++ == 212241) {
-			t2 = std::chrono::high_resolution_clock::now();
-			auto t = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
-			std::cout << "Time: " << t / 1e6 << std::endl;
-		}
 		// if (data_) {
-		// cout << "value = " << CNT++ << endl;
 		delete[] data_;
 		// }
 	}
