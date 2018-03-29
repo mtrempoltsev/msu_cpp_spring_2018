@@ -86,7 +86,7 @@ public:
         return *this;
     }
     
-    bool operator == (const Matrix & other)
+    bool operator == (const Matrix & other) const
     {
         if (cols != other.cols || rows != other.rows)
             return false;
@@ -99,16 +99,16 @@ public:
         return true;
     }
     
-    bool operator != (const Matrix & other)
+    bool operator != (const Matrix & other) const
     {
         return !(*this == other);
     }
     
-    std::size_t getRows()
+    const std::size_t getRows() const
     {
         return rows;
     }
-    std::size_t getColumns()
+    const std::size_t getColumns() const
     {
         return cols;
     }

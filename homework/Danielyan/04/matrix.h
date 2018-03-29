@@ -6,18 +6,16 @@ private:
     struct Proxy {
         Proxy(std::vector<int> *pVector) : data(pVector) {}
 
+        Proxy(const std::vector<int> *pVector) : data(const_cast<decltype(data)>(pVector)) {}
+
         std::vector<int>* data;
         int& operator[](size_t index) {
             if (index >= data->size())
                 throw std::out_of_range("");
             return (*data)[index];
         }
-    };
-    struct ConstProxy {
-        ConstProxy(const std::vector<int> *pVector) : data(pVector) {}
 
-        const std::vector<int>* data;
-        const int& operator[](size_t index) {
+        const int& operator[](size_t index) const {
             if (index >= data->size())
                 throw std::out_of_range("");
             return (*data)[index];
@@ -25,13 +23,12 @@ private:
     };
 
     std::vector<std::vector<int>> data_;
-
 public:
-    Matrix(int rows, int cols, int val = 0)
-        : data_(rows, std::vector<int>(cols, val)) {}
+    Matrix(int cols, int rows, int val = 0)
+        : data_(cols, std::vector<int>(rows, val)) {}
 
-    size_t getRows() const { return data_.size(); }
-    size_t getColumns() const { return data_.empty() ? 0 : data_.back().size();}
+    size_t getRows() const { return data_.empty() ? 0 : data_.back().size();}
+    size_t getColumns() const { return data_.size(); }
 
     Matrix& operator *= (int mult) {
         for (auto& row : data_) {
@@ -48,10 +45,10 @@ public:
         return !(*this == other);
     }
 
-    ConstProxy operator [] (size_t index) const {
+    const Proxy operator [] (size_t index) const {
         if (index >= data_.size())
             throw std::out_of_range("");
-        return ConstProxy(&data_.at(index));
+        return Proxy(&data_.at(index));
     };
 
     Proxy operator [] (size_t index) {
