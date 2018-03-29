@@ -48,137 +48,99 @@ public:
 	}
 
 	BigInt(int64_t value = 0) {
-		try {
-			// CNT++;
-			if (CNT_c == 0) {
-				CNT_c++;
-				t1 = std::chrono::high_resolution_clock::now();
-			}
-			// cout << value << " " << size_ << endl;
+		sign_ = value < 0;
+		value = abs(value);
 
-			sign_ = value < 0;
-			value = abs(value);
+		size_ = (value) ? (LOG2(value) + 1) : 1;
 
-			size_ = (value) ? (LOG2(value) + 1) : 1;
+		if (size_) {
+			alloc();
 
-			if (size_) {
-				alloc();
+			size_t i = 0;
 
-				size_t i = 0;
-
-				do {
-					data_[i++] = value & 1;
-					value >>= 1;
-				} while (value);
-			}
-		} catch (const std::exception& e) {
-			cout << e.what() << endl;
-			exit(1);
+			do {
+				data_[i++] = value & 1;
+				value >>= 1;
+			} while (value);
 		}
 	}
 
-
 	BigInt(const BigInt& value) {
-		try {
-			size_ = value.size_;
-			sign_ = value.sign_;
+		size_ = value.size_;
+		sign_ = value.sign_;
 
-			alloc();
+		alloc();
 
-			memcpy(data_, value.data_, size_);
-		} catch (const std::exception& e) {
-			cout << e.what() << endl;
-			exit(1);
-		}
+		memcpy(data_, value.data_, size_);
 	}
 
 	BigInt& operator=(const BigInt& value) {
-		try {
-			if (size_)
-				delete[] data_;
+		if (size_)
+			delete[] data_;
 
-			size_ = value.size();
+		size_ = value.size();
 
-			if (size_) {
-				alloc();
-				sign_ = value.sign_;
+		if (size_) {
+			alloc();
+			sign_ = value.sign_;
 
-				memcpy(data_, value.data_, size_);
-			}
-
-			return (*this);
-		} catch (const std::exception& e) {
-			cout << e.what() << endl;
-			exit(1);
+			memcpy(data_, value.data_, size_);
 		}
+
+		return (*this);
 	}
 
 	BigInt& operator=(const int64_t value) {
-		try {
-			(*this) = BigInt(value);
+		(*this) = BigInt(value);
 
-			return (*this);
-		} catch (const std::exception& e) {
-			cout << e.what() << endl;
-			exit(1);
-		}
+		return (*this);
 	}
 
 	void resize(size_t new_size) {
 		try {
-			try {
-				data_ = (bool*)realloc(data_, new_size);
-			} catch (const std::exception& e) {
-				cout << e.what() << endl;
-				exit(1);
-			}
-
-			if (size_ < new_size) {
-				for (size_t i = size_; i < new_size; i++) {
-					data_[i] = 0;
-				}
-			}
-
-			size_ = new_size;
+			data_ = (bool*)realloc(data_, new_size);
 		} catch (const std::exception& e) {
 			cout << e.what() << endl;
 			exit(1);
 		}
+
+		if (size_ < new_size) {
+			for (size_t i = size_; i < new_size; i++) {
+				data_[i] = 0;
+			}
+		}
+
+		size_ = new_size;
 	}
 
 	bool operator==(const BigInt& b) const {
-		try {
-			if (sign_ != b.sign_) {
-				return (is_zero() && b.is_zero());
-			}
+		if (sign_ != b.sign_) {
+			return (is_zero() && b.is_zero());
+		}
 
-			size_t min_size = std::min(size(), b.size());
+		size_t min_size = std::min(size(), b.size());
 
-			if (size() - 1 >= min_size)
-				for (size_t i = size() - 1; i >= min_size; i--) {
-					if (at(i)) {
-						return false;
-					}
-				}
-
-			if (b.size() - 1 >= min_size)
-				for (size_t i = b.size() - 1; i >= min_size; i--) {
-					if (b.at(i)) {
-						return false;
-					}
-				}
-
-			for (ssize_t i = min_size - 1; i >= 0 ; i--) {
-				if (at(i) != b.at(i)) {
+		if (size() - 1 >= min_size)
+			for (size_t i = size() - 1; i >= min_size; i--) {
+				if (at(i)) {
 					return false;
 				}
 			}
 
-			return true;
-		} catch (const std::exception& e) {
-			cout << e.what() << endl;
-			exit(1);
+		if (b.size() - 1 >= min_size)
+			for (size_t i = b.size() - 1; i >= min_size; i--) {
+				if (b.at(i)) {
+					return false;
+				}
+			}
+
+		for (ssize_t i = min_size - 1; i >= 0 ; i--) {
+			if (at(i) != b.at(i)) {
+				return false;
+			}
 		}
+
+		return true;
 	}
 
 	bool positive() const {
@@ -190,46 +152,41 @@ public:
 	}
 
 	bool operator>(const BigInt& b) const {
-		try {
-			if (positive() && b.negative()) {
+		if (positive() && b.negative()) {
+			return true;
+		}
+
+		if (negative() && b.positive()) {
+			return false;
+		}
+
+		if (negative() && b.negative()) {
+			return (-b) > (-(*this));
+		}
+
+		size_t min_size = std::min(size(), b.size());
+
+		for (int i = size() - 1; i >= min_size; i--) {
+			if (at(i)) {
 				return true;
 			}
+		}
 
-			if (negative() && b.positive()) {
+		for (int i = b.size() - 1; i >= min_size; i--) {
+			if (b.at(i)) {
 				return false;
 			}
-
-			if (negative() && b.negative()) {
-				return (-b) > (-(*this));
-			}
-
-			size_t min_size = std::min(size(), b.size());
-
-			for (int i = size() - 1; i >= min_size; i--) {
-				if (at(i)) {
-					return true;
-				}
-			}
-
-			for (int i = b.size() - 1; i >= min_size; i--) {
-				if (b.at(i)) {
-					return false;
-				}
-			}
-
-			for (int i = min_size - 1; i >= 0 ; i--) {
-				if (at(i) > b.at(i)) {
-					return true;
-				} else if (at(i) < b.at(i)) {
-					return false;
-				}
-			}
-
-			return false;
-		} catch (const std::exception& e) {
-			cout << e.what() << endl;
-			exit(1);
 		}
+
+		for (int i = min_size - 1; i >= 0 ; i--) {
+			if (at(i) > b.at(i)) {
+				return true;
+			} else if (at(i) < b.at(i)) {
+				return false;
+			}
+		}
+
+		return false;
 	}
 
 	bool operator>=(const BigInt& b) const {
@@ -249,18 +206,13 @@ public:
 	}
 
 	BigInt& operator <<= (int pos) {
-		try {
-			resize(size_ + pos);
+		resize(size_ + pos);
 
-			for (int i = size_ - 1; i >= pos; i--) {
-				std::swap(data_[i], data_[i - pos]);
-			}
-
-			return *this;
-		} catch (const std::exception& e) {
-			cout << e.what() << endl;
-			exit(1);
+		for (int i = size_ - 1; i >= pos; i--) {
+			std::swap(data_[i], data_[i - pos]);
 		}
+
+		return *this;
 	}
 	BigInt& operator>>=(int pos) {
 		for (size_t i = 0; i < size_ - pos; i++) {
@@ -277,19 +229,14 @@ public:
 	}
 
 	void clear() {
-		try {
-			if (size_) {
-				delete[] data_;
-				try {
-					data_ = new bool[size_]();
-				} catch (const std::exception& e) {
-					cout << e.what() << endl;
-					exit(1);
-				}
+		if (size_) {
+			delete[] data_;
+			try {
+				data_ = new bool[size_]();
+			} catch (const std::exception& e) {
+				cout << e.what() << endl;
+				exit(1);
 			}
-		} catch (const std::exception& e) {
-			cout << e.what() << endl;
-			exit(1);
 		}
 	}
 
