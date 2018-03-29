@@ -28,10 +28,10 @@ class BigInt
     BigInt& operator -= (const BigInt & td);
     friend BigInt operator * (const BigInt & left, const BigInt & right);
     BigInt& operator *= (const BigInt & td);
-    friend BigInt operator / (const BigInt &left, const BigInt &right)
-    {
-        return BigInt(1);
-    }
+    //friend BigInt operator / (const BigInt &left, const BigInt &right)
+    //{
+      //  return BigInt(1);
+    //}
     friend const bool operator > (const BigInt & left, const BigInt & right);
     friend const bool operator < (const BigInt & left, const BigInt & right);
     friend const bool operator == (const BigInt & left, const BigInt & right);
@@ -45,6 +45,9 @@ class BigInt
             std::cout << number[i];
         std::cout << '\n';
     }
+    void LevelUp();
+    friend BigInt operator / (const BigInt &a, const BigInt &b);
+    void reverse();
 };
 
 BigInt::BigInt() : number(new int[1]), length(1), real_size(1)
@@ -88,21 +91,21 @@ BigInt::BigInt(const BigInt & par_BigInt)
     :number(new int[par_BigInt.real_size])
     ,length(par_BigInt.length)
     ,real_size(par_BigInt.real_size)
-    ,sign(par_BigInt.sign)
+     ,sign(par_BigInt.sign)
 {
     for (std::size_t i = 0; i < real_size; ++i)
         number[i] = par_BigInt.number[i];
     this->shrink_to_fit();
 }
 BigInt::BigInt(BigInt&& par_delitable) :
-//    :number(new int[par_delitable.real_size])
+    //    :number(new int[par_delitable.real_size])
     length(par_delitable.length)
     ,real_size(par_delitable.real_size)
     ,sign(par_delitable.sign)
 {
-//    for (std::size_t i = 0; i < real_size; ++i)
-//        number[i] = par_delitable.number[i];
-//    par_delitable.~BigInt();
+    //    for (std::size_t i = 0; i < real_size; ++i)
+    //        number[i] = par_delitable.number[i];
+    //    par_delitable.~BigInt();
     std::swap(number, par_delitable.number);
 }
 std::ostream& operator << (std::ostream& ot, const BigInt& X)
@@ -112,10 +115,10 @@ std::ostream& operator << (std::ostream& ot, const BigInt& X)
         ot << X.number[i];
 
     /*for (std::size_t i = X.real_size - X.length; i < X.real_size; ++i)
-        X.number[i] += '0';
-    ot << X.number + X.real_size - X.length;
-    for (std::size_t i = X.real_size - X.length; i < X.real_size; ++i)
-        X.number[i] -= '0';*/
+      X.number[i] += '0';
+      ot << X.number + X.real_size - X.length;
+      for (std::size_t i = X.real_size - X.length; i < X.real_size; ++i)
+      X.number[i] -= '0';*/
     return ot;
 }
 std::istream& operator >> (std::istream& it, BigInt& X)
@@ -152,11 +155,11 @@ BigInt& BigInt::operator = (BigInt && tp)
 const bool operator > (const BigInt & left, const BigInt & right)
 {
     if (left.sign != right.sign) {
- /*       if (left.sign) {
-            return false;
-        } else {
-            return true;
-        }*/
+        /*       if (left.sign) {
+                 return false;
+                 } else {
+                 return true;
+                 }*/
         return !left.sign;
     }
     bool res;
@@ -292,7 +295,7 @@ BigInt operator- (const BigInt &left, const BigInt &right)
             --res.number[j];
         }
     }
-//    std::size_t len = 0;
+    //    std::size_t len = 0;
     for (std::size_t i = 0; i <= res.real_size && res.number[i] == 0; ++i, --res.length) {};
     //res.resize(res.length - len);
     return res;
@@ -345,3 +348,58 @@ void BigInt::shrink_to_fit()
         this->real_size = this->length;
     }
 }
+
+
+void BigInt::LevelUp()
+{
+    for (int i = length;i>=1;i--)
+        number[i] = number[i-1];
+    if (number[length])
+        length++;
+}
+BigInt operator / (const BigInt &a, const BigInt &b)
+{
+    BigInt res, curValue, ta(a), tb(b);
+    ta.reverse();
+    tb.reverse();
+    for (int i = ta.length-1; i>=0; i--)
+    {
+        curValue.LevelUp(); // * osn
+        curValue.number[0] = a.number[i];
+        // подбираем максимальное число x, такое что b * x <= curValue
+        int x = 0;
+        int l = 0, r = 10;
+        while (l <= r)
+        {
+            int m = (l + r) >> 1;
+            BigInt cur = tb * m;
+            if (cur <= curValue)
+            {
+                x = m;
+                l = m+1;
+            }
+            else
+                r = m-1;
+        }
+        res.number[i] = x;
+        curValue = curValue - tb * x;
+    }
+    // избавляемся от лидирующих нулей
+    int pos = ta.length;
+    while (pos>=0 && !res.number[pos])
+        pos--;
+    res.length = pos+1;
+
+    res.reverse();
+
+    return res;
+}
+void BigInt::reverse()
+{
+    for (std::size_t i = 0; i < real_size / 2; ++i) {
+        number[i] ^= number[real_size - 1 - i];
+        number[real_size - 1 - i] ^= number[i];
+        number[i] ^= number[real_size - 1 - i];
+    }
+}
+
