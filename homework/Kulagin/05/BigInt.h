@@ -8,15 +8,6 @@
 using namespace std;
 #include <chrono>
 
-bool fair = true;
-// bool fair = false;
-
-int CNT = 0;
-
-std::chrono::high_resolution_clock::time_point t1;
-std::chrono::high_resolution_clock::time_point t2;
-
-
 int LOG2(int64_t x) {
 	try {
 		int cnt = 0;
@@ -32,8 +23,6 @@ int LOG2(int64_t x) {
 		exit(1);
 	}
 }
-
-int CNT_c = 0;
 
 class BigInt {
 
@@ -241,12 +230,9 @@ public:
 	}
 
 	BigInt operator*(const BigInt& other) const {
-		if (!fair) {
-			return tol() * other.tol();
-		}
-
 		BigInt a_tmp(*this);
 		BigInt c(*this);
+
 		c.clear();
 
 		for (size_t i = 0; i < other.size_; i++) {
@@ -282,10 +268,6 @@ public:
 	}
 
 	BigInt operator/(const BigInt& other) const {
-		if (!fair) {
-			return tol() / other.tol();
-		}
-
 		BigInt a_tmp(*this);
 		BigInt b_tmp(other);
 
@@ -356,10 +338,6 @@ public:
 	}
 
 	BigInt operator+(const BigInt& other) const {
-		if (!fair) {
-			return tol() + other.tol();
-		}
-
 		// A < 0 | B < 0
 		if (negative() && other.negative()) {
 			return -(-(*this) + -other);
@@ -411,10 +389,6 @@ public:
 	}
 
 	BigInt operator-(const BigInt & other) const {
-		if (!fair) {
-			return tol() - other.tol();
-		}
-
 		if (negative() && other.negative()) {
 			return ((*this) + (-other));
 		}
@@ -459,24 +433,24 @@ public:
 		return data_[index];
 	}
 
-	friend std::ostream& operator<<(std::ostream & out, const BigInt & mid) {
-		if (mid.size_ == 0) {
+	friend std::ostream& operator<<(std::ostream & out, const BigInt & big_int) {
+		if (big_int.size_ == 0) {
 			return out;
 		}
 
-		size_t i = mid.size_ - 1;
+		size_t i = big_int.size_ - 1;
 
 		int64_t v = 0;
 
-		bool sign = mid.at(mid.size_ - 1) == 1;
+		bool sign = big_int.at(big_int.size_ - 1) == 1;
 
-		if (mid.sign_ && !mid.is_zero()) {
+		if (big_int.sign_ && !big_int.is_zero()) {
 			out << "-";
 		}
 
 		do {
 			v <<= 1;
-			v += mid.at(i);
+			v += big_int.at(i);
 		} while (i-- != 0);
 
 		out << v;
