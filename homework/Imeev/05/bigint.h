@@ -17,9 +17,11 @@ class BigInt
 public:
     BigInt(int64_t num = 0);
     BigInt(const BigInt &other);
+    BigInt(BigInt &&other);
     ~BigInt() { delete[] arr; }
 
     BigInt &operator=(const BigInt &other);
+    BigInt &operator=(BigInt &&other);
     BigInt operator-() const;
 
     friend BigInt operator+(const BigInt &first, const BigInt &second);
@@ -67,6 +69,15 @@ BigInt::BigInt(const BigInt &other)
     for(size_t i = 0; i < cur_size; ++i) arr[i] = other.arr[i];
 }
 
+BigInt::BigInt(BigInt &&other)
+{
+    max_size = other.max_size;
+    cur_size = other.cur_size;
+    is_positive = other.is_positive;
+    arr = other.arr;
+    other.arr = nullptr;
+}
+
 BigInt &BigInt::operator=(const BigInt &other)
 {
     max_size = other.max_size;
@@ -75,6 +86,18 @@ BigInt &BigInt::operator=(const BigInt &other)
     delete[] arr;
     arr = new Number[max_size]();
     for(size_t i = 0; i < cur_size; ++i) arr[i] = other.arr[i];
+    return *this;
+}
+
+BigInt &BigInt::operator=(BigInt &&other)
+{
+    max_size = other.max_size;
+    cur_size = other.cur_size;
+    is_positive = other.is_positive;
+    delete[] arr;
+    arr = other.arr;
+    other.arr = nullptr;
+    return *this;
 }
 
 BigInt operator+(const BigInt &first, const BigInt &second)
