@@ -31,6 +31,14 @@ public:
                 throw std::out_of_range("out of range");
             }
         }
+        const int & operator [] (size_t i) const
+        {
+            if (i < len) {
+                return data[i];
+            } else {
+                throw std::out_of_range("out of range");
+            }
+        }
     };
     
     Matrix(size_t _cols, size_t _rows)
@@ -59,6 +67,15 @@ public:
         }
     }
     
+    const line operator [] (size_t i) const
+    {
+        if (i < cols) {
+            return line(data[i], rows);
+        } else {
+            throw std::out_of_range("out of range");
+        }
+    }
+    
     Matrix & operator *= (int x)
     {
         for (int i = 0; i < cols; i++) {
@@ -69,7 +86,7 @@ public:
         return *this;
     }
     
-    bool operator == (const Matrix & other)
+    bool operator == (const Matrix & other) const
     {
         if (cols != other.cols || rows != other.rows)
             return false;
@@ -82,16 +99,16 @@ public:
         return true;
     }
     
-    bool operator != (const Matrix & other)
+    bool operator != (const Matrix & other) const
     {
         return !(*this == other);
     }
     
-    std::size_t getRows()
+    const std::size_t getRows() const
     {
         return rows;
     }
-    std::size_t getColumns()
+    const std::size_t getColumns() const
     {
         return cols;
     }

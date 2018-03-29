@@ -36,7 +36,7 @@ Row Matrix::operator[](size_t j)
     return Row(arr[j], rows);
 }
 
-Row Matrix::operator[](size_t j) const
+const Row Matrix::operator[](size_t j) const
 {
     if (j >= cols) throw std::out_of_range("");
     return Row(arr[j], rows);
@@ -48,7 +48,7 @@ int& Row::operator [](size_t i)
     return row[i];
 }
 
-int& Row::operator [](size_t i) const
+const int& Row::operator [](size_t i) const
 {
     if (i >= rows) throw std::out_of_range("");
     return row[i];

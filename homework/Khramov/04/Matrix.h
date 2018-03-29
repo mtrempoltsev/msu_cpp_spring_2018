@@ -1,3 +1,7 @@
+#include <string>
+#include <stdexcept>
+#include <iostream>
+
 class Arr_int {
 private:
 	int *arr_int;
@@ -5,7 +9,7 @@ private:
 public:
 	Arr_int() {
 		M = 0;
-		arr_int = nullptr;
+		arr_int = NULL;
 	}
 	Arr_int(int m) : M(m) {
 		this->arr_int = new int[m];
@@ -20,11 +24,10 @@ public:
 	}
 	Arr_int(const Arr_int& other) {
 		this->M = other.M;
-		int *r = new int[other.M];
+		arr_int = new int[other.M];
 		for (int i = 0; i < other.M; i++) {
-			r[i] = other.arr_int[i];
+			arr_int[i] = other.arr_int[i];
 		}
-		this->arr_int = r;
 	}
 
 	Arr_int& operator=(const Arr_int& other) {
