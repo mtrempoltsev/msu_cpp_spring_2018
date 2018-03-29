@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdexcept>
 
-
 class Column {
 private:
     int length;
@@ -10,7 +9,9 @@ private:
 public:
     Column(int len):
         length(len){
-        elems = new int[length];
+        elems = (int*)malloc(length*sizeof(int));
+        for (int t = 0; t < length; t++)
+            elems[t] = 0;
     }
     
     int operator[](int i) const{
@@ -26,7 +27,7 @@ public:
     }
     
     ~Column(){
-        delete elems;
+        free(elems);
     }
 };
 
@@ -73,13 +74,13 @@ public:
     }
     
     bool operator==(const Matrix& other) const{
-        if (cols_num != other.getColumns())
+        if (this->getColumns() != other.getColumns())
             return false;
-        if (rows_num != other.getRows())
+        if (this->getRows() != other.getRows())
             return false;
         for (int i = 0; i < cols_num; i++)
             for (int j = 0; j < rows_num; j++)
-                if ((*this)[i][j] != other[i][j])
+                if ((this->operator[](i))[j] != other[i][j])
                     return false;
         return true;
     }
@@ -91,6 +92,6 @@ public:
     ~Matrix(){
         for (int t = 0; t < cols_num; t++)
             delete elems[t];
-        delete[] elems;
+        free(elems);
     }
 };
