@@ -1,11 +1,87 @@
 #pragma once
 
 #include <cmath>
+#include <vector>
 #include <fstream>
 #include <iomanip>
 #include <cstring>
 
 using namespace std;
+
+#pragma once
+using namespace std;
+
+class BigIntPrinter {
+
+public:
+	BigIntPrinter(int size): size_(size) {
+		data_ = new int[size_]();
+	}
+
+	void operator*=(const int value) {
+		int mod = 0;
+
+		for (int i = 0; i < size_ - 1; i++) {
+			int mult = data_[i] * value + mod;
+
+			mod = mult / 10;
+
+			data_[i] = mult % 10;
+		}
+	}
+
+	void operator+=(const int value) {
+		int mod = value;
+
+		for (int i = 0; i < size_ - 1; i++) {
+			int mult = data_[i] + mod;
+
+			mod = mult / 10;
+
+			data_[i] = mult % 10;
+
+			if (mod == 0) {
+				break;
+			}
+		}
+	}
+
+	int left_ind() const {
+		int b_1 = 0;
+		for (int i = size_ - 1; i >= 0; i--) {
+			if (data_[i]) {
+				b_1 = i;
+				break;
+			}
+		}
+
+		return b_1;
+	}
+
+	void print() const {
+		for (int i = size_ - 1; i >= 0; i--) {
+			std::cout << data_[i];
+		}
+
+		std::cout << std::endl;
+	}
+
+	friend std::ostream& operator<<(std::ostream & out, const BigIntPrinter & mid) {
+		for (int i = mid.left_ind(); i >= 0; i--) {
+			out << mid.data_[i];
+		}
+
+		return out;
+	}
+
+	~BigIntPrinter() {
+		delete[] data_;
+	}
+
+private:
+	int size_;
+	int* data_;
+};
 
 int LOG2(int64_t x) {
 	int cnt = 0;
@@ -326,6 +402,17 @@ public:
 		return v;
 	}
 
+	int left_ind() const {
+		int b_1 = 0;
+		for (int i = size_ - 1; i >= 0; i--) {
+			if (at(i)) {
+				b_1 = i;
+				break;
+			}
+		}
+
+		return b_1;
+	}
 	BigInt operator/(const BigInt& other) const {
 		BigInt a_tmp(*this);
 		BigInt b_tmp(other);
@@ -525,7 +612,7 @@ public:
 
 		size_t i = mid.size_ - 1;
 
-		long double v = 0;
+		uint64_t v = 0;
 
 		bool sign = mid.at(mid.size_ - 1) == 1;
 
@@ -533,18 +620,18 @@ public:
 			out << "-";
 		}
 
-		string s;
+		BigIntPrinter b(mid.size_);
 
-		do {
-			v *= 2;
-			v += mid.at(i);
-			s += mid.at(i) ? '1' : '0';
-		} while (i-- != 0);
+		int l0 = 2;
 
+		b += mid.data_[mid.left_ind()];
 
-		out << fixed << setprecision(0) << v;
+		for (int i = mid.left_ind() - 1; i >= 0; i--) {
+			b *= l0;
+			b += mid.data_[i];
+		}
 
-		return out;
+		return out << b;
 	}
 
 
