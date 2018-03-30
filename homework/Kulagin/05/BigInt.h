@@ -1,20 +1,15 @@
 #pragma once
 
 #include <cmath>
-#include <vector>
 #include <fstream>
-#include <iomanip>
 #include <cstring>
 
 using namespace std;
 
-#pragma once
-using namespace std;
-
-class BigIntPrinter {
+class BigIntDec {
 
 public:
-	BigIntPrinter(int size): size_(size) {
+	BigIntDec(int size): size_(size) {
 		data_ = new int[size_]();
 	}
 
@@ -66,15 +61,15 @@ public:
 		std::cout << std::endl;
 	}
 
-	friend std::ostream& operator<<(std::ostream & out, const BigIntPrinter & mid) {
-		for (int i = mid.left_ind(); i >= 0; i--) {
-			out << mid.data_[i];
+	friend std::ostream& operator<<(std::ostream & out, const BigIntDec & x) {
+		for (int i = x.left_ind(); i >= 0; i--) {
+			out << x.data_[i];
 		}
 
 		return out;
 	}
 
-	~BigIntPrinter() {
+	~BigIntDec() {
 		delete[] data_;
 	}
 
@@ -103,7 +98,7 @@ public:
 		try {
 			data_ = new bool[size_]();
 		} catch (const std::exception& e) {
-			cout << e.what() << endl;
+			std::cout << e.what() << std::endl;
 			exit(1);
 		}
 	}
@@ -118,7 +113,7 @@ public:
 		if (size_) {
 			alloc();
 
-			size_t i = 0;
+			ssize_t i = 0;
 
 			do {
 				data_[i++] = value & 1;
@@ -129,56 +124,37 @@ public:
 
 
 	BigInt(const BigInt& value) {
-		try {
-			size_ = value.size_;
-			sign_ = value.sign_;
+		size_ = value.size_;
+		sign_ = value.sign_;
 
-			// cout << "yes2" << endl;
+		alloc();
 
-			alloc();
-
-			memcpy(data_, value.data_, size_);
-		} catch (const std::exception& e) {
-			cout << e.what() << endl;
-			exit(1);
-		}
+		memcpy(data_, value.data_, size_);
 	}
 
 	BigInt& operator=(const BigInt& value) {
-		try {
-			if (size_)
-				delete[] data_;
+		if (size_)
+			delete[] data_;
 
-			// cout << "yes3" << endl;
+		size_ = value.size();
 
-			size_ = value.size();
+		if (size_) {
+			alloc();
+			sign_ = value.sign_;
 
-			if (size_) {
-				alloc();
-				sign_ = value.sign_;
-
-				memcpy(data_, value.data_, size_);
-			}
-
-			return (*this);
-		} catch (const std::exception& e) {
-			cout << e.what() << endl;
-			exit(1);
+			memcpy(data_, value.data_, size_);
 		}
+
+		return (*this);
 	}
 
 	BigInt& operator=(const int64_t value) {
-		try {
-			(*this) = BigInt(value);
+		(*this) = BigInt(value);
 
-			return (*this);
-		} catch (const std::exception& e) {
-			cout << e.what() << endl;
-			exit(1);
-		}
+		return (*this);
 	}
 
-	void resize(size_t new_size) {
+	void resize(ssize_t new_size) {
 		bool* NEWDATA = new bool[new_size]();
 
 		// if (size_)
@@ -197,29 +173,27 @@ public:
 		data_ = NEWDATA;
 	}
 
-	bool operator==(const BigInt& b) const {
-		if (sign_ != b.sign_) {
-			return (is_zero() && b.is_zero());
+	bool operator==(const BigInt& other) const {
+		if (sign_ != other.sign_) {
+			return (is_zero() && other.is_zero());
 		}
 
-		size_t min_size = std::min(size(), b.size());
+		ssize_t min_size = std::min(size(), other.size());
 
-		if (size() - 1 >= min_size)
-			for (size_t i = size() - 1; i >= min_size; i--) {
-				if (at(i)) {
-					return false;
-				}
+		for (ssize_t i = size() - 1; i >= min_size; i--) {
+			if (at(i)) {
+				return false;
 			}
+		}
 
-		if (b.size() - 1 >= min_size)
-			for (size_t i = b.size() - 1; i >= min_size; i--) {
-				if (b.at(i)) {
-					return false;
-				}
+		for (ssize_t i = other.size() - 1; i >= min_size; i--) {
+			if (other.at(i)) {
+				return false;
 			}
+		}
 
 		for (ssize_t i = min_size - 1; i >= 0 ; i--) {
-			if (at(i) != b.at(i)) {
+			if (at(i) != other.at(i)) {
 				return false;
 			}
 		}
@@ -235,20 +209,20 @@ public:
 		return sign_;
 	}
 
-	bool operator>(const BigInt& b) const {
-		if (positive() && b.negative()) {
+	bool operator>(const BigInt& other) const {
+		if (positive() && other.negative()) {
 			return true;
 		}
 
-		if (negative() && b.positive()) {
+		if (negative() && other.positive()) {
 			return false;
 		}
 
-		if (negative() && b.negative()) {
-			return (-b) > (-(*this));
+		if (negative() && other.negative()) {
+			return -(other) > -(*this);
 		}
 
-		size_t min_size = std::min(size(), b.size());
+		ssize_t min_size = std::min(size(), other.size());
 
 		for (int i = size() - 1; i >= min_size; i--) {
 			if (at(i)) {
@@ -256,16 +230,16 @@ public:
 			}
 		}
 
-		for (int i = b.size() - 1; i >= min_size; i--) {
-			if (b.at(i)) {
+		for (int i = other.size() - 1; i >= min_size; i--) {
+			if (other.at(i)) {
 				return false;
 			}
 		}
 
 		for (int i = min_size - 1; i >= 0 ; i--) {
-			if (at(i) > b.at(i)) {
+			if (at(i) > other.at(i)) {
 				return true;
-			} else if (at(i) < b.at(i)) {
+			} else if (at(i) < other.at(i)) {
 				return false;
 			}
 		}
@@ -273,20 +247,20 @@ public:
 		return false;
 	}
 
-	bool operator>=(const BigInt& b) const {
-		return operator>(b) || operator == (b);
+	bool operator>=(const BigInt& other) const {
+		return operator>(other) || operator == (other);
 	}
 
-	bool operator<(const BigInt& b) const {
-		return !operator>=(b);
+	bool operator<(const BigInt& other) const {
+		return !operator>=(other);
 	}
 
-	bool operator<=(const BigInt& b) const {
-		return operator<(b) || operator==(b);
+	bool operator<=(const BigInt& other) const {
+		return operator<(other) || operator==(other);
 	}
 
-	bool operator!=(const BigInt& b) const {
-		return !operator==(b);
+	bool operator!=(const BigInt& other) const {
+		return !operator==(other);
 	}
 
 	BigInt& operator <<= (int pos) {
@@ -299,16 +273,16 @@ public:
 	}
 	BigInt& operator>>=(int pos) {
 		try {
-			for (size_t i = pos; i < size_; i++) {
+			for (ssize_t i = pos; i < size_; i++) {
 				data_[i - pos] = data_[i];
 			}
-			for (size_t i = size_ - 1; i > size_ - pos; i++) {
+			for (ssize_t i = size_ - 1; i > size_ - pos; i++) {
 				data_[i] = 0;
 			}
 
 			return *this;
 		} catch (const std::exception& e) {
-			cout << e.what() << endl;
+			std::cout << e.what() << std::endl;
 			exit(1);
 		}
 	}
@@ -319,7 +293,7 @@ public:
 			try {
 				data_ = new bool[size_]();
 			} catch (const std::exception& e) {
-				cout << e.what() << endl;
+				std::cout << e.what() << std::endl;
 				exit(1);
 			}
 		}
@@ -362,7 +336,7 @@ public:
 		// 	// if (b_tmp.size_ - b_1)
 		// 	// a_tmp.resize(a_tmp.size_ + (b_tmp.size_ - b_1) + 1);
 
-		// 	// cout << a_tmp.size() << endl;
+		// 	// cout << a_tmp.size() <<std::endl;
 		// 	a_tmp.resize(b_1 - a_1 + 1 + a_tmp.size_);
 		// 	// a_tmp.resize(b_1 - a_1 + a_tmp.size_);
 		// }
@@ -370,7 +344,7 @@ public:
 		// 	a_tmp.resize(a_1 - b_1 + 1 + a_tmp.size_);
 		// }
 
-		for (size_t i = 0; i <= b_1; i++) {
+		for (ssize_t i = 0; i <= b_1; i++) {
 			if (b_tmp.at(i)) {
 				c = c + a_tmp;
 			}
@@ -381,25 +355,6 @@ public:
 		c.sign_ = sign_ xor other.sign_;
 
 		return c;
-	}
-
-	int64_t tol() const {
-		size_t i = size_ - 1;
-
-		int64_t v = 0;
-
-		bool sign = at(size_ - 1) == 1;
-
-		do {
-			v <<= 1;
-			v += at(i);
-		} while (i-- != 0);
-
-		if (sign_ && !is_zero()) {
-			v *= -1;
-		}
-
-		return v;
 	}
 
 	int left_ind() const {
@@ -498,7 +453,7 @@ public:
 	}
 
 	bool is_zero() const {
-		for (size_t i = 0; i < size_; i++) {
+		for (ssize_t i = 0; i < size_; i++) {
 			if (at(i)) {
 				return false;
 			}
@@ -529,13 +484,13 @@ public:
 
 		bool bubble = false;
 
-		for (size_t i = 0; i < other.size(); i++) {
+		for (ssize_t i = 0; i < other.size(); i++) {
 			int sum = (c.at(i) + other.at(i) + bubble);
 			c.data_[i] = sum & 1;
 			bubble = sum >> 1;
 		}
 
-		for (size_t i = other.size(); i < c.size() - 1; i++) {
+		for (ssize_t i = other.size(); i < c.size() - 1; i++) {
 			int sum = (c.at(i) + bubble);
 			c.data_[i] = sum & 1;
 			bubble = sum >> 1;
@@ -546,11 +501,11 @@ public:
 		return c;
 	}
 
-	size_t size() const {
+	ssize_t size() const {
 		return size_;
 	}
 
-	void bit_flip(const size_t pos) {
+	void bit_flip(const ssize_t pos) {
 		data_[pos] = !data_[pos];
 	}
 
@@ -576,11 +531,11 @@ public:
 
 			BigInt c(*this);
 
-			for (size_t i = 0; i < other.size(); i++) {
+			for (ssize_t i = 0; i < other.size(); i++) {
 				bool bubble = !c.at(i) && other.at(i);
 
 				if (bubble) {
-					for (size_t j = i + 1; j < c.size_; j++) {
+					for (ssize_t j = i + 1; j < c.size_; j++) {
 						if (c.at(j)) {
 							c.bit_flip(j);
 							break;
@@ -595,40 +550,34 @@ public:
 
 			return c;
 		} catch (const std::exception& e) {
-			cout << e.what() << endl;
+			std::cout << e.what() << std::endl;
 			exit(1);
 		}
 
 	}
 
-	bool at(size_t index) const {
-		return data_[index];
+	bool at(ssize_t index) const {
+		return (index >= 0) ? data_[index] : data_[size_ + index];
 	}
 
-	friend std::ostream& operator<<(std::ostream & out, const BigInt & mid) {
-		if (mid.size_ == 0) {
+	friend std::ostream& operator<<(std::ostream & out, const BigInt & x) {
+		if (x.size_ == 0) {
 			return out;
 		}
 
-		size_t i = mid.size_ - 1;
-
-		uint64_t v = 0;
-
-		bool sign = mid.at(mid.size_ - 1) == 1;
-
-		if (mid.sign_ && !mid.is_zero()) {
+		if (x.negative()) {
 			out << "-";
 		}
 
-		BigIntPrinter b(mid.size_);
+		BigIntDec b(x.size_);
 
-		int l0 = 2;
+		int base = 2;
 
-		b += mid.data_[mid.left_ind()];
+		b += x.data_[x.left_ind()];
 
-		for (int i = mid.left_ind() - 1; i >= 0; i--) {
-			b *= l0;
-			b += mid.data_[i];
+		for (int i = x.left_ind() - 1; i >= 0; i--) {
+			b *= base;
+			b += x.data_[i];
 		}
 
 		return out << b;
@@ -636,7 +585,7 @@ public:
 
 
 	void bit_print() const {
-		size_t i = size_ - 1;
+		ssize_t i = size_ - 1;
 
 		do {
 			std::cout << at(i);
@@ -650,7 +599,7 @@ public:
 	}
 
 private:
-	size_t size_;
+	ssize_t size_;
 	bool sign_;
 
 	bool* data_;
