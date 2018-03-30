@@ -1,14 +1,13 @@
 #include<iostream>
-#include<vector>
 #include"numbers.dat"
 
 // Data -- массив
 // Size -- размер
 
-int binary_search(const int* arr, int n, int k, bool bl)
+size_t binary_search(const int* arr, size_t n, int k, bool bl)
 {
-    int left = 0;
-    int right = n;
+    size_t left = 0;
+    size_t right = n;
     int mid = 0;
     
     while(left <= right)
@@ -40,9 +39,10 @@ int binary_search(const int* arr, int n, int k, bool bl)
     }
     return -1; 
 }
-bool is_prime(int n)
+
+bool is_prime(size_t n)
 {
-    int i = 2;
+    size_t i = 2;
     if(n == 1)
         return false;        
     while(1)
@@ -55,18 +55,18 @@ bool is_prime(int n)
     }
 }
 
-bool* array_of_primes(const int size, bool* arr_prime)
+bool* array_of_primes(const size_t size, bool* arr_prime)
 {
-    for(int i = 0; i < size; ++i)
+    for(size_t i = 0; i < size; ++i)
         arr_prime[i] = is_prime(i);            
         
     return arr_prime;        
 }
 
-int count_of_primes(bool* arr_prime, int left, int right)
+size_t count_of_primes(bool* arr_prime, size_t left, size_t right)
 {
-    int count = 0;
-    for(int i = left; i < right; ++i)
+    size_t count = 0;
+    for(size_t i = left; i < right; ++i)
         if(arr_prime[Data[i]] == true)
             count++;
 
@@ -75,13 +75,13 @@ int count_of_primes(bool* arr_prime, int left, int right)
 
 int main(int argc, char* argv[])
 {
-    int num_left = 0;
-    const int size = 100000;
+    size_t num_left = 0;
+    const size_t size = 100000;
     bool* arr_prime = new bool [size];
-    int num_right = 0;
-    int left = 0;
-    int right = 0;
-    int count = 0;
+    size_t num_right = 0;
+    size_t left = 0;
+    size_t right = 0;
+    size_t count = 0;
 
     arr_prime = array_of_primes(size, arr_prime);
 
