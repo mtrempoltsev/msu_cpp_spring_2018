@@ -6,30 +6,26 @@
 #include <cstring>
 
 using namespace std;
-#include <chrono>
 
 int LOG2(int64_t x) {
-	try {
-		int cnt = 0;
+	int cnt = 0;
 
-		do {
-			x >>= 1;
-			cnt++;
-		} while (x);
+	do {
+		x >>= 1;
+		cnt++;
+	} while (x);
 
-		return cnt - 1;
-	} catch (const std::exception& e) {
-		cout << e.what() << endl;
-		exit(1);
-	}
+	return cnt - 1;
 }
+
+const int BLOCK_SIZE = 8;
 
 class BigInt {
 
 public:
 	void alloc() {
 		try {
-			data_ = new bool[size_];
+			data_ = new bool[size_]();
 		} catch (const std::exception& e) {
 			cout << e.what() << endl;
 			exit(1);
@@ -41,6 +37,7 @@ public:
 		value = abs(value);
 
 		size_ = (value) ? (LOG2(value) + 1) : 1;
+		size_ = (size_ / BLOCK_SIZE + 1) * BLOCK_SIZE;
 
 		if (size_) {
 			alloc();
@@ -54,52 +51,74 @@ public:
 		}
 	}
 
+
 	BigInt(const BigInt& value) {
-		size_ = value.size_;
-		sign_ = value.sign_;
-
-		alloc();
-
-		memcpy(data_, value.data_, size_);
-	}
-
-	BigInt& operator=(const BigInt& value) {
-		if (size_)
-			delete[] data_;
-
-		size_ = value.size();
-
-		if (size_) {
-			alloc();
+		try {
+			size_ = value.size_;
 			sign_ = value.sign_;
 
+			// cout << "yes2" << endl;
+
+			alloc();
+
 			memcpy(data_, value.data_, size_);
-		}
-
-		return (*this);
-	}
-
-	BigInt& operator=(const int64_t value) {
-		(*this) = BigInt(value);
-
-		return (*this);
-	}
-
-	void resize(size_t new_size) {
-		try {
-			data_ = (bool*)realloc(data_, new_size);
 		} catch (const std::exception& e) {
 			cout << e.what() << endl;
 			exit(1);
 		}
+	}
 
-		if (size_ < new_size) {
-			for (size_t i = size_; i < new_size; i++) {
-				data_[i] = 0;
+	BigInt& operator=(const BigInt& value) {
+		try {
+			if (size_)
+				delete[] data_;
+
+			// cout << "yes3" << endl;
+
+			size_ = value.size();
+
+			if (size_) {
+				alloc();
+				sign_ = value.sign_;
+
+				memcpy(data_, value.data_, size_);
 			}
+
+			return (*this);
+		} catch (const std::exception& e) {
+			cout << e.what() << endl;
+			exit(1);
+		}
+	}
+
+	BigInt& operator=(const int64_t value) {
+		try {
+			(*this) = BigInt(value);
+
+			return (*this);
+		} catch (const std::exception& e) {
+			cout << e.what() << endl;
+			exit(1);
+		}
+	}
+
+	void resize(size_t new_size) {
+		bool* NEWDATA = new bool[new_size]();
+
+		// if (size_)
+		memcpy(NEWDATA, data_, size_);
+		// if (size_)
+		// 	delete[] data_;
+
+		// // data_ = (bool*)realloc(data_, new_size);
+		size_ = new_size;
+		// swap(new_data_, data_);
+
+		if (size_) {
+			delete[] data_;
 		}
 
-		size_ = new_size;
+		data_ = NEWDATA;
 	}
 
 	bool operator==(const BigInt& b) const {
@@ -195,26 +214,27 @@ public:
 	}
 
 	BigInt& operator <<= (int pos) {
-		resize(size_ + pos);
-
-		for (int i = size_ - 1; i >= pos; i--) {
-			std::swap(data_[i], data_[i - pos]);
+		for (int i = size_ - 1 - pos; i >= 0; i--) {
+			data_[i + pos] = data_[i];
 		}
-
-		return *this;
+		for (int i = pos - 1; i >= 0; i--) {
+			data_[i] = 0;
+		}
 	}
 	BigInt& operator>>=(int pos) {
-		for (size_t i = 0; i < size_ - pos; i++) {
-			std::swap(data_[i + pos], data_[i]);
+		try {
+			for (size_t i = pos; i < size_; i++) {
+				data_[i - pos] = data_[i];
+			}
+			for (size_t i = size_ - 1; i > size_ - pos; i++) {
+				data_[i] = 0;
+			}
+
+			return *this;
+		} catch (const std::exception& e) {
+			cout << e.what() << endl;
+			exit(1);
 		}
-
-		if (size_ - pos <= 0) {
-			cout << "err";
-		}
-
-		size_ = size_ - pos;
-
-		return *this;
 	}
 
 	void clear() {
@@ -231,12 +251,51 @@ public:
 
 	BigInt operator*(const BigInt& other) const {
 		BigInt a_tmp(*this);
-		BigInt c(*this);
+		BigInt b_tmp(other);
 
+		a_tmp.sign_ = false;
+		b_tmp.sign_ = false;
+
+		if (a_tmp.size_ > b_tmp.size_) {
+			b_tmp.resize(a_tmp.size_);
+		} else if (b_tmp.size_ > a_tmp.size_) {
+			a_tmp.resize(b_tmp.size_);
+		}
+
+		int a_1 = 0;
+		for (int i = a_tmp.size_ - 1; i >= 0; i--) {
+			if (a_tmp.at(i)) {
+				a_1 = i;
+				break;
+			}
+		}
+
+		int b_1 = 0;
+		for (int i = b_tmp.size_ - 1; i >= 0; i--) {
+			if (b_tmp.at(i)) {
+				b_1 = i;
+				break;
+			}
+		}
+
+		a_tmp.resize(a_tmp.size_ * 2);
+		BigInt c(a_tmp);
 		c.clear();
 
-		for (size_t i = 0; i < other.size_; i++) {
-			if (other.at(i)) {
+		// if (b_1 > a_1) {
+		// 	// if (b_tmp.size_ - b_1)
+		// 	// a_tmp.resize(a_tmp.size_ + (b_tmp.size_ - b_1) + 1);
+
+		// 	// cout << a_tmp.size() << endl;
+		// 	a_tmp.resize(b_1 - a_1 + 1 + a_tmp.size_);
+		// 	// a_tmp.resize(b_1 - a_1 + a_tmp.size_);
+		// }
+		// else if (a_1 > b_1) {
+		// 	a_tmp.resize(a_1 - b_1 + 1 + a_tmp.size_);
+		// }
+
+		for (size_t i = 0; i <= b_1; i++) {
+			if (b_tmp.at(i)) {
 				c = c + a_tmp;
 			}
 
@@ -280,17 +339,52 @@ public:
 			return c;
 		}
 
-		BigInt b_tmp_l(b_tmp);
-
 		BigInt c(a_tmp);
+
+		if (b_tmp == 1) {
+			c.sign_ = sign_ xor other.sign_;
+			return c;
+		}
+
+		if (c.size_ > b_tmp.size_) {
+			b_tmp.resize(c.size_);
+		} else if (b_tmp.size_ > c.size_) {
+			c.resize(b_tmp.size_);
+		}
 
 		int res = 0;
 
-		b_tmp <<= (a_tmp.size_ - other.size_);
+		int cnt = 0;
+		int a_1 = 0;
+		for (int i = a_tmp.size_ - 1; i >= 0; i--) {
+			if (a_tmp.at(i)) {
+				a_1 = i;
+				break;
+			}
+		}
 
-		while (b_tmp >= b_tmp_l && b_tmp.size_) {
+		int b_1 = 0;
+		for (int i = b_tmp.size_ - 1; i >= 0; i--) {
+			if (b_tmp.at(i)) {
+				b_1 = i;
+				break;
+			}
+		}
+
+		int b_lshift = a_1 - b_1;
+
+		if (b_lshift) {
+			b_tmp <<= a_1 - b_1;
+		}
+
+		while (1) {
 			if (c < b_tmp) {
+				if (b_lshift == 0) {
+					break;
+				}
+
 				b_tmp >>= 1;
+				b_lshift--;
 
 				res <<= 1;
 
@@ -299,18 +393,7 @@ public:
 
 			c = c - b_tmp;
 
-			res <<= 1;
 			res ++;
-
-			if (c.is_zero()) {
-				for (int t = 0; t < b_tmp.size() - other.size(); t++) {
-					res <<= 1;
-				}
-
-				break;
-			}
-
-			b_tmp >>= 1;
 		}
 
 		c = BigInt(res);
@@ -353,14 +436,10 @@ public:
 			return (*this) - (-other);
 		}
 
-		if (size_ < other.size_) {
-			return other + (*this);
-		}
+		BigInt c(*this);
 
-		BigInt c = (*this);
+		c.resize(size_ + BLOCK_SIZE);
 
-		c.resize(size_ + 2);
-		// c.bit_print();
 		bool bubble = false;
 
 		for (size_t i = 0; i < other.size(); i++) {
@@ -389,73 +468,85 @@ public:
 	}
 
 	BigInt operator-(const BigInt & other) const {
-		if (negative() && other.negative()) {
-			return ((*this) + (-other));
-		}
-
-		if (negative() && other.positive()) {
-			return -(-(*this) + other);
-		}
-
-		if (positive() && other.negative()) {
-			return (*this) + (-other);
-		}
-
-		if (positive() && other.positive()) {
-			if (*this < other) {
-				return -(other - (*this));
+		try {
+			if (negative() && other.negative()) {
+				return ((*this) + (-other));
 			}
-		}
 
-		BigInt c(*this);
+			if (negative() && other.positive()) {
+				return -(-(*this) + other);
+			}
 
-		for (size_t i = 0; i < other.size(); i++) {
-			bool bubble = !c.at(i) && other.at(i);
+			if (positive() && other.negative()) {
+				return (*this) + (-other);
+			}
 
-			if (bubble) {
-				for (size_t j = i + 1; j < c.size_; j++) {
-					if (c.at(j)) {
-						c.bit_flip(j);
-						break;
-					} else {
-						c.bit_flip(j);
-					}
+			if (positive() && other.positive()) {
+				if (*this < other) {
+					return -(other - (*this));
 				}
 			}
 
-			c.data_[i] -= other.at(i);
+			BigInt c(*this);
+
+			for (size_t i = 0; i < other.size(); i++) {
+				bool bubble = !c.at(i) && other.at(i);
+
+				if (bubble) {
+					for (size_t j = i + 1; j < c.size_; j++) {
+						if (c.at(j)) {
+							c.bit_flip(j);
+							break;
+						} else {
+							c.bit_flip(j);
+						}
+					}
+				}
+
+				c.data_[i] -= other.at(i);
+			}
+
+			return c;
+		} catch (const std::exception& e) {
+			cout << e.what() << endl;
+			exit(1);
 		}
 
-		return c;
 	}
 
 	bool at(size_t index) const {
 		return data_[index];
 	}
 
-	friend std::ostream& operator<<(std::ostream & out, const BigInt & big_int) {
-		if (big_int.size_ == 0) {
+	friend std::ostream& operator<<(std::ostream & out, const BigInt & mid) {
+		if (mid.size_ == 0) {
 			return out;
 		}
 
-		size_t i = big_int.size_ - 1;
+		size_t i = mid.size_ - 1;
 
-		int64_t v = 0;
+		long double v = 0;
 
-		bool sign = big_int.at(big_int.size_ - 1) == 1;
+		bool sign = mid.at(mid.size_ - 1) == 1;
 
-		if (big_int.sign_ && !big_int.is_zero()) {
+		if (mid.sign_ && !mid.is_zero()) {
 			out << "-";
 		}
 
+		string s;
+
 		do {
-			v <<= 1;
-			v += big_int.at(i);
+			v *= 2;
+			v += mid.at(i);
+			s += mid.at(i) ? '1' : '0';
 		} while (i-- != 0);
 
-		out << v;
+
+		out << fixed << setprecision(0) << v;
+
 		return out;
 	}
+
 
 	void bit_print() const {
 		size_t i = size_ - 1;
@@ -468,9 +559,7 @@ public:
 	}
 
 	~BigInt() {
-		// if (data_) {
 		delete[] data_;
-		// }
 	}
 
 private:
