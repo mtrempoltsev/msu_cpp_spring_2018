@@ -49,12 +49,13 @@ public:
         return countColumns;
     }
     
-    void operator *= (const int value) {
+    Matrix operator *= (const int value) {
         for(int i = 0; i < countRows; ++i) {
             for(int j = 0; j < countColumns; ++j) {
                 matrix[j][i] *= value;
             }
         }
+        return *this;
     }
     
     bool operator != (const Matrix& m1) const {
@@ -73,3 +74,4 @@ public:
         return false;
     }
 };
+
