@@ -1,10 +1,10 @@
-using Number = signed char;
-
-constexpr Number BASE = 10;
-constexpr size_t SIZE = 32;
-
 class BigInt
 {
+    using Number = signed char;
+
+    constexpr Number BASE = 10;
+    constexpr size_t SIZE = 32;
+
     Number *arr = nullptr;
     size_t max_size = SIZE;
     size_t cur_size = 0;
