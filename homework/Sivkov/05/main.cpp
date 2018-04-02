@@ -333,12 +333,47 @@ public:
         return res;
     }
 
-    BigInt operator++() {
-        return *this + BigInt(1);
+    BigInt& operator++() {
+        size_t pos = 0;
+        while (true) {
+            if (data[pos] == '9') {
+                data[pos] = '0';
+                pos++;
+            }
+            else {
+                data[pos] += 1;
+                break;
+            }
+        }
+        if (pos == size - 1 && data[pos] == '0') {
+            auto tmp = new char[size + 1];
+            std::strcpy(tmp, data);
+            tmp[size] = '1';
+            size++;
+            tmp[size] = '\0';
+            delete[] data;
+            data = tmp;
+        }
+        return *this;
     }
 
-    BigInt operator--() {
-        return *this - BigInt(1);
+    BigInt& operator--() {
+        size_t pos = 0;
+        while (true) {
+            if (data[pos] == '0') {
+                data[pos] = '9';
+                pos++;
+            }
+            else {
+                data[pos] -= 1;
+                break;
+            }
+        }
+        if (pos == size - 1 && data[pos] == '0') {
+            data[pos] = '\0';
+            size--;
+        }
+        return *this;
     }
 
     BigInt operator-() {
