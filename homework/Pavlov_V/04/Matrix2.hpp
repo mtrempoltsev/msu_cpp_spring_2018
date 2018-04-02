@@ -49,7 +49,7 @@ public:
         return countColumns;
     }
     
-    Matrix operator *= (const int value) {
+    Matrix& operator *= (const int value) {
         for(int i = 0; i < countRows; ++i) {
             for(int j = 0; j < countColumns; ++j) {
                 matrix[j][i] *= value;
