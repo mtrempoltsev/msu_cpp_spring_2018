@@ -251,7 +251,8 @@ BigInt BigInt::operator*(const BigInt& other) const {
     return res;
 }
 
-size_t bin_search(const BigInt& C, const BigInt& B) {
+size_t BigInt::bin_search(const BigInt& B) const {
+    BigInt C = *this;
     unsigned long left = 0, right = BigInt::NUMBER_SIZE - 1, mid;
     while (left < right) {
         mid = (right + left) / 2;
@@ -290,13 +291,13 @@ BigInt BigInt::operator/(const BigInt& other) const {
     }
     
     unsigned long num;
-    num = bin_search(C, B);
+    num = C.bin_search(B);
     res.data[step] = num;
     
     while (step > 0) {
         step--;
         C = (C - B * num) * BigInt::NUMBER_SIZE + A.data[step];
-        num = bin_search(C, B);
+        num = C.bin_search(B);
         res.data[step] = num;
     }
     res.correct_size();    
