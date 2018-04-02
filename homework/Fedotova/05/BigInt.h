@@ -1,9 +1,6 @@
 #pragma once
 #include <iostream>
 
-#define NUMBER_SIZE 1000000000
-#define NUMBER_POR 9
-
 class BigInt
 {
 private:
@@ -15,6 +12,9 @@ private:
     void adapt_sizes(size_t s);
     void correct_size();
 public:
+    const static unsigned long NUMBER_SIZE = 1000000000;
+    const static unsigned long NUMBER_POR = 9;
+    
     BigInt();
     BigInt(const BigInt& x);
     BigInt(long x);
