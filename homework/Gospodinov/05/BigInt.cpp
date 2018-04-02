@@ -7,6 +7,26 @@ BigInt::BigInt()
 	this->push_back(0);
 }
 
+BigInt::BigInt(int64_t value)
+{
+	if (value < 0)
+	{
+		isNegative = true;
+		value *= -1;
+	}
+	data = new cell_type[capacity];
+	if (value == 0)
+	{
+		this->push_back(0);
+		return;
+	}
+	for (size_t i = 0; value > 0; i++)
+	{
+		this->push_back(value % 10);
+		value /= 10;
+	}
+}
+
 BigInt::BigInt(const BigInt& number) 
 	: size(number.size)
 	, isNegative(number.isNegative)
