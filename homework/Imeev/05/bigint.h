@@ -2,8 +2,8 @@ class BigInt
 {
     using Number = signed char;
 
-    constexpr Number BASE = 10;
-    constexpr size_t SIZE = 32;
+    static constexpr Number BASE = 10;
+    static constexpr size_t SIZE = 32;
 
     Number *arr = nullptr;
     size_t max_size = SIZE;
