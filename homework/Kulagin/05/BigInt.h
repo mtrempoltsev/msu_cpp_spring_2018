@@ -217,20 +217,20 @@ public:
 		return sign_;
 	}
 
-	bool operator>(const BigInt& b) const {
-		if (positive() && b.negative()) {
+	bool operator>(const BigInt& other) const {
+		if (positive() && other.negative()) {
 			return true;
 		}
 
-		if (negative() && b.positive()) {
+		if (negative() && other.positive()) {
 			return false;
 		}
 
-		if (negative() && b.negative()) {
-			return (-b) > (-(*this));
+		if (negative() && other.negative()) {
+			return (-other) > (-(*this));
 		}
 
-		size_t min_size = std::min(size(), b.size());
+		size_t min_size = std::min(size(), other.size());
 
 		for (int i = size() - 1; i >= min_size; i--) {
 			if (at(i)) {
@@ -238,16 +238,16 @@ public:
 			}
 		}
 
-		for (int i = b.size() - 1; i >= min_size; i--) {
-			if (b.at(i)) {
+		for (int i = other.size() - 1; i >= min_size; i--) {
+			if (other.at(i)) {
 				return false;
 			}
 		}
 
 		for (int i = min_size - 1; i >= 0 ; i--) {
-			if (at(i) > b.at(i)) {
+			if (at(i) > other.at(i)) {
 				return true;
-			} else if (at(i) < b.at(i)) {
+			} else if (at(i) < other.at(i)) {
 				return false;
 			}
 		}
@@ -255,20 +255,20 @@ public:
 		return false;
 	}
 
-	bool operator>=(const BigInt& b) const {
-		return operator>(b) || operator == (b);
+	bool operator>=(const BigInt& other) const {
+		return operator>(other) || operator == (other);
 	}
 
-	bool operator<(const BigInt& b) const {
-		return !operator>=(b);
+	bool operator<(const BigInt& other) const {
+		return !operator>=(other);
 	}
 
-	bool operator<=(const BigInt& b) const {
-		return operator<(b) || operator==(b);
+	bool operator<=(const BigInt& other) const {
+		return operator<(other) || operator==(other);
 	}
 
-	bool operator!=(const BigInt& b) const {
-		return !operator==(b);
+	bool operator!=(const BigInt& other) const {
+		return !operator==(other);
 	}
 
 	BigInt& operator <<= (int pos) {
@@ -311,21 +311,8 @@ public:
 			a_tmp.resize(b_tmp.size_);
 		}
 
-		int a_1 = 0;
-		for (int i = a_tmp.size_ - 1; i >= 0; i--) {
-			if (a_tmp.at(i)) {
-				a_1 = i;
-				break;
-			}
-		}
-
-		int b_1 = 0;
-		for (int i = b_tmp.size_ - 1; i >= 0; i--) {
-			if (b_tmp.at(i)) {
-				b_1 = i;
-				break;
-			}
-		}
+		int a_1 = a_tmp.left_ind();
+		int b_1 = b_tmp.left_ind();
 
 		a_tmp.resize(a_tmp.size_ * 2);
 		BigInt c(a_tmp);
@@ -345,16 +332,18 @@ public:
 	}
 
 	int left_ind() const {
-		int b_1 = 0;
+		int ind = 0;
+
 		for (int i = size_ - 1; i >= 0; i--) {
 			if (at(i)) {
-				b_1 = i;
+				ind = i;
 				break;
 			}
 		}
 
-		return b_1;
+		return ind;
 	}
+
 	BigInt operator/(const BigInt& other) const {
 		BigInt a_tmp(*this);
 		BigInt b_tmp(other);
@@ -384,21 +373,9 @@ public:
 		int res = 0;
 
 		int cnt = 0;
-		int a_1 = 0;
-		for (int i = a_tmp.size_ - 1; i >= 0; i--) {
-			if (a_tmp.at(i)) {
-				a_1 = i;
-				break;
-			}
-		}
 
-		int b_1 = 0;
-		for (int i = b_tmp.size_ - 1; i >= 0; i--) {
-			if (b_tmp.at(i)) {
-				b_1 = i;
-				break;
-			}
-		}
+		int a_1 = a_tmp.left_ind();
+		int b_1 = b_tmp.left_ind();
 
 		int b_lshift = a_1 - b_1;
 
@@ -569,7 +546,6 @@ public:
 
 		return out << b;
 	}
-
 
 	void bit_print() const {
 		size_t i = size_ - 1;
