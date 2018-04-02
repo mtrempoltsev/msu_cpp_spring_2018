@@ -33,10 +33,10 @@ public:
 		delete[] matrix;
 	}
 	size_t getRows() const{
-		return rowCount;
+		return columnCount;
 	}
 	size_t getColumns() const{
-		return columnCount;
+		return rowCount;
 	}
 	Proxy operator[](size_t i){
 		if (i >= rowCount)
@@ -55,7 +55,6 @@ public:
 				matrix[i][j] = matrix[i][j] * number;
 			}
 		}
-		
 	}
 	bool operator==(const Matrix& other) const{
 		if (other.rowCount != rowCount || other.columnCount != columnCount)
