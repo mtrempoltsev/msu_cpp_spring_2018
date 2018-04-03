@@ -334,6 +334,11 @@ public:
     }
 
     BigInt& operator++() {
+        if (sign < 0) {
+            sign = 1;
+            --*this;
+            sign = -1;
+        }
         size_t pos = 0;
         while (true) {
             if (data[pos] == '9') {
@@ -358,6 +363,11 @@ public:
     }
 
     BigInt& operator--() {
+        if (sign < 0) {
+            sign = 1;
+            ++*this;
+            sign = -1;
+        }
         size_t pos = 0;
         while (true) {
             if (data[pos] == '0') {
@@ -369,7 +379,7 @@ public:
                 break;
             }
         }
-        if (pos == size - 1 && data[pos] == '0') {
+        if (pos == size - 1 && data[pos] == '0' && pos > 1) {
             data[pos] = '\0';
             size--;
         }
