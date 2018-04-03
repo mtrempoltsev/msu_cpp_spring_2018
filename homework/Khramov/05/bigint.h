@@ -4,14 +4,10 @@
 #define DIGIT_SIZE 1000'000'000
 #define BASE 9
 
-#pragma once
-
-
 template<class T>
 class Mvector
 {
 public:
-
 	Mvector();
 	Mvector(int l, T initial);
 	Mvector(const Mvector<T>& other);
@@ -34,7 +30,6 @@ public:
 
 		for (int j = _size; j < i; j++) {
 			newMem[j] = initial;
-			//std::cout << newMem[j] <<" -j- "<<j<< '\n';
 		}
 		delete[] _array;
 		_array = newMem;
@@ -49,7 +44,6 @@ private:
 	void resize();
 };
 
-
 template<class T>
 Mvector<T>::Mvector()
 {
@@ -58,7 +52,6 @@ Mvector<T>::Mvector()
 	_size = 0;
 }
 
-
 template<class T>
 Mvector<T>::Mvector(int l, T initial)
 {
@@ -66,7 +59,6 @@ Mvector<T>::Mvector(int l, T initial)
 	_array = new T[_capacity]{ initial };
 	_size = l;
 }
-
 
 template<class T>
 Mvector<T>::Mvector(const Mvector<T> & other) :
@@ -142,7 +134,10 @@ void Mvector<T>::push_back(T x)
 template<class T>
 inline void Mvector<T>::pop()
 {
-	_size--;
+	if (_size > 0) {
+		_size--;//так и задумывается, меня устраивает, что в векторе остается память, я ее потом просто перезапишу
+	}
+	return;
 }
 
 template<class T>
@@ -159,8 +154,6 @@ inline void Mvector<T>::push_front(T x)
 	_size++;
 	_array[0] = x;
 }
-
-
 
 template<class T>
 int Mvector<T>::size() const
@@ -184,7 +177,7 @@ void Mvector<T>::resize()
 	_array = newMem;
 }
 
-
+//-----------------------BigInt----------------------
 
 class BigInt
 {
@@ -232,11 +225,10 @@ private:
 		_digits.new_size(i,0);
 	}
 	void kill_zeroes();
-	
 };
 
 BigInt::BigInt(){
-
+	_digits.push_back(0);
 }
 
 BigInt::BigInt(long long a)
@@ -250,13 +242,14 @@ BigInt::BigInt(long long a)
 		if (t > DIGIT_SIZE) 
 			_digits.push_back(t / DIGIT_SIZE);
 	}
-	//std::cout << _digits[1]<<" 1 "<<" 0-> " << _digits[0]<< " 2-> " << _digits[2] << "\n";
 }
 
 BigInt::BigInt(bool sign, const Mvector<long long> vec):
 	_sign(sign),_digits(vec) {}
 
-BigInt::~BigInt(){}
+BigInt::~BigInt(){
+
+}
 
 bool compare_abs(const BigInt& one, const BigInt& two)
 {
@@ -299,6 +292,9 @@ BigInt & BigInt::operator=(const BigInt & other)
 }
 
 /*
+я не понимаю как реализовать мув семантику, если я делал через вектор и в нем реализовал мув 
+просто если я напишу _digits = other._digits это будет не мув  
+но мне так и не ответили нужно ли делать мув в BigInt и я не делал
 BigInt::BigInt(BigInt && moved)
 {
 }
@@ -314,7 +310,6 @@ std::ostream & operator<<(std::ostream & out, const BigInt & b)
 	if (!b._sign)
 		out << '-';
 	out << b._digits[b.size() - 1];
-	//std::cout << b._digits[b.size() - 1] << " bdid " << '\n';
 	for (int i = b.size() - 2; i >= 0; i--) {
 		out << std::setfill('0');
 		out << std::setw(BASE) << b._digits[i];
@@ -324,10 +319,10 @@ std::ostream & operator<<(std::ostream & out, const BigInt & b)
 
 BigInt operator+(const BigInt & left, const BigInt & right)
 {	
-	//std::cout << right << " rht1" << '\n';
 	if (compare_abs(right, left)) return (right + left);
 	BigInt res,Temp;
-	//std::cout << right << " rht" << '\n';
+	res._digits.pop();
+	Temp._digits.pop();
 	long long rest = 0;
 	int sze = 0;
 	
@@ -339,13 +334,11 @@ BigInt operator+(const BigInt & left, const BigInt & right)
 	if (left._sign != right._sign) {
 		for (int i = 0; i < sze; i++) {
 			long long tmp = (rest+left._digits[i] - Temp._digits[i]);
-			//std::cout << left._digits[i] << " - " << Temp._digits[i]<< '\n';
 			if (tmp <0) {
 				tmp += DIGIT_SIZE;
 				rest = -1;
 			}
 			else rest = 0;
-
 			res._digits.push_back(tmp);
 		}
 		if (left._sign) {
@@ -370,7 +363,7 @@ BigInt operator+(const BigInt & left, const BigInt & right)
 			}
 			else res._sign = false;
 	}
-	//res.kill_zeroes();
+	res.kill_zeroes();
 	return res;
 }
 
@@ -388,6 +381,9 @@ BigInt BigInt::operator-() const
 
 bool BigInt::operator==(const BigInt & other) const
 {
+	if (get_size() == 1 && other.get_size() == 1 && _digits[0] == 0 && other._digits[0] == 0) {
+		return true;
+	}
 	if (_sign != other._sign) {
 		return false;
 	}
@@ -437,7 +433,6 @@ bool BigInt::operator<(const BigInt & other) const
 		for (int i = get_size()-1; i >= 0; i--)
 		{
 			if (_digits[i] < other._digits[i]) {
-				//std::cout<<"le  "<< _digits[i]<<"r "<< other._digits[i]
 				return true;
 			}
 			else if (_digits[i] > other._digits[i]) {
@@ -499,7 +494,6 @@ inline long long binsearch(const BigInt & div, const BigInt & num)
 	long long rez = 0;
 	long long min = 0;
 	long long max = DIGIT_SIZE;
-	//std::cout << "curr*" << num << "  <=" << div << '\n';
 	while (min <= max)
 	{
 		long long curr = (max + min) / 2;
@@ -518,19 +512,17 @@ inline long long binsearch(const BigInt & div, const BigInt & num)
 BigInt operator/(const BigInt & left, const BigInt & right)
 {	
 	BigInt quotient;
+	quotient._digits.pop();
 	BigInt param;
+	param._digits.pop();
 	BigInt abs_num(right);
 	abs_num._sign = true;
 	for (size_t i = 0; i < left.get_size(); i++)
 	{
 		param._digits.push_front(left._digits[left.get_size() - 1 - i]);
-		//std::cout << "index -> " << left.get_size() - 1 - i << "  __left._digits[]  " << left._digits[left.get_size() - 1 - i] << '\n';
-		//std::cout << "param  " << param  << "  _dig -> " << param._digits[0] << '\n';
 		long long div = binsearch(param, abs_num);
 		quotient._digits.push_front(div);
 		param = param - abs_num * BigInt(div);
-		//std::cout << " param after " << param << '\n';
-		//std::cout << " div " << div << '\n';
 		if (param == 0) {
 			param._digits.pop();
 		}
@@ -542,5 +534,4 @@ BigInt operator/(const BigInt & left, const BigInt & right)
 		quotient._sign = true;
 	}
 	return quotient;
-	
 }

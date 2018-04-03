@@ -13,11 +13,18 @@ BigInt::BigInt(const BigInt& x): sign(x.sign), size(x.size) {
 
 BigInt::BigInt(long x): sign(x < 0) {
     long a = x / (2 * !sign - 1);
-    if (a >= NUMBER_SIZE) {
+    if (a >= BigInt::NUMBER_SIZE * BigInt::NUMBER_SIZE) {
+        size = 3;
+        data = new unsigned long[size]();
+        data[0] = a % BigInt::NUMBER_SIZE;
+        data[1] = a / BigInt::NUMBER_SIZE % BigInt::NUMBER_SIZE;
+        data[2] = a / BigInt::NUMBER_SIZE / BigInt::NUMBER_SIZE;
+    }
+    else if (a >= BigInt::NUMBER_SIZE) {
         size = 2;
         data = new unsigned long[size]();
-        data[0] = a % NUMBER_SIZE;
-        data[1] = a / NUMBER_SIZE;
+        data[0] = a % BigInt::NUMBER_SIZE;
+        data[1] = a / BigInt::NUMBER_SIZE;
     }
     else {
         size = 1;
@@ -65,7 +72,7 @@ std::ostream& operator<<(std::ostream& out, const BigInt& x) {
     out << x.data[x.size - 1];
     for (int i = x.size - 2; i >= 0; i--) {
         out << std::setfill('0');
-        out << std::setw(NUMBER_POR) << x.data[i];
+        out << std::setw(BigInt::NUMBER_POR) << x.data[i];
     }
     return out;
 }
@@ -181,8 +188,8 @@ BigInt BigInt::operator+(const BigInt& other) const {
     for (int i = 0; i < s; i++) {
         res.data[i] = A.data[i] + B.data[i];
         res.data[i] += take;
-        take = res.data[i] / NUMBER_SIZE;
-        res.data[i] %= NUMBER_SIZE;
+        take = res.data[i] / BigInt::NUMBER_SIZE;
+        res.data[i] %= BigInt::NUMBER_SIZE;
     }
     res.data[s] = take;
     
@@ -210,7 +217,7 @@ BigInt BigInt::operator-(const BigInt& other) const {
         take = 0;
         if (A.data[i] < B.data[i]) {
             take = 1;
-            A.data[i] += NUMBER_SIZE;
+            A.data[i] += BigInt::NUMBER_SIZE;
         }
         res.data[i] = A.data[i] - B.data[i];
     }
@@ -232,8 +239,8 @@ BigInt BigInt::operator*(const BigInt& other) const {
     for (int i = 0; i < A.size; i++) {
         take = 0;
         for (size_t j = 0; j < B.size; j++) {
-            C.data[i + j] = (A.data[i] * B.data[j] + take) % NUMBER_SIZE;
-            take = (A.data[i] * B.data[j] + take) / NUMBER_SIZE;
+            C.data[i + j] = (A.data[i] * B.data[j] + take) % BigInt::NUMBER_SIZE;
+            take = (A.data[i] * B.data[j] + take) / BigInt::NUMBER_SIZE;
         }
         C.data[i + B.size] = take;
         res = res + C;
@@ -244,8 +251,9 @@ BigInt BigInt::operator*(const BigInt& other) const {
     return res;
 }
 
-size_t bin_search(const BigInt& C, const BigInt& B) {
-    unsigned long left = 0, right = NUMBER_SIZE - 1, mid;
+size_t BigInt::bin_search(const BigInt& B) const {
+    BigInt C = *this;
+    unsigned long left = 0, right = BigInt::NUMBER_SIZE - 1, mid;
     while (left < right) {
         mid = (right + left) / 2;
         if (B * (mid + 1) > C && B * mid <= C)
@@ -279,17 +287,17 @@ BigInt BigInt::operator/(const BigInt& other) const {
     C.correct_size();
     if (C < B) {
         step--;
-        C = C * NUMBER_SIZE + A.data[step];
+        C = C * BigInt::NUMBER_SIZE + A.data[step];
     }
     
     unsigned long num;
-    num = bin_search(C, B);
+    num = C.bin_search(B);
     res.data[step] = num;
     
     while (step > 0) {
         step--;
-        C = (C - B * num) * NUMBER_SIZE + A.data[step];
-        num = bin_search(C, B);
+        C = (C - B * num) * BigInt::NUMBER_SIZE + A.data[step];
+        num = C.bin_search(B);
         res.data[step] = num;
     }
     res.correct_size();    

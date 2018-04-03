@@ -1,12 +1,12 @@
 #pragma once
 #include <iostream>
 
-#define NUMBER_SIZE 1000000000
-#define NUMBER_POR 9
-
 class BigInt
 {
 private:
+    const static unsigned long NUMBER_SIZE = 1000000000;
+    const static unsigned long NUMBER_POR = 9;
+    
     size_t size;
     unsigned long *data;
     bool sign;
@@ -14,6 +14,7 @@ private:
     int compare_abs(const BigInt& other) const;
     void adapt_sizes(size_t s);
     void correct_size();
+    size_t bin_search(const BigInt& B) const;
 public:
     BigInt();
     BigInt(const BigInt& x);
