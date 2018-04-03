@@ -6,8 +6,6 @@
 #include <iomanip>
 #include <cstring>
 
-using namespace std;
-
 class BigIntDec {
 
 public:
@@ -78,9 +76,9 @@ public:
 		std::cout << std::endl;
 	}
 
-	friend std::ostream& operator<<(std::ostream & out, const BigIntDec & mid) {
-		for (int i = mid.left_ind(); i >= 0; i--) {
-			out << mid.data_[i];
+	friend std::ostream& operator<<(std::ostream & out, const BigIntDec & x) {
+		for (int i = x.left_ind(); i >= 0; i--) {
+			out << x.data_[i];
 		}
 
 		return out;
@@ -108,6 +106,7 @@ int LOG2(int64_t x) {
 
 const int BLOCK_SIZE = 8;
 
+
 class BigInt {
 
 public:
@@ -117,7 +116,7 @@ public:
 
 	BigInt(int64_t value = 0) {
 		sign_ = value < 0;
-		value = abs(value);
+		value = std::abs(value);
 
 		size_ = (value) ? (LOG2(value) + 1) : 1;
 		size_ = (size_ / BLOCK_SIZE + 1) * BLOCK_SIZE;
@@ -518,30 +517,26 @@ public:
 		return data_[index];
 	}
 
-	friend std::ostream& operator<<(std::ostream & out, const BigInt & mid) {
-		if (mid.size_ == 0) {
+	friend std::ostream& operator<<(std::ostream & out, const BigInt & x) {
+		if (x.size_ == 0) {
 			return out;
 		}
 
-		size_t i = mid.size_ - 1;
+		bool sign = x.at(x.size_ - 1) == 1;
 
-		uint64_t v = 0;
-
-		bool sign = mid.at(mid.size_ - 1) == 1;
-
-		if (mid.sign_ && !mid.is_zero()) {
+		if (x.sign_ && !x.is_zero()) {
 			out << "-";
 		}
 
-		BigIntDec b(mid.size_);
+		BigIntDec b(x.left_ind() + 2);
 
-		int l0 = 2;
+		int base = 2;
 
-		b += mid.data_[mid.left_ind()];
+		b += x.data_[x.left_ind()];
 
-		for (int i = mid.left_ind() - 1; i >= 0; i--) {
-			b *= l0;
-			b += mid.data_[i];
+		for (int i = x.left_ind() - 1; i >= 0; i--) {
+			b *= base;
+			b += x.data_[i];
 		}
 
 		return out << b;
