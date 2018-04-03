@@ -648,3 +648,12 @@ public:
 	}
 	~BigInt() { delete[]bi_; }
 };
+
+std::ostream& operator<<(std::ostream& out, const BigInt& R)
+{
+	if (R.isnegative)
+		out << "-";
+	for (int i = R.size - 1; i >= 0; i--)
+		out << R.bi_[i];
+	return out;
+}
