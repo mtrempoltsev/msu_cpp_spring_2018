@@ -493,7 +493,12 @@ public:
 
 private:
 	void alloc() {
-		data_ = new bool[size_]();
+		try {
+			data_ = new bool[size_]();
+		} catch (std::bad_alloc) {
+			std::cout << "Cannot allocate memory" << std::endl;
+			exit(1);
+		}
 	}
 
 	void resize(size_t new_size) {
