@@ -320,29 +320,27 @@ BigInt BigInt::operator-(const BigInt& number) const {
 
 BigInt BigInt::operator*(const BigInt& number) const {
 	BigInt result;
-	BigInt res(*this);
+	//BigInt res(*this);
 	BigInt num(number);
 
 	result.sign = true;
 	if ((size_ == 1 && arr[0] == 0) || (number.size_ == 1 && number.arr[0] == 0))
 		return result;
-
+	/*
 	if (size_ < number.size_) {
 		BigInt tmpd = num;
 		num = res;
 		res = tmpd;
-	}
+	}*/
 
-	for (size_t i = 0; i < num.size_; i++)
-	{
+	for (size_t i = 0; i < num.size_; i++) {
 		BigInt tmp;
 		tmp.size_--;
 		int carry = 0;
 		for (size_t j = 0; j < i; j++)
 			tmp.push_back(0);
-		for (size_t j = 0; j < res.size_; j++)
-		{
-			int mult = num.arr[i] * res.arr[j] + carry;
+		for (size_t j = 0; j < size_; j++) {
+			int mult = num.arr[i] * arr[j] + carry;
 			tmp.push_back(mult % 10);
 			carry = mult / 10;
 		}
@@ -350,11 +348,13 @@ BigInt BigInt::operator*(const BigInt& number) const {
 			tmp.push_back(carry);
 		result = result + tmp;
 	}
-	if (res.sign && !num.sign || !res.sign && num.sign) {
+
+	if (sign && !num.sign || !sign && num.sign) {
 		result.sign = false;
 	}
-	while (result.size_ > 1 && result.arr[result.size_] == 0)
-		result.size_--;
+	//result.size_++;
+	//while (result.size_ > 1 && result.arr[result.size_] == 0)
+		//result.size_--;
 
 	return result;
 

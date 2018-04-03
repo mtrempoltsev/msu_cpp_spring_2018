@@ -342,6 +342,3 @@ BigInt operator%(const BigInt& a, const BigInt& b) {
     mid_a = mid_a - ((a / b) * b) ;
     return mid_a;
 }
-int main() {
-    return 0;
-}
