@@ -41,41 +41,6 @@ public:
 		}
 	}
 
-	void inc(const int ind) {
-		int mod = 1;
-
-		for (int i = ind; i < size_ - 1; i++) {
-			int mult = data_[i] + mod;
-			mod = mult / 10;
-
-			data_[i] = mult % 10;
-
-			if (mod == 0) {
-				break;
-			}
-		}
-	}
-
-	int left_ind() const {
-		int b_1 = 0;
-		for (int i = size_ - 1; i >= 0; i--) {
-			if (data_[i]) {
-				b_1 = i;
-				break;
-			}
-		}
-
-		return b_1;
-	}
-
-	void print() const {
-		for (int i = size_ - 1; i >= 0; i--) {
-			std::cout << data_[i];
-		}
-
-		std::cout << std::endl;
-	}
-
 	friend std::ostream& operator<<(std::ostream & out, const BigIntDec & x) {
 		for (int i = x.left_ind(); i >= 0; i--) {
 			out << x.data_[i];
@@ -89,6 +54,18 @@ public:
 	}
 
 private:
+	int left_ind() const {
+		int b_1 = 0;
+		for (int i = size_ - 1; i >= 0; i--) {
+			if (data_[i]) {
+				b_1 = i;
+				break;
+			}
+		}
+
+		return b_1;
+	}
+
 	int size_;
 	int* data_;
 };
@@ -110,10 +87,6 @@ const int BLOCK_SIZE = 8;
 class BigInt {
 
 public:
-	void alloc() {
-		data_ = new bool[size_]();
-	}
-
 	BigInt(int64_t value = 0) {
 		sign_ = value < 0;
 		value = std::abs(value);
@@ -163,19 +136,6 @@ public:
 		(*this) = BigInt(value);
 
 		return (*this);
-	}
-
-	void resize(size_t new_size) {
-		bool* NEWDATA = new bool[new_size]();
-
-		memcpy(NEWDATA, data_, size_);
-		size_ = new_size;
-
-		if (size_) {
-			delete[] data_;
-		}
-
-		data_ = NEWDATA;
 	}
 
 	bool operator==(const BigInt& b) const {
@@ -330,19 +290,6 @@ public:
 		return c;
 	}
 
-	int left_ind() const {
-		int ind = 0;
-
-		for (int i = size_ - 1; i >= 0; i--) {
-			if (at(i)) {
-				ind = i;
-				break;
-			}
-		}
-
-		return ind;
-	}
-
 	BigInt operator/(const BigInt& other) const {
 		BigInt a_tmp(*this);
 		BigInt b_tmp(other);
@@ -464,14 +411,6 @@ public:
 		return c;
 	}
 
-	size_t size() const {
-		return size_;
-	}
-
-	void bit_flip(const size_t pos) {
-		data_[pos] = !data_[pos];
-	}
-
 	BigInt operator-(const BigInt & other) const {
 		if (negative() && other.negative()) {
 			return ((*this) + (-other));
@@ -511,10 +450,6 @@ public:
 		}
 
 		return c;
-	}
-
-	bool at(size_t index) const {
-		return data_[index];
 	}
 
 	friend std::ostream& operator<<(std::ostream & out, const BigInt & x) {
@@ -557,6 +492,49 @@ public:
 	}
 
 private:
+	void alloc() {
+		data_ = new bool[size_]();
+	}
+
+	void resize(size_t new_size) {
+		bool* NEWDATA = new bool[new_size]();
+
+		memcpy(NEWDATA, data_, size_);
+		size_ = new_size;
+
+		if (size_) {
+			delete[] data_;
+		}
+
+		data_ = NEWDATA;
+	}
+
+	size_t size() const {
+		return size_;
+	}
+
+	void bit_flip(const size_t pos) {
+		data_[pos] = !data_[pos];
+	}
+
+	// позиция старшего ненулевого бита
+	int left_ind() const {
+		int ind = 0;
+
+		for (int i = size_ - 1; i >= 0; i--) {
+			if (at(i)) {
+				ind = i;
+				break;
+			}
+		}
+
+		return ind;
+	}
+
+	bool at(size_t index) const {
+		return data_[index];
+	}
+
 	size_t size_;
 	bool sign_;
 
