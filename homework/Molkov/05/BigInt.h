@@ -4,12 +4,18 @@
 class BigInt {
 private:
 	void allocate_to_len() {
-		//if (cap < 1) new_cap = cap;
-		size_t new_cap = cap;
-		while (size_ >= new_cap) {
-			new_cap *= 2;
+		cap *= 2;
+		int* newarr;
+		newarr = new int[cap];
+		size_t tmp = size_;
+		//size_ = std::min(size_, cap);
+		if (tmp != 0) {
+			for (size_t i = 0; i < size_; i++) {
+				newarr[i] = arr[i];
+			}
 		}
-		resize(new_cap);
+		delete[] arr;
+		arr = newarr;
 	}
 
 public:
@@ -42,32 +48,19 @@ public:
 
 	friend std::ostream& operator<<(std::ostream&, const BigInt&);
 
-	void resize(size_t size) {
-		cap = size;
-		int* newarr;
-		newarr  = new int[cap];
-		size_t tmp = size_;
-		size_ = std::min(size_, cap);
-		if (tmp != 0) {
-			for (size_t i = 0; i < size_; i++) {
-				newarr[i] = arr[i];
-			}
-		}
-		delete[] arr;
-		arr = newarr;
-		
-	}
+
 	void push_back(int number) {
-		arr[size_] = number;
 		size_++;
-		if (cap == size_)
+		if (cap <= size_)
 			this->allocate_to_len();
+		arr[size_ - 1] = number;
+
 	}
 	void push_front(int number) {
 		for (size_t i = size_; i > 0; i--)
 			arr[i] = arr[i - 1];
 		size_++;
-		if (cap == size_)
+		if (cap <= size_)
 			this->allocate_to_len();
 		arr[0] = number;
 	}
@@ -75,7 +68,7 @@ public:
 
 BigInt::BigInt() {
 	size_ = 0;
-	cap = 88;
+	cap = 64;
 	arr = new int[cap];
 	push_back(0);
 }
@@ -93,7 +86,7 @@ BigInt::BigInt(const BigInt& number) {
 
 BigInt::BigInt(int64_t number) {
 	size_ = 0;
-	cap = 88;
+	cap = 64;
 	arr = new int[cap];
 	if (number == 0) {
 		push_back(0);
@@ -330,6 +323,8 @@ BigInt BigInt::operator-(const BigInt& number) const {
 
 BigInt BigInt::operator*(const BigInt& number) const {
 	BigInt result;
+	if(size_ > 32)
+		result.allocate_to_len();
 	//BigInt res(*this);
 	BigInt num(number);
 
