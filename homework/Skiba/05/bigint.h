@@ -12,6 +12,16 @@ class BigInt{
     int base = 1000;
     int out_len = 3;
     int *ptr;
+    void shift() {
+        if (cp == sz) {
+            resize(cp * 2);
+        }
+        sz++;
+        for (int i = sz - 1; i > 0; i--) {
+            ptr[i] = ptr[i - 1];
+        }
+        ptr[0] = 0;
+    }
     int getlen(int64_t x) {
         if (x == 0) {
             return 1;
@@ -44,16 +54,6 @@ class BigInt{
         }
     }
 public:
-    void shift() {
-        if (cp == sz) {
-            resize(cp * 2);
-        }
-        sz++;
-        for (int i = sz - 1; i > 0; i--) {
-            ptr[i] = ptr[i - 1];
-        }
-        ptr[0] = 0;
-    }
     BigInt(int64_t x = 0) {
         if (x < 0) sig = -1;
         x = abs(x);
@@ -196,6 +196,7 @@ public:
         return *this;
     }
     friend BigInt abs(const BigInt& a);
+    friend BigInt operator/(const BigInt& a, int64_t b);
     friend BigInt operator+(const BigInt& a, const BigInt& b);
     friend BigInt operator-(const BigInt& a, const BigInt& b);
     friend BigInt operator*(const BigInt& a, const BigInt& b);
@@ -313,6 +314,10 @@ BigInt operator*(const BigInt& a, const BigInt& b) {
     return mid;
 }
 BigInt operator/(const BigInt& a, const BigInt& b) {
+    if (b.sz == 1) {
+        int64_t del = b.ptr[0] * b.sig;
+        return operator/(a, del);
+    }
     BigInt mid_a(abs(a)), mid_b(abs(b));
     BigInt ans(0);
     while (mid_a >= mid_b) {
@@ -341,4 +346,32 @@ BigInt operator%(const BigInt& a, const BigInt& b) {
     BigInt mid_a(a), zero(0);
     mid_a = mid_a - ((a / b) * b) ;
     return mid_a;
+}
+
+BigInt operator/(const BigInt& a, int64_t b) {
+    BigInt mid(0);
+    int buf = 0;
+    int b_sig = (b >= 0) ? 1 : -1;
+    b = abs(b);
+    //std::cout << a << " " << b << std::endl;
+    for (int i = a.sz - 1; i >= 0; i--) {
+        buf = buf * a.base + a.ptr[i];
+        //std::cout << "Buf " << buf << std::endl;
+        if (buf >= b) {
+            mid.shift();
+            mid = mid + (buf / b);
+            buf %=b;
+        } else {
+            mid.shift();
+        }
+        //std::cout << "Ans " << mid << std::endl;
+    }
+    mid.sig = a.sig * b_sig;
+    while ((mid.sz > 1) && (!mid.ptr[mid.sz - 1])) {
+        mid.sz--;
+    }
+    if ((mid.sz == 1) && (mid.ptr[mid.sz - 1] == 0)) {
+        mid.sig = 1;
+    }
+        return mid;
 }
