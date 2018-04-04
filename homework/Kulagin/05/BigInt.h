@@ -13,7 +13,7 @@ public:
 		data_ = new int[size_]();
 	}
 
-	void operator*=(const int value) {
+	BigIntDec& operator*=(const int value) {
 		int mod = 0;
 
 		for (int i = 0; i < size_ - 1; i++) {
@@ -25,7 +25,7 @@ public:
 		}
 	}
 
-	void operator+=(const int value) {
+	BigIntDec& operator+=(const int value) {
 		int mod = value;
 
 		for (int i = 0; i < size_ - 1; i++) {
@@ -54,34 +54,23 @@ public:
 	}
 
 private:
+	// позиция старшего ненулевого бита
 	int left_ind() const {
-		int b_1 = 0;
+		int ind = 0;
+
 		for (int i = size_ - 1; i >= 0; i--) {
 			if (data_[i]) {
-				b_1 = i;
+				ind = i;
 				break;
 			}
 		}
 
-		return b_1;
+		return ind;
 	}
 
 	int size_;
 	int* data_;
 };
-
-int LOG2(int64_t x) {
-	int cnt = 0;
-
-	do {
-		x >>= 1;
-		cnt++;
-	} while (x);
-
-	return cnt - 1;
-}
-
-const int BLOCK_SIZE = 8;
 
 
 class BigInt {
@@ -91,7 +80,7 @@ public:
 		sign_ = value < 0;
 		value = std::abs(value);
 
-		size_ = (value) ? (LOG2(value) + 1) : 1;
+		size_ = (value) ? ceil(log2(value)) : 1;
 		size_ = (size_ / BLOCK_SIZE + 1) * BLOCK_SIZE;
 
 		if (size_) {
@@ -329,7 +318,7 @@ public:
 			b_tmp <<= a_1 - b_1;
 		}
 
-		while (1) {
+		while (true) {
 			if (c < b_tmp) {
 				if (b_lshift == 0) {
 					break;
@@ -492,26 +481,25 @@ public:
 	}
 
 private:
+	static const int BLOCK_SIZE = 8;
+
 	void alloc() {
-		try {
-			data_ = new bool[size_]();
-		} catch (std::bad_alloc) {
-			std::cout << "Cannot allocate memory" << std::endl;
-			exit(1);
-		}
+		data_ = new bool[size_]();
 	}
 
 	void resize(size_t new_size) {
-		bool* NEWDATA = new bool[new_size]();
-
-		memcpy(NEWDATA, data_, size_);
-		size_ = new_size;
-
-		if (size_) {
-			delete[] data_;
+		if (new_size == size_) {
+			return;
 		}
 
-		data_ = NEWDATA;
+		bool *new_data_ = new bool[new_size]();
+
+		std::copy(data_, data_ + std::min(size_, new_size), new_data_);
+
+		delete[] data_;
+
+		data_ = new_data_;
+		size_ = new_size;
 	}
 
 	size_t size() const {
