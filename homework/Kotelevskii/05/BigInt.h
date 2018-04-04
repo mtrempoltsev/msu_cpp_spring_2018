@@ -10,7 +10,6 @@ public:
 	BigInt();
 	BigInt(int64_t);
 	BigInt(const BigInt&);
-	//BigInt& operator=(BigInt&& other);
 	BigInt operator-() const;
 	~BigInt();
 	BigInt operator+(const BigInt& other) const;
