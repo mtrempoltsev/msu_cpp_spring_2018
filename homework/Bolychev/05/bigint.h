@@ -230,12 +230,12 @@ public:
 
     bool operator<(const BigInt other) const
     {
-        if (this->is_negative && !other.is_negative) {
+        if (is_negative && !other.is_negative) {
             return true;
-        } else if (!this->is_negative && other.is_negative) {
+        } else if (!is_negative && other.is_negative) {
             return false;
-        } else if (this->is_negative && other.is_negative) {
-            return this->is_abs_bigger(other);
+        } else if (is_negative && other.is_negative) {
+            return is_abs_bigger(other);
         }
         return other.is_abs_bigger(*this);
 
@@ -285,20 +285,20 @@ public:
 
     BigInt operator+(const BigInt& other) const
     {
-        if (this->is_negative && other.is_negative) {
+        if (is_negative && other.is_negative) {
             bool result_is_negative = true;
             return sumAbsValues(*this, other, result_is_negative);
-        } else if (!this->is_negative && !other.is_negative) {
+        } else if (!is_negative && !other.is_negative) {
             return sumAbsValues(*this, other);
-        } else if (!this->is_negative && other.is_negative) {
+        } else if (!is_negative && other.is_negative) {
             if (other.is_abs_bigger(*this)) {
                 bool result_is_negative = true;
                 return subtractAbsValues(other, *this, result_is_negative);
             } else {
                 return subtractAbsValues(*this, other);
             }
-        } else { // (this->is_negative && !other.is_negative)
-            if (this->is_abs_bigger(other)) {
+        } else { // (is_negative && !other.is_negative)
+            if (is_abs_bigger(other)) {
                 bool result_is_negative = true;
                 return subtractAbsValues(*this, other, result_is_negative);
             } else {
@@ -312,20 +312,20 @@ public:
         // *this - other == *this + (-other) =>
         // other.is_negative changing to !other.is_negative
 
-        if (this->is_negative && !other.is_negative) {
+        if (is_negative && !other.is_negative) {
             bool result_is_negative = true;
             return sumAbsValues(*this, other, result_is_negative);
-        } else if (!this->is_negative && other.is_negative) {
+        } else if (!is_negative && other.is_negative) {
             return sumAbsValues(*this, other);
-        } else if (!this->is_negative && !other.is_negative) {
+        } else if (!is_negative && !other.is_negative) {
             if (other.is_abs_bigger(*this)) {
                 bool result_is_negative = true;
                 return subtractAbsValues(other, *this, result_is_negative);
             } else {
                 return subtractAbsValues(*this, other);
             }
-        } else { // (this->is_negative && other.is_negative)
-            if (this->is_abs_bigger(other)) {
+        } else { // (is_negative && other.is_negative)
+            if (is_abs_bigger(other)) {
                 bool result_is_negative = true;
                 return subtractAbsValues(*this, other, result_is_negative);
             } else {
