@@ -112,7 +112,6 @@ ostream &operator<< (ostream &out, const BigInt &obj)
             out << '0';
         out << obj[i];
     }
-    //out << '(' << obj.size_BI << ')';
     return out;
 }
 
