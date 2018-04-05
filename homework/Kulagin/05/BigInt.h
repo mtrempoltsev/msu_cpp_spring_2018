@@ -23,6 +23,8 @@ public:
 
 			data_[i] = mult % 10;
 		}
+
+		return *this;
 	}
 
 	BigIntDec& operator+=(const int value) {
@@ -39,6 +41,8 @@ public:
 				break;
 			}
 		}
+
+		return *this;
 	}
 
 	friend std::ostream& operator<<(std::ostream & out, const BigIntDec & x) {
