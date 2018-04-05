@@ -60,6 +60,8 @@ public:
     BigInt & operator--();
 
     friend std::ostream & operator<<(std::ostream & os, const BigInt & value);
+    friend std::pair<uint8_t, bool> modulo_addc(uint8_t a, uint8_t b);
+    friend std::pair<uint8_t, bool> modulo_subb(uint8_t a, uint8_t b);
 };
 
 #endif //SPHERE_01_C_HW05_BIGINT_H
