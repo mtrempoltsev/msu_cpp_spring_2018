@@ -1,4 +1,4 @@
-#include<iomanip>
+п»ї#include<iomanip>
 #include<iostream>
 
 #define DIGIT_SIZE 1000'000'000
@@ -9,7 +9,7 @@ class Mvector
 {
 public:
 	Mvector();
-	Mvector(int l, T initial);
+	Mvector(int l, const T& initial);
 	Mvector(const Mvector<T>& other);
 	Mvector(Mvector<T>&& moved);
 	Mvector<T>& operator=(const Mvector<T>& other);
@@ -18,23 +18,12 @@ public:
 
 	T& operator[](size_t i);
 	T& operator[](size_t i) const;
-	void push_back(T x);
+	void push_back(const T& x);
 	void pop();
-	void push_front(T x);
+	void push_front(const T& x);
 	int size() const;
 	size_t capacity();
-	void new_size(int i, T initial) {
-		if (_size > i) return;
-		T* newMem = new T[i];
-		std::copy(_array, _array + _size, newMem);
-
-		for (int j = _size; j < i; j++) {
-			newMem[j] = initial;
-		}
-		delete[] _array;
-		_array = newMem;
-		_capacity = i;
-	}
+	void new_size(int i, const T& initial);
 
 
 private:
@@ -45,6 +34,21 @@ private:
 };
 
 template<class T>
+void Mvector<T>::new_size(int i, const T& initial) {
+	if (_size > i) return;
+	T* newMem = new T[i];
+	std::copy(_array, _array + _size, newMem);
+
+	for (int j = _size; j < i; j++) {
+		newMem[j] = initial;
+	}
+	delete[] _array;
+	_array = newMem;
+	_capacity = i;
+}
+
+
+template<class T>
 Mvector<T>::Mvector()
 {
 	_capacity = 4;
@@ -53,10 +57,13 @@ Mvector<T>::Mvector()
 }
 
 template<class T>
-Mvector<T>::Mvector(int l, T initial)
+Mvector<T>::Mvector(int l, const T& initial)
 {
 	_capacity = l;
-	_array = new T[_capacity]{ initial };
+	_array = new T[_capacity];
+	for (int i = 0; i < l; i++) {
+		_array[i] = initial;
+	}
 	_size = l;
 }
 
@@ -123,7 +130,7 @@ T& Mvector<T>::operator[](size_t i) const
 }
 
 template<class T>
-void Mvector<T>::push_back(T x)
+void Mvector<T>::push_back(const T& x)
 {
 	if (_size == _capacity) {
 		resize();
@@ -135,13 +142,13 @@ template<class T>
 inline void Mvector<T>::pop()
 {
 	if (_size > 0) {
-		_size--;//так и задумывается, меня устраивает, что в векторе остается память, я ее потом просто перезапишу
+		_size--;
 	}
 	return;
 }
 
 template<class T>
-inline void Mvector<T>::push_front(T x)
+inline void Mvector<T>::push_front(const T& x)
 {
 	if (_size == _capacity) {
 		resize();
@@ -184,12 +191,9 @@ class BigInt
 public:
 	BigInt();
 	BigInt(long long a);
-	BigInt(const bool sign, const Mvector<long long> num);
 	BigInt(const BigInt& other);
-	//BigInt(BigInt&& moved);
 	BigInt& operator=(const BigInt& b);
-	//BigInt& operator=(BigInt&& moved);
-	~BigInt();
+
 
 	friend std::ostream& operator<<(std::ostream& out, const BigInt& b);
 
@@ -209,25 +213,20 @@ public:
 	bool operator>(const BigInt& other) const;
 	bool operator<(const BigInt& other) const;
 
-	void add_reversDigit(long long x) {
-		_digits.push_back(x);
-	}
-	int size() const{
-		return this->_digits.size();
-	}
-	
-private:
-	Mvector<long long> _digits;
-	bool _sign=true;
 	int get_size() const;
-	
+
+private:
+	BigInt(const bool sign, const Mvector<long long>& num);
+	Mvector<long long> _digits;
+	bool _sign = true;
+
 	void resize_to(int i) {
-		_digits.new_size(i,0);
+		_digits.new_size(i, 0);
 	}
 	void kill_zeroes();
 };
 
-BigInt::BigInt(){
+BigInt::BigInt() {
 	_digits.push_back(0);
 }
 
@@ -239,27 +238,26 @@ BigInt::BigInt(long long a)
 	if (t > DIGIT_SIZE) {
 		t = t / DIGIT_SIZE;
 		_digits.push_back(t % DIGIT_SIZE);
-		if (t > DIGIT_SIZE) 
+		if (t > DIGIT_SIZE)
 			_digits.push_back(t / DIGIT_SIZE);
 	}
 }
 
-BigInt::BigInt(bool sign, const Mvector<long long> vec):
-	_sign(sign),_digits(vec) {}
-
-BigInt::~BigInt(){
+BigInt::BigInt(bool sign, const Mvector<long long>& vec):
+	_sign(sign), _digits(vec) 
+{
 
 }
 
 bool compare_abs(const BigInt& one, const BigInt& two)
 {
-	if (one.get_size()>two.get_size()) return true;
-	if (one.get_size()<two.get_size()) return false;
-	for (int i = one.get_size() - 1; i >= 0; i--) 
-		if (one._digits[i]<=two._digits[i]) return false;
-	
+	if (one.get_size() > two.get_size()) return true;
+	if (one.get_size() < two.get_size()) return false;
+	for (int i = one.get_size() - 1; i >= 0; i--)
+		if (one._digits[i] <= two._digits[i]) return false;
+
 	return true;
-	
+
 }
 
 
@@ -270,15 +268,15 @@ inline int BigInt::get_size() const
 
 inline void BigInt::kill_zeroes()
 {
-	int i = this->get_size()-1;
+	int i = this->get_size() - 1;
 	while (this->_digits[i] == 0 && i != 0) {
 		this->_digits.pop();
 		i--;
 	}
 }
 
-BigInt::BigInt(const BigInt & other): 
-	_sign(other._sign), _digits(other._digits) 
+BigInt::BigInt(const BigInt & other) :
+	_sign(other._sign), _digits(other._digits)
 {
 }
 
@@ -291,26 +289,12 @@ BigInt & BigInt::operator=(const BigInt & other)
 	return *this;
 }
 
-/*
-я не понимаю как реализовать мув семантику, если я делал через вектор и в нем реализовал мув 
-просто если я напишу _digits = other._digits это будет не мув  
-но мне так и не ответили нужно ли делать мув в BigInt и я не делал
-BigInt::BigInt(BigInt && moved)
-{
-}
-
-BigInt & BigInt::operator=(BigInt && moved)
-{
-	// TODO: вставьте здесь оператор return
-}*/
-
-
 std::ostream & operator<<(std::ostream & out, const BigInt & b)
 {
 	if (!b._sign)
 		out << '-';
-	out << b._digits[b.size() - 1];
-	for (int i = b.size() - 2; i >= 0; i--) {
+	out << b._digits[b.get_size() - 1];
+	for (int i = b.get_size() - 2; i >= 0; i--) {
 		out << std::setfill('0');
 		out << std::setw(BASE) << b._digits[i];
 	}
@@ -318,23 +302,23 @@ std::ostream & operator<<(std::ostream & out, const BigInt & b)
 }
 
 BigInt operator+(const BigInt & left, const BigInt & right)
-{	
+{
 	if (compare_abs(right, left)) return (right + left);
-	BigInt res,Temp;
+	BigInt res, Temp;
 	res._digits.pop();
 	Temp._digits.pop();
 	long long rest = 0;
 	int sze = 0;
-	
+
 	Temp = BigInt(right);
 	Temp.resize_to(left.get_size());
 	sze = left.get_size();
-	
-	
+
+
 	if (left._sign != right._sign) {
 		for (int i = 0; i < sze; i++) {
-			long long tmp = (rest+left._digits[i] - Temp._digits[i]);
-			if (tmp <0) {
+			long long tmp = (rest + left._digits[i] - Temp._digits[i]);
+			if (tmp < 0) {
 				tmp += DIGIT_SIZE;
 				rest = -1;
 			}
@@ -350,18 +334,18 @@ BigInt operator+(const BigInt & left, const BigInt & right)
 		}
 	}
 	else {
-			int i = 0;
-			for (; i < sze; i++) {
-				long long tmp = (left._digits[i] + Temp._digits[i]) % DIGIT_SIZE;
-				res._digits.push_back(tmp + rest);
-				rest = (left._digits[i] + right._digits[i]) / DIGIT_SIZE;
-			}
-			res._digits[i] += rest;
+		int i = 0;
+		for (; i < sze; i++) {
+			long long tmp = (left._digits[i] + Temp._digits[i]) % DIGIT_SIZE;
+			res._digits.push_back(tmp + rest);
+			rest = (left._digits[i] + right._digits[i]) / DIGIT_SIZE;
+		}
+		res._digits[i] += rest;
 
-			if (left._sign) {
-				res._sign = true;
-			}
-			else res._sign = false;
+		if (left._sign) {
+			res._sign = true;
+		}
+		else res._sign = false;
 	}
 	res.kill_zeroes();
 	return res;
@@ -390,7 +374,7 @@ bool BigInt::operator==(const BigInt & other) const
 	if (get_size() != other.get_size())
 		return false;
 
-	for (int i = get_size()-1; i >= 0 ; i--) 
+	for (int i = get_size() - 1; i >= 0; i--)
 	{
 		if (_digits[i] != other._digits[i]) {
 			return false;
@@ -407,7 +391,7 @@ bool BigInt::operator>=(const BigInt & other) const
 bool BigInt::operator<=(const BigInt & other) const
 {
 
-	return !(*this>other);
+	return !(*this > other);
 }
 
 bool BigInt::operator!=(const BigInt & other) const
@@ -417,11 +401,11 @@ bool BigInt::operator!=(const BigInt & other) const
 
 bool BigInt::operator>(const BigInt & other) const
 {
-	return other<*this;
+	return other < *this;
 }
 
 bool BigInt::operator<(const BigInt & other) const
-{	
+{
 	if (_sign != other._sign)
 		return !_sign;
 
@@ -430,7 +414,7 @@ bool BigInt::operator<(const BigInt & other) const
 			return true;
 		if (get_size() > other.get_size())
 			return false;
-		for (int i = get_size()-1; i >= 0; i--)
+		for (int i = get_size() - 1; i >= 0; i--)
 		{
 			if (_digits[i] < other._digits[i]) {
 				return true;
@@ -440,7 +424,8 @@ bool BigInt::operator<(const BigInt & other) const
 			}
 		}
 		return false;
-	}else {
+	}
+	else {
 		if (get_size() < other.get_size())
 			return false;
 		if (get_size() > other.get_size())
@@ -472,10 +457,10 @@ BigInt operator*(const BigInt & left, const BigInt & right)
 
 	for (int i = 0; i < r_copy.size(); i++)
 		for (int j = 0; j < l_copy.size(); j++) {
-			
+
 			res[i + j] += r_copy[i] * l_copy[j];
 		}
-	
+
 	for (int i = 0; i < length - 1; i++)
 	{
 		res[i + 1] += res[i] / DIGIT_SIZE;
@@ -489,7 +474,7 @@ BigInt operator*(const BigInt & left, const BigInt & right)
 	return rez;
 }
 
-inline long long binsearch(const BigInt & div, const BigInt & num) 
+inline long long binsearch(const BigInt & div, const BigInt & num)
 {
 	long long rez = 0;
 	long long min = 0;
@@ -510,7 +495,7 @@ inline long long binsearch(const BigInt & div, const BigInt & num)
 }
 
 BigInt operator/(const BigInt & left, const BigInt & right)
-{	
+{
 	BigInt quotient;
 	quotient._digits.pop();
 	BigInt param;
@@ -527,7 +512,7 @@ BigInt operator/(const BigInt & left, const BigInt & right)
 			param._digits.pop();
 		}
 	}
-	
+
 	quotient._sign = left._sign == right._sign;
 	quotient.kill_zeroes();
 	if (quotient.get_size() == 1 && quotient._digits[0] == 0) {
