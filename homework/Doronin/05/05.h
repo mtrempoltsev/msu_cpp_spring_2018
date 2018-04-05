@@ -108,7 +108,7 @@ public:
 
     }
 
-    BigInt(char* st, int len)
+    BigInt(const char* st, int len)
     {
         numb = new char[size];
         int i = 0;
@@ -130,7 +130,9 @@ public:
     size(value.size),
     numb(value.numb)
     {
-        value.numb = nullptr;
+        //value.numb = nullptr;
+        value.numb = new char[size];
+        value.push(0);
     }
 
     BigInt(const BigInt& big_int):
