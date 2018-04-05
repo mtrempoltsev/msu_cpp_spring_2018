@@ -5,6 +5,9 @@
 #include <tuple>
 
 class BigInt {
+    static const size_t min_size = 21;
+    static const size_t base = 100;
+
     uint8_t * data;
     size_t real_size;
     size_t max_size;
@@ -13,8 +16,6 @@ class BigInt {
     void widen();
     std::pair<BigInt, BigInt> divmod(const BigInt & other) const;
 public:
-    static const size_t min_size = 21;
-    static const size_t base = 100;
     BigInt(int64_t v = 0);
     BigInt(const BigInt & other);
     BigInt(BigInt && other);
