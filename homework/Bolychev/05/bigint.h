@@ -6,8 +6,6 @@
 
 typedef int8_t digit;
 
-// TODO: template why not?
-
 class BigInt {
 private:
     const digit operator[](size_t i) const {
