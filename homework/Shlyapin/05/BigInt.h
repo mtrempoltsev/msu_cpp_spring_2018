@@ -6,13 +6,13 @@
 
 class BigInt
 {
-    int *number = nullptr;
+    short *number = nullptr;
     std::size_t length = 0;
     std::size_t real_size = 0;
     bool sign = false;
 public:
     BigInt();
-    BigInt(long long par);
+    BigInt(int64_t par);
     BigInt(const BigInt & par_BigInt);
     BigInt(BigInt&& par_delitable);
     ~BigInt();
@@ -52,13 +52,14 @@ public:
     friend BigInt operator / (const BigInt &a, const BigInt &b);
     void reverse();
     BigInt split(std::size_t sz);
+    BigInt half() const;
 };
 
-BigInt::BigInt() : number(new int[1]), length(1), real_size(1)
+BigInt::BigInt() : number(new short[1]), length(1), real_size(1)
 {
     number[0] = 0;
 }
-BigInt::BigInt(long long par) : sign(par < 0)
+BigInt::BigInt(int64_t par) : sign(par < 0)
 {
     if (par == 0) {
         //BigInt a;
@@ -71,9 +72,9 @@ BigInt::BigInt(long long par) : sign(par < 0)
         ++number_of_ints;
         temp /= 10;
     }
-    number = new int[number_of_ints];
+    number = new short[number_of_ints];
     std::size_t i = 0;
-    int *temp_mas = new int[number_of_ints];
+    short *temp_mas = new short[number_of_ints];
     temp = std::abs(par);
     while (temp) {
         temp_mas[i] = temp % 10;
@@ -87,12 +88,17 @@ BigInt::BigInt(long long par) : sign(par < 0)
 }
 BigInt::~BigInt()
 {
-    delete[] number;
+    try {
+        delete[] number;
+    } catch (...) {
+        std::cerr << "!!!ERROR!!!\n";
+        assert(0);
+    }
     number = nullptr;
     real_size = length = 0;
 }
 BigInt::BigInt(const BigInt & par_BigInt)
-    :number(new int[par_BigInt.real_size])
+    :number(new short[par_BigInt.real_size])
     ,length(par_BigInt.length)
     ,real_size(par_BigInt.real_size)
     ,sign(par_BigInt.sign)
@@ -102,7 +108,7 @@ BigInt::BigInt(const BigInt & par_BigInt)
     this->shrink_to_fit();
 }
 BigInt::BigInt(BigInt&& par_delitable) :
-    //    :number(new int[par_delitable.real_size])
+    //    :number(new short[par_delitable.real_size])
     length(par_delitable.length)
     ,real_size(par_delitable.real_size)
     ,sign(par_delitable.sign)
@@ -135,7 +141,7 @@ std::istream& operator >> (std::istream& it, BigInt& X)
         X.sign = false;
     X.length = X.real_size = s.size() - X.sign;
     delete[] X.number;
-    X.number = new int[X.length];
+    X.number = new short[X.length];
     for (std::size_t i = 0; i < X.length; ++i)
         X.number[i] = s[i + X.sign] - '0';
     return it;
@@ -226,7 +232,7 @@ void BigInt::resize(std::size_t new_size)
         *this = BigInt();
         return;
     }
-    int *temp = new int[new_size];
+    short *temp = new short[new_size];
     for (std::size_t i = 0; i < new_size; ++i) {
         if (i < this->length)
             temp[new_size - 1 - i] = this->number[this->real_size - 1 - i];
@@ -248,7 +254,7 @@ BigInt BigInt::operator- () const
 }
 BigInt operator+(const BigInt &left, const BigInt &right)
 {
-//    std::cout << "Gone into +\n";
+//    std::cout << "Gone into +\n"; fflush(stdout);
     if (left.sign == right.sign) {
         BigInt temp1, temp2;
         if (left > right) {
@@ -289,7 +295,7 @@ BigInt& BigInt::operator += (const BigInt & td)
 }
 BigInt operator- (const BigInt &left, const BigInt &right)
 {
-//    std::cout << "Gone into -\n";
+//    std::cout << "Gone into -\n"; fflush(stdout);
     if (left == right) {
 //        std::cout << "==\n";
         return BigInt(0);
@@ -323,7 +329,7 @@ BigInt operator- (const BigInt &left, const BigInt &right)
     std::size_t rl = right.real_size;
     std::size_t ss = res.real_size;
     for (std::size_t i = 1; i <= right.length; ++i) {
-        int tmp = res.number[ss - i] - right.number[rl - i];
+        short tmp = res.number[ss - i] - right.number[rl - i];
         if (tmp >= 0) {
             res.number[ss - i] = tmp;
         } else {
@@ -364,11 +370,11 @@ BigInt operator * (const BigInt & left, const BigInt & right)
         for (std::size_t j = 0; j < tempr.length; ++j)
             temp.number[i + j] += templ.number[i] * tempr.number[j];
     //temp.check();
-    for (int i = temp.real_size - 1; i > 0; --i)
+    for (std::size_t i = temp.real_size - 1; i > 0; --i)
         temp.number[i] = temp.number[i - 1];
     //temp.check();
     temp.number[0] = 0;
-    for (int i = temp.real_size - 1; i > 0; --i) {
+    for (std::size_t i = temp.real_size - 1; i > 0; --i) {
         temp.number[i - 1] += temp.number[i] / 10;
         temp.number[i] %= 10;
     }
@@ -477,7 +483,7 @@ BigInt BigInt::split(std::size_t sz)
     BigInt res;
     res.length = res.real_size = sz;
     try {
-        res.number = new int[sz];
+        res.number = new short[sz];
     } catch (...) {
         assert(0);
     }
@@ -488,7 +494,7 @@ BigInt BigInt::split(std::size_t sz)
     return res;
 }
 
-BigInt operator / (const BigInt &a, const BigInt &b)
+/*BigInt operator / (const BigInt &a, const BigInt &b)
 {
     
     BigInt res, ta(a.abs()), tb(b.abs());
@@ -529,5 +535,54 @@ BigInt operator / (const BigInt &a, const BigInt &b)
 //        std::cout << std::endl << res << ' ' << q << std::endl;
     }// while (ta.number || cr >= tb);
     return res;
+}*/
+
+BigInt BigInt::half() const
+{
+    BigInt res(*this);
+    for (std::size_t i = 0; i < res.real_size; ++i) {
+        if ((res.number[i] & 1) == 0 || i + 1 == res.real_size) {
+            res.number[i] /= 2;
+        } else {
+            res.number[i + 1] += 10;
+            res.number[i] /= 2;
+        }
+    }
+    if (!res.number[0]) {
+        res.length--;
+        res.shrink_to_fit();
+    }
+    return res;
 }
 
+BigInt operator / (const BigInt &a, const BigInt &b)
+{
+    if (a == BigInt()) {
+        return BigInt();
+    } else if (b == BigInt()) {
+        throw -1;
+    }
+    BigInt res, ta(a.abs()), tb(b.abs());
+    if (ta < tb) {
+        return BigInt();
+    } else if (ta < 2 * tb) {
+        return a.sign == b.sign ? BigInt(1) : BigInt(-1);
+    } else if (tb == 1){
+        return b.sign ? -a : a;
+    }
+    
+    BigInt left, right(ta);
+    res = (left + right).half();
+//    std::cout << '\n' << res << '\n';
+    while (res * tb > ta || ta - res * tb >= tb) {
+        if (res * tb > ta) {
+            right = res;
+        } else {
+            left = res;
+        }
+        res = (left + right).half();
+//        std::cout << '\n' << res << '\n';
+    }
+    res.sign = a.sign != b.sign;
+    return res;
+}
