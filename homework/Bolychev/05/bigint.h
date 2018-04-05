@@ -169,8 +169,8 @@ private:
     digit* number;
     bool is_negative;
     size_t length; // if negative "-" doesn't count
-public:
 
+public:
     BigInt() : is_negative{false}, length{1}, number{new digit[1]} {
         *number = 0;
     }
