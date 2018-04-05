@@ -169,27 +169,56 @@ public:
     Unit* CarriedBy();
     // ...
 private:
-    struct ItemState {
-        double attack_damage_bonus;
-        double attack_speed_bonus;
-        double armor_bonus;
-        double move_speed_bonus;
-    };
-    enum ItemType {
-        SWORD,
-        AXE,
-        BOW,
-        SHIELD,
-        HELM,
-        GLOVES,
-        BOOTS,
-        BELT
-        // ...
-    };
     ItemState itemState;
     Unit* owner;
     ItemType itemType;
 };
+
+class Sword : public Item {
+public:
+    double GetAttackDamageBonus();
+    double GetAttackSpeedBonus();
+private:
+    double attack_damage_bonus;
+    double attack_speed_bonus;
+
+};
+
+class Bow : public Item {
+public:
+    double GetAttackDamageBonus();
+    double GetAttackSpeedBonus();
+    double GetAttackRange();
+private:
+    double attack_damage_bonus;
+    double attack_speed_bonus;
+    double attack_range;
+};
+
+class Shield : public Item {
+public:
+    double GetDamageBlock();
+    double GetArmorBonus();
+private:
+    double damage_block;
+    double armor_bonus;
+};
+
+class Helm : public Item {
+public:
+    double GetArmorBonus();
+private:
+    double armor_bonus;
+
+};
+
+class Boots : public Item {
+public:
+    double GetMoveSpeedBonus();
+private:
+    double move_speed_bonus;
+};
+
 
 class Decoration : Widget {
 public:
