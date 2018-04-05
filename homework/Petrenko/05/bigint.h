@@ -2,6 +2,7 @@
 #define SPHERE_01_C_HW05_BIGINT_H
 
 #include <ostream>
+#include <tuple>
 
 class BigInt {
     uint8_t * data;
