@@ -17,6 +17,13 @@ public:
 	void push_back(T x);
 	size_t size();
 	size_t capacity();
+	void make_size(int s) {
+				if (this->_size > s) return;
+				T* new_s = new T[s];
+				std::copy(_array, _array + _size, new_s);
+		 	 delete[] _array;
+		 	 _array = new_s;
+	}
 
 
 private:
@@ -35,7 +42,7 @@ Mvector<T>::Mvector()
 }
 
 template<class T>
- Mvector<T>::Mvector(const Mvector<T> & other): 
+ Mvector<T>::Mvector(const Mvector<T> & other):
 	 _capacity(other._capacity), _size(other._size)
 {
 	 T* _array = new T[_capacity];
@@ -51,9 +58,9 @@ template<class T>
 		 delete[] _array;
 		 _array = tmp;
 		 _capacity = other._capacity;
-		 _size = other._size;				
+		 _size = other._size;
 	 }
-	 return *this;	 
+	 return *this;
 }
 
  template<class T>
@@ -76,7 +83,7 @@ template<class T>
 	 }
 	 return *this;
  }
- 
+
 template<class T>
 Mvector<T>::~Mvector()
 {
@@ -85,7 +92,7 @@ Mvector<T>::~Mvector()
 
 template<class T>
 T& Mvector<T>::operator[](size_t i)
-{	
+{
 	return _array[i];
 }
 

@@ -22,6 +22,12 @@ public:
 		}
 		return arr_int[i];
 	}
+	const int operator[](int i) const {
+		if (i>= this->M || i<0){
+			throw std::out_of_range("in const []");
+		}
+		return arr_int[i];
+	}
 	Arr_int(const Arr_int& other) {
 		this->M = other.M;
 		arr_int = new int[other.M];
@@ -76,7 +82,7 @@ public:
 		return matrix[i];
 
 	}
-	Arr_int& operator[](int i) const{
+	const Arr_int& operator[](int i) const{
 		if (i >= this->cols || i<0)	{
 			throw std::out_of_range(std::to_string(i) + " is " +
 				"out of Col range. max index = " + std::to_string(this->cols));

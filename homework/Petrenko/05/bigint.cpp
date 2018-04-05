@@ -336,7 +336,7 @@ BigInt & BigInt::operator*=(const BigInt & other) {
         this->negative = other.negative != this->negative;
         this->real_size = n + m;
         this->max_size = n + m;
-        //this->normalize();
+        this->normalize();
         return *this;
     }
 }

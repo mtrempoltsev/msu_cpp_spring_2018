@@ -184,7 +184,7 @@ public:
         }
         return mid;
     }
-    BigInt& operator=(BigInt mid) {
+    BigInt& operator=(const BigInt& mid) {
         sig = mid.sig;
         sz = mid.sz;
         cp = mid.cp;
