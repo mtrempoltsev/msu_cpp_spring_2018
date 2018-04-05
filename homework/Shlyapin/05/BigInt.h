@@ -85,6 +85,13 @@ BigInt::BigInt(int64_t par) : sign(par < 0)
         number[i] = temp_mas[number_of_ints - 1 - i];
     }
     real_size = length = number_of_ints;
+
+    /*std::string s = std::to_string(std::abs(par));
+    real_size = length = s.length();
+    number = new short[length];
+    for (std::size_t i = 0; i < s.length(); ++i) {
+        number[i] = s[i];
+    }*/
 }
 BigInt::~BigInt()
 {
@@ -548,7 +555,7 @@ BigInt BigInt::half() const
             res.number[i] /= 2;
         }
     }
-    if (!res.number[0]) {
+    if (res.length > 1 && !res.number[0]) {
         res.length--;
         res.shrink_to_fit();
     }
