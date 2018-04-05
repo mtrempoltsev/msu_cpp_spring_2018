@@ -375,6 +375,3 @@ BigInt operator/(const BigInt& a, int64_t b) {
     }
         return mid;
 }
-int main() {
-    return 0;
-}

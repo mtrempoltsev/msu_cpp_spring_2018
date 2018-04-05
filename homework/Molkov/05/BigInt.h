@@ -4,26 +4,31 @@
 class BigInt {
 private:
 	void allocate_to_len() {
-		//size_t new_cap = 1; // size-0 vectors wont loop infinitely
-		//if (cap < 1) new_cap = cap;
-		size_t new_cap = cap;
-		while (size_ > new_cap) {
-			new_cap *= 2;
+		cap *= 2;
+		int* newarr;
+		newarr = new int[cap];
+		size_t tmp = size_;
+		//size_ = std::min(size_, cap);
+		if (tmp != 0) {
+			for (size_t i = 0; i < size_; i++) {
+				newarr[i] = arr[i];
+			}
 		}
-		resize(new_cap);
+		delete[] arr;
+		arr = newarr;
 	}
 
 public:
 	size_t size_, cap;
-	int* arr;
+	int* arr = nullptr;
 	bool sign = true;
 	BigInt();
 	BigInt(const BigInt&);
-	BigInt(int);
-
+	BigInt(int64_t);
 	~BigInt();
 
 	BigInt& operator=(const BigInt&);
+	BigInt& operator=(int64_t number);
 	//BigInt& operator=(const int&);
 		
 	BigInt operator-();
@@ -43,29 +48,27 @@ public:
 
 	friend std::ostream& operator<<(std::ostream&, const BigInt&);
 
-	void resize(size_t size) {
-		cap = size;
-		int* newarr = new int[size];
-		size_t tmp = size_;
-		size_ = std::min(size_, cap);
-		if (tmp != 0) {
-			for (size_t i = 0; i < size_; i++) {
-				newarr[i] = arr[i];
-			}
-		}
-		arr = newarr;
-		delete[] newarr;
-	}
+
 	void push_back(int number) {
-		arr[size_++] = number;
-		if (cap == size_)
+		size_++;
+		if (cap <= size_)
 			this->allocate_to_len();
+		arr[size_ - 1] = number;
+
+	}
+	void push_front(int number) {
+		for (size_t i = size_; i > 0; i--)
+			arr[i] = arr[i - 1];
+		size_++;
+		if (cap <= size_)
+			this->allocate_to_len();
+		arr[0] = number;
 	}
 };
 
 BigInt::BigInt() {
 	size_ = 0;
-	cap = 16;
+	cap = 64;
 	arr = new int[cap];
 	push_back(0);
 }
@@ -81,9 +84,9 @@ BigInt::BigInt(const BigInt& number) {
 	}
 }
 
-BigInt::BigInt(int number) {
+BigInt::BigInt(int64_t number) {
 	size_ = 0;
-	cap = 16;
+	cap = 64;
 	arr = new int[cap];
 	if (number == 0) {
 		push_back(0);
@@ -94,13 +97,9 @@ BigInt::BigInt(int number) {
 		number *= -1;
 	}
 	for (size_t i = 0; number > 0; i++) {
-		this->push_back(number % 10);
+		push_back(number % 10);
 		number /= 10;
 	}
-}
-
-BigInt::~BigInt() {
-	delete[] arr;
 }
 
 BigInt BigInt::operator-() {
@@ -110,12 +109,17 @@ BigInt BigInt::operator-() {
 	sign = !sign;
 	return *this;
 }
-
+BigInt& BigInt::operator=(int64_t number) {
+	BigInt num(number);
+	*this = num;
+	return *this;
+}
 BigInt& BigInt::operator=(const BigInt& number) {
 	if (this == &number)
 		return *this;
 	sign = number.sign;
 	size_ = number.size_;
+	arr = new int[size_];
 	for (size_t i = 0; i < size_; i++) {
 		arr[i] = number.arr[i];
 	}
@@ -125,8 +129,7 @@ BigInt& BigInt::operator=(const BigInt& number) {
 bool BigInt::operator==(const BigInt& number) const {
 	if (size_ != number.size_ || sign != number.sign)
 		return false;
-	for (size_t i = 0; i < size_; i++)
-	{
+	for (size_t i = 0; i < size_; i++) {
 		if (arr[i] != number.arr[i])
 			return false;
 	}
@@ -134,7 +137,7 @@ bool BigInt::operator==(const BigInt& number) const {
 }
 
 bool BigInt::operator!=(const BigInt& number) const {
-	return !this->operator==(number);
+	return !(operator==(number));
 }
 
 bool BigInt::operator<(const BigInt& number) const {
@@ -320,29 +323,29 @@ BigInt BigInt::operator-(const BigInt& number) const {
 
 BigInt BigInt::operator*(const BigInt& number) const {
 	BigInt result;
-	BigInt res(*this);
+	if(size_ > 32)
+		result.allocate_to_len();
+	//BigInt res(*this);
 	BigInt num(number);
 
 	result.sign = true;
 	if ((size_ == 1 && arr[0] == 0) || (number.size_ == 1 && number.arr[0] == 0))
 		return result;
-
+	/*
 	if (size_ < number.size_) {
 		BigInt tmpd = num;
 		num = res;
 		res = tmpd;
-	}
+	}*/
 
-	for (size_t i = 0; i < num.size_; i++)
-	{
+	for (size_t i = 0; i < num.size_; i++) {
 		BigInt tmp;
 		tmp.size_--;
 		int carry = 0;
 		for (size_t j = 0; j < i; j++)
 			tmp.push_back(0);
-		for (size_t j = 0; j < res.size_; j++)
-		{
-			int mult = num.arr[i] * res.arr[j] + carry;
+		for (size_t j = 0; j < size_; j++) {
+			int mult = num.arr[i] * arr[j] + carry;
 			tmp.push_back(mult % 10);
 			carry = mult / 10;
 		}
@@ -350,40 +353,67 @@ BigInt BigInt::operator*(const BigInt& number) const {
 			tmp.push_back(carry);
 		result = result + tmp;
 	}
-	if (res.sign && !num.sign || !res.sign && num.sign) {
+
+	if (sign && !num.sign || !sign && num.sign) {
 		result.sign = false;
 	}
-	while (result.size_ > 1 && result.arr[result.size_] == 0)
+	while (result.size_ > 1 && result.arr[result.size_ - 1] == 0)
 		result.size_--;
 
 	return result;
 
 }
 
-BigInt BigInt::operator/(const BigInt& number) const {
+BigInt BigInt::operator/(const BigInt& number) const
+{
 	BigInt result;
-	BigInt res(*this);
+	BigInt buff;
+	buff.size_--;
 	BigInt num(number);
-	
+	BigInt res(*this);
+
+	if(sign != number.sign)
+		result.sign = false;
+	//sign = true;
+	if ((size_ == 1 && arr[0] == 0))
+		return 0;
 	res.sign = true;
 	num.sign = true;
-
-	if ((size_ == 1 && arr[0] == 0) || res <= num)
-		return result;
 	if (res == num) {
-		if ((sign && !number.sign) || (!sign && number.sign))
-			return -1;
-		return 1;
-	}
-	while (res > num) {
 		result = result + 1;
-		res = res - num;
+		if (sign != number.sign)
+			result.sign = false;
+		return result;
 	}
-	if (sign && !number.sign || !sign && number.sign) {
-		result.sign = false;
+
+	for (size_t i = 0; i < size_; i++) {
+		buff.push_front(arr[size_ - 1 - i]);
+		int carry = 0;
+		while (buff.size_ > 1 && buff.arr[buff.size_ - 1] == 0)
+			buff.size_--;
+		int min = 0;
+		int max = 10;
+
+		while (min <= max) {
+			int curr = (max + min) / 2;
+			if (BigInt(curr) * num < buff) {
+				carry = curr;
+				min = curr + 1;
+			}
+			else
+				max = curr - 1;
+		}
+
+		result.push_front(carry);
+		BigInt tmp = BigInt(carry);
+		buff = buff - num * tmp;
 	}
-	while (result.size_ > 1 && result.arr[result.size_] == 0)
+
+	while (result.size_ > 1 && result.arr[result.size_ - 1] == 0)
 		result.size_--;
+
+	if (result.size_ == 1 && result.arr[0] == 0)
+		result.sign = true;
 
 	return result;
 }
@@ -395,4 +425,8 @@ std::ostream& operator<<(std::ostream& out, const BigInt& value)
 	for (size_t i = value.size_ - 1; i !=-1; i--)
 		out << (value.arr[i]);
 	return out;
+}
+
+BigInt::~BigInt() {
+	delete[] arr;
 }

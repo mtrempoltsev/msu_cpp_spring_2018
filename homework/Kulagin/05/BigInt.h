@@ -1,10 +1,10 @@
 #pragma once
 
 #include <cmath>
+#include <vector>
 #include <fstream>
+#include <iomanip>
 #include <cstring>
-
-using namespace std;
 
 class BigIntDec {
 
@@ -13,7 +13,7 @@ public:
 		data_ = new int[size_]();
 	}
 
-	void operator*=(const int value) {
+	BigIntDec& operator*=(const int value) {
 		int mod = 0;
 
 		for (int i = 0; i < size_ - 1; i++) {
@@ -25,7 +25,7 @@ public:
 		}
 	}
 
-	void operator+=(const int value) {
+	BigIntDec& operator+=(const int value) {
 		int mod = value;
 
 		for (int i = 0; i < size_ - 1; i++) {
@@ -41,26 +41,6 @@ public:
 		}
 	}
 
-	int left_ind() const {
-		int b_1 = 0;
-		for (int i = size_ - 1; i >= 0; i--) {
-			if (data_[i]) {
-				b_1 = i;
-				break;
-			}
-		}
-
-		return b_1;
-	}
-
-	void print() const {
-		for (int i = size_ - 1; i >= 0; i--) {
-			std::cout << data_[i];
-		}
-
-		std::cout << std::endl;
-	}
-
 	friend std::ostream& operator<<(std::ostream & out, const BigIntDec & x) {
 		for (int i = x.left_ind(); i >= 0; i--) {
 			out << x.data_[i];
@@ -74,46 +54,39 @@ public:
 	}
 
 private:
+	// позиция старшего ненулевого бита
+	int left_ind() const {
+		int ind = 0;
+
+		for (int i = size_ - 1; i >= 0; i--) {
+			if (data_[i]) {
+				ind = i;
+				break;
+			}
+		}
+
+		return ind;
+	}
+
 	int size_;
 	int* data_;
 };
 
-int LOG2(int64_t x) {
-	int cnt = 0;
-
-	do {
-		x >>= 1;
-		cnt++;
-	} while (x);
-
-	return cnt - 1;
-}
-
-const int BLOCK_SIZE = 8;
 
 class BigInt {
 
 public:
-	void alloc() {
-		try {
-			data_ = new bool[size_]();
-		} catch (const std::exception& e) {
-			std::cout << e.what() << std::endl;
-			exit(1);
-		}
-	}
-
 	BigInt(int64_t value = 0) {
 		sign_ = value < 0;
-		value = abs(value);
+		value = std::abs(value);
 
-		size_ = (value) ? (LOG2(value) + 1) : 1;
+		size_ = (value) ? ceil(log2(value)) : 1;
 		size_ = (size_ / BLOCK_SIZE + 1) * BLOCK_SIZE;
 
 		if (size_) {
 			alloc();
 
-			ssize_t i = 0;
+			size_t i = 0;
 
 			do {
 				data_[i++] = value & 1;
@@ -154,40 +127,29 @@ public:
 		return (*this);
 	}
 
-	void resize(ssize_t new_size) {
-		bool* NEWDATA = new bool[new_size]();
-
-		memcpy(NEWDATA, data_, size_);
-		size_ = new_size;
-
-		if (size_) {
-			delete[] data_;
+	bool operator==(const BigInt& b) const {
+		if (sign_ != b.sign_) {
+			return (is_zero() && b.is_zero());
 		}
 
-		data_ = NEWDATA;
-	}
+		size_t min_size = std::min(size(), b.size());
 
-	bool operator==(const BigInt& other) const {
-		if (sign_ != other.sign_) {
-			return (is_zero() && other.is_zero());
-		}
-
-		ssize_t min_size = std::min(size(), other.size());
-
-		for (ssize_t i = size() - 1; i >= min_size; i--) {
-			if (at(i)) {
-				return false;
+		if (size() - 1 >= min_size)
+			for (size_t i = size() - 1; i >= min_size; i--) {
+				if (at(i)) {
+					return false;
+				}
 			}
-		}
 
-		for (ssize_t i = other.size() - 1; i >= min_size; i--) {
-			if (other.at(i)) {
-				return false;
+		if (b.size() - 1 >= min_size)
+			for (size_t i = b.size() - 1; i >= min_size; i--) {
+				if (b.at(i)) {
+					return false;
+				}
 			}
-		}
 
 		for (ssize_t i = min_size - 1; i >= 0 ; i--) {
-			if (at(i) != other.at(i)) {
+			if (at(i) != b.at(i)) {
 				return false;
 			}
 		}
@@ -213,10 +175,10 @@ public:
 		}
 
 		if (negative() && other.negative()) {
-			return -(other) > -(*this);
+			return (-other) > (-(*this));
 		}
 
-		ssize_t min_size = std::min(size(), other.size());
+		size_t min_size = std::min(size(), other.size());
 
 		for (int i = size() - 1; i >= min_size; i--) {
 			if (at(i)) {
@@ -258,12 +220,22 @@ public:
 	}
 
 	BigInt& operator <<= (int pos) {
-		memcpy(data_ + pos, data_, size_ - pos);
-		memset(data_, 0, pos);
+		for (int i = size_ - 1 - pos; i >= 0; i--) {
+			data_[i + pos] = data_[i];
+		}
+		for (int i = pos - 1; i >= 0; i--) {
+			data_[i] = 0;
+		}
 	}
 	BigInt& operator>>=(int pos) {
-		memcpy(data_, data_ + pos, size_ - pos);
-		memset(data_ + size_ - pos, 0, pos);
+		for (size_t i = pos; i < size_; i++) {
+			data_[i - pos] = data_[i];
+		}
+		for (size_t i = size_ - 1; i > size_ - pos; i++) {
+			data_[i] = 0;
+		}
+
+		return *this;
 	}
 
 	void clear() {
@@ -290,12 +262,11 @@ public:
 		int a_1 = a_tmp.left_ind();
 		int b_1 = b_tmp.left_ind();
 
-		a_tmp.resize(a_tmp.size_ + b_tmp.size_);
-
+		a_tmp.resize(a_tmp.size_ * 2);
 		BigInt c(a_tmp);
 		c.clear();
 
-		for (ssize_t i = 0; i <= b_1; i++) {
+		for (size_t i = 0; i <= b_1; i++) {
 			if (b_tmp.at(i)) {
 				c = c + a_tmp;
 			}
@@ -304,129 +275,6 @@ public:
 		}
 
 		c.sign_ = sign_ xor other.sign_;
-
-		return c;
-	}
-
-	int left_ind() const {
-		int b_1 = 0;
-		for (int i = size_ - 1; i >= 0; i--) {
-			if (at(i)) {
-				b_1 = i;
-				break;
-			}
-		}
-
-		return b_1;
-	}
-
-
-	bool is_zero() const {
-		for (ssize_t i = 0; i < size_; i++) {
-			if (at(i)) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	ssize_t size() const {
-		return size_;
-	}
-
-	void bit_flip(const ssize_t pos) {
-		data_[pos] = !data_[pos];
-	}
-
-	bool at(ssize_t index) const {
-		return (index >= 0) ? data_[index] : data_[size_ + index];
-	}
-
-	BigInt operator-() const {
-		BigInt tmp(*this);
-
-		tmp.sign_ = !sign_;
-
-		return tmp;
-	}
-
-	BigInt operator+(const BigInt& other) const {
-		// A < 0 | B < 0
-		if (negative() && other.negative()) {
-			return -(-(*this) + -other);
-		}
-
-		// A < 0 | B > 0
-		if (negative() && other.positive()) {
-			return other - (-(*this));
-		}
-
-		// A > 0 | B < 0
-		if (positive() && other.negative()) {
-			return (*this) - (-other);
-		}
-
-		BigInt c(*this);
-
-		c.resize(size_ + BLOCK_SIZE);
-
-		bool bubble = false;
-
-		for (ssize_t i = 0; i < other.size(); i++) {
-			int sum = (c.at(i) + other.at(i) + bubble);
-			c.data_[i] = sum & 1;
-			bubble = sum >> 1;
-		}
-
-		for (ssize_t i = other.size(); i < c.size() - 1; i++) {
-			int sum = (c.at(i) + bubble);
-			c.data_[i] = sum & 1;
-			bubble = sum >> 1;
-		}
-
-		c.sign_ = sign_ xor other.sign_;
-
-		return c;
-	}
-
-	BigInt operator-(const BigInt & other) const {
-		if (negative() && other.negative()) {
-			return ((*this) + (-other));
-		}
-
-		if (negative() && other.positive()) {
-			return -(-(*this) + other);
-		}
-
-		if (positive() && other.negative()) {
-			return (*this) + (-other);
-		}
-
-		if (positive() && other.positive()) {
-			if (*this < other) {
-				return -(other - (*this));
-			}
-		}
-
-		BigInt c(*this);
-
-		for (ssize_t i = 0; i < other.size(); i++) {
-			bool bubble = !c.at(i) && other.at(i);
-
-			if (bubble) {
-				for (ssize_t j = i + 1; j < c.size_; j++) {
-					if (c.at(j)) {
-						c.bit_flip(j);
-						break;
-					} else {
-						c.bit_flip(j);
-					}
-				}
-			}
-
-			c.data_[i] -= other.at(i);
-		}
 
 		return c;
 	}
@@ -460,21 +308,9 @@ public:
 		int res = 0;
 
 		int cnt = 0;
-		int a_1 = 0;
-		for (int i = a_tmp.size_ - 1; i >= 0; i--) {
-			if (a_tmp.at(i)) {
-				a_1 = i;
-				break;
-			}
-		}
 
-		int b_1 = 0;
-		for (int i = b_tmp.size_ - 1; i >= 0; i--) {
-			if (b_tmp.at(i)) {
-				b_1 = i;
-				break;
-			}
-		}
+		int a_1 = a_tmp.left_ind();
+		int b_1 = b_tmp.left_ind();
 
 		int b_lshift = a_1 - b_1;
 
@@ -482,7 +318,7 @@ public:
 			b_tmp <<= a_1 - b_1;
 		}
 
-		while (1) {
+		while (true) {
 			if (c < b_tmp) {
 				if (b_lshift == 0) {
 					break;
@@ -507,16 +343,116 @@ public:
 		return c;
 	}
 
+	BigInt operator-() const {
+		BigInt tmp(*this);
+
+		tmp.sign_ = !sign_;
+
+		return tmp;
+	}
+
+	bool is_zero() const {
+		for (size_t i = 0; i < size_; i++) {
+			if (at(i)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	BigInt operator+(const BigInt& other) const {
+		// A < 0 | B < 0
+		if (negative() && other.negative()) {
+			return -(-(*this) + -other);
+		}
+
+		// A < 0 | B > 0
+		if (negative() && other.positive()) {
+			return other - (-(*this));
+		}
+
+		// A > 0 | B < 0
+		if (positive() && other.negative()) {
+			return (*this) - (-other);
+		}
+
+		BigInt c(*this);
+
+		c.resize(size_ + BLOCK_SIZE);
+
+		bool bubble = false;
+
+		for (size_t i = 0; i < other.size(); i++) {
+			int sum = (c.at(i) + other.at(i) + bubble);
+			c.data_[i] = sum & 1;
+			bubble = sum >> 1;
+		}
+
+		for (size_t i = other.size(); i < c.size() - 1; i++) {
+			int sum = (c.at(i) + bubble);
+			c.data_[i] = sum & 1;
+			bubble = sum >> 1;
+		}
+
+		c.sign_ = sign_ xor other.sign_;
+
+		return c;
+	}
+
+	BigInt operator-(const BigInt & other) const {
+		if (negative() && other.negative()) {
+			return ((*this) + (-other));
+		}
+
+		if (negative() && other.positive()) {
+			return -(-(*this) + other);
+		}
+
+		if (positive() && other.negative()) {
+			return (*this) + (-other);
+		}
+
+		if (positive() && other.positive()) {
+			if (*this < other) {
+				return -(other - (*this));
+			}
+		}
+
+		BigInt c(*this);
+
+		for (size_t i = 0; i < other.size(); i++) {
+			bool bubble = !c.at(i) && other.at(i);
+
+			if (bubble) {
+				for (size_t j = i + 1; j < c.size_; j++) {
+					if (c.at(j)) {
+						c.bit_flip(j);
+						break;
+					} else {
+						c.bit_flip(j);
+					}
+				}
+			}
+
+			c.data_[i] -= other.at(i);
+		}
+
+		return c;
+	}
+
 	friend std::ostream& operator<<(std::ostream & out, const BigInt & x) {
 		if (x.size_ == 0) {
 			return out;
 		}
 
-		if (x.negative()) {
+		bool sign = x.at(x.size_ - 1) == 1;
+
+		if (x.sign_ && !x.is_zero()) {
 			out << "-";
 		}
 
-		BigIntDec b(x.size_);
+		BigIntDec b(x.left_ind() + 2);
 
 		int base = 2;
 
@@ -530,9 +466,8 @@ public:
 		return out << b;
 	}
 
-
 	void bit_print() const {
-		ssize_t i = size_ - 1;
+		size_t i = size_ - 1;
 
 		do {
 			std::cout << at(i);
@@ -546,7 +481,54 @@ public:
 	}
 
 private:
-	ssize_t size_;
+	static const int BLOCK_SIZE = 8;
+
+	void alloc() {
+		data_ = new bool[size_]();
+	}
+
+	void resize(size_t new_size) {
+		if (new_size == size_) {
+			return;
+		}
+
+		bool *new_data_ = new bool[new_size]();
+
+		std::copy(data_, data_ + std::min(size_, new_size), new_data_);
+
+		delete[] data_;
+
+		data_ = new_data_;
+		size_ = new_size;
+	}
+
+	size_t size() const {
+		return size_;
+	}
+
+	void bit_flip(const size_t pos) {
+		data_[pos] = !data_[pos];
+	}
+
+	// позиция старшего ненулевого бита
+	int left_ind() const {
+		int ind = 0;
+
+		for (int i = size_ - 1; i >= 0; i--) {
+			if (at(i)) {
+				ind = i;
+				break;
+			}
+		}
+
+		return ind;
+	}
+
+	bool at(size_t index) const {
+		return data_[index];
+	}
+
+	size_t size_;
 	bool sign_;
 
 	bool* data_;

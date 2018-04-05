@@ -33,10 +33,10 @@ public:
 		delete[] matrix;
 	}
 	size_t getRows() const{
-		return rowCount;
+		return columnCount;
 	}
 	size_t getColumns() const{
-		return columnCount;
+		return rowCount;
 	}
 	Proxy operator[](size_t i){
 		if (i >= rowCount)
@@ -49,25 +49,25 @@ public:
 		return Proxy(matrix[i], columnCount);
 	}
 	
-	void operator*=(int number) {
+	Matrix& operator*=(int number) {
 		for (size_t i = 0; i < rowCount; i++) {
 			for (size_t j = 0; j < columnCount; j++) {
 				matrix[i][j] = matrix[i][j] * number;
 			}
 		}
-		
+		return *this;
 	}
 	bool operator==(const Matrix& other) const{
 		if (other.rowCount != rowCount || other.columnCount != columnCount)
-			return 0;
+			return false;
 
 		for (size_t i = 0; i < rowCount; i++) {
 			for (size_t j = 0; j < columnCount; j++) {
 				if (matrix[i][j] != other.matrix[i][j])
-					return 0;
+					return false;
 			}
 		}
-		return 1;
+		return true;
 	}
 	bool operator!=(const Matrix& other) const{
 		return !(*this == other);
