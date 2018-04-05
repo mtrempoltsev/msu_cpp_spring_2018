@@ -17,11 +17,11 @@ public:
 	~Mvector();
 
 	T& operator[](size_t i);
-	T& operator[](size_t i) const;
+	const T& operator[](size_t i) const;
 	void push_back(const T& x);
 	void pop();
 	void push_front(const T& x);
-	int size() const;
+	size_t size() const;
 	size_t capacity();
 	void new_size(int i, const T& initial);
 
@@ -124,7 +124,7 @@ T& Mvector<T>::operator[](size_t i)
 }
 
 template<class T>
-T& Mvector<T>::operator[](size_t i) const
+const T& Mvector<T>::operator[](size_t i) const
 {
 	return _array[i];
 }
@@ -163,7 +163,7 @@ inline void Mvector<T>::push_front(const T& x)
 }
 
 template<class T>
-int Mvector<T>::size() const
+size_t Mvector<T>::size() const
 {
 	return _size;
 }
