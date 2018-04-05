@@ -29,8 +29,8 @@ public:
             m[i] = new int[cols];
     }
 
-    size_t getColumns() const { return cols; }
-    size_t getRows() const { return rows; }
+    size_t getColumns() const { return rows; }
+    size_t getRows() const { return cols; }
 
     Row operator[](const int i)
     {

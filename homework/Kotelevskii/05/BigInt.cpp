@@ -1,42 +1,29 @@
 #include "BigInt.h"
 
-
 BigInt::BigInt()
 {
-	num = new short();
+	num = new char[1]{ '0' };
 	size = 1;
 	is_positive = true;
 }
-
-BigInt::BigInt(int x)
+BigInt::BigInt(int64_t x)
 {
 	is_positive = (x >= 0);
 	if (!is_positive)
-		x = -1 * x;
-	int s = 1;
-	int x_copy = x;
+		x *=-1;
+	size_t s = 1;
+	int64_t x_copy = x;
 	while (x_copy / 10)
 	{
 		x_copy /= 10;
 		s++;
 	}
 	size = s;
-	num = new short[size];
+	num = new char[size];
 	for (int i = size - 1; i >= 0; i--)
 	{
-		num[size-1-i] = x % 10;
+		num[size-1-i] = x % 10 +'0';
 		x /= 10;
-	}
-}
-
-BigInt::BigInt(const short n[], int s, bool isp)
-{
-	is_positive = isp;
-	size = s;
-	num = new short[size];
-	for (int i = 0; i < size; i++)
-	{
-		num[i] = n[i];
 	}
 }
 
@@ -44,8 +31,8 @@ BigInt::BigInt(const BigInt& other)
 {
 	is_positive = other.is_positive;
 	size = other.size;
-	num = new short[size];
-	for (int i = 0; i < size; i++)
+	num = new char[size];
+	for (size_t i = 0; i < size; i++)
 	{
 		num[i] = other.num[i];
 	}
@@ -69,7 +56,7 @@ BigInt BigInt::operator+(const BigInt& other) const
 			return *this - (-other);
 		}
 	}
-	int max_size,min_size;
+	size_t max_size,min_size;
 	bool this_bigger = false;
 	if (size > other.size)
 	{
@@ -82,46 +69,49 @@ BigInt BigInt::operator+(const BigInt& other) const
 		max_size = other.size;
 		min_size = size;
 	}
-	short* result = new short[max_size + 1];
+	BigInt result;
+	result.resize(max_size + 1);
+	result.fill_zeros();
 	int buf = 0;
-	result[0] = 0;
-
-	for (int i = 0; i < min_size; i++)
+	for (size_t i = 0; i < min_size; i++)
 	{
-		result[i] = (num[i] + other.num[i] + buf) % 10;
-		buf = (num[i] + other.num[i] + buf) / 10;
+		result.num[i] = (num[i]-'0' + other.num[i]-'0' + buf) % 10 +'0';
+		buf = (num[i] - '0' + other.num[i] - '0' + buf) / 10;
 	}
-	for (int i = min_size; i < max_size; i++)
+	for (size_t i = min_size; i < max_size; i++)
 	{
-		result[i] = (num[i] * this_bigger + other.num[i] * (1 - this_bigger) + buf) % 10;
-		buf = (num[i] * this_bigger + other.num[i] * (1 - this_bigger) + buf) / 10;
+		result.num[i] = ((num[i]-'0') * this_bigger + (other.num[i]-'0') * (1 - this_bigger) + buf) % 10 +'0';
+		buf = ((num[i] - '0') * this_bigger + (other.num[i] - '0') * (1 - this_bigger) + buf) / 10;
 	}
 	if (buf != 0)
 	{
-		result[max_size] = buf;
+		result.num[max_size] = buf+'0';
 		max_size += 1;
 	}
 	else
 	{
-		short* result_new = new short[max_size];
-		for (int i = 0; i < max_size; i++)
+		BigInt result_new;
+		result_new.resize(max_size);
+		result_new.fill_zeros();
+		for (size_t i = 0; i < max_size; i++)
 		{
-			result_new[i] = result[i];
+			result_new.num[i] = result.num[i];
 		}
-		delete result;
-		return BigInt(result_new, max_size, is_positive);
+		result_new.set_sign(is_positive);
+		return result_new;
 	}
-	return BigInt(result, max_size, is_positive);
+	result.set_sign(is_positive);
+	return result;
 }
 BigInt BigInt::operator-(const BigInt& other) const
 {
-	int max_size, min_size;
+	size_t max_size, min_size;
 	bool this_bigger = true;
 	BigInt tmp = *this;
 	BigInt other_tmp = other;
 	if (*this == other)
 	{
-		return BigInt(new short(), 1, true);
+		return BigInt();
 	}
 	else if (is_positive == false && other.is_positive == true)
 	{
@@ -136,8 +126,7 @@ BigInt BigInt::operator-(const BigInt& other) const
 		this_bigger = (*this) > other;
 		if (!this_bigger)
 		{
-			tmp = other;
-			other_tmp = *this;
+			std::swap(tmp.num, other_tmp.num);
 		}
 		max_size = size*this_bigger + (1 - this_bigger)*other.size;
 		min_size = size*(1 - this_bigger) + this_bigger*other.size;
@@ -168,57 +157,67 @@ BigInt BigInt::operator-(const BigInt& other) const
 			}
 		}
 	}
-	short* result = new short[max_size];
+	BigInt result;
+	result.resize(max_size);
+	result.fill_zeros();
 	bool buf = false;
-	for (int i = 0; i < min_size; i++)
+	for (size_t i = 0; i < min_size; i++)
 	{
-		result[i] = tmp.num[i] - other_tmp.num[i] - buf;
-		buf = result[i] < 0;
+		result.num[i] = tmp.num[i] - other_tmp.num[i] - buf;
+		buf = result.num[i] < 0;
 		if (buf)
 		{
-			result[i] += 10;
+			result.num[i] = result.num[i] + 10;
 		}
+		result.num[i] += '0';
 	}
-	for (int i = min_size; i < max_size; i++)
+	for (size_t i = min_size; i < max_size; i++)
 	{
-		result[i] = tmp.num[i] - buf;
-		buf = result[i] < 0;
+		result.num[i] = tmp.num[i] - (buf+'0');
+		buf = result.num[i] < 0;
 		if (buf)
 		{
-			result[i] += 10;
+			result.num[i] = result.num[i] + 10;
 		}
+		result.num[i] += '0';
 	}
-	int last=max_size;
-	while (result[last-1] == 0)
+	size_t last=max_size;
+	while (result.num[last-1] == '0')
 		last--;
-	short*result_new = new short[last];
-	for (int i = 0; i < last; i++)
-		result_new[i] = result[i];
-	delete result;
-	return BigInt(result_new, last, tmp.is_positive*this_bigger);
+	BigInt result_new;
+	result_new.resize(last);
+	result_new.fill_zeros();
+	for (size_t i = 0; i < last; i++)
+		result_new.num[i] = result.num[i];
+	result_new.set_sign(tmp.is_positive&&this_bigger);
+	return result_new;
 }
 BigInt BigInt::operator*(const BigInt& other) const
 {
-	if (size == 1 && num[0] == 0 || other.size == 1 && other.num[0] == 0)
-		return BigInt(new short(), 1, true);
-	int s = size + other.size;
-	short*result = new short[s]();
+	if (size == 1 && num[0] == '0' || other.size == 1 && other.num[0] == '0')
+		return BigInt();
+	size_t s = size + other.size;
+	BigInt result;
+	result.resize(s);
+	result.fill_zeros();
 	int buf = 0;
-	for (int i = 0; i<size; ++i)
-		for (int j = 0, buf = 0; j<other.size || buf; ++j)
+	for (size_t i = 0; i < size; ++i)
+		for (size_t j = 0, buf = 0; j < other.size || buf; ++j)
 		{
-			long long cur = result[i + j] + num[i] * (j < other.size ? other.num[j] : 0) + buf;
-			result[i + j] = int(cur % 10);
+			long long cur = result.num[i + j] - '0' + (num[i] - '0') * (j < other.size ? (other.num[j] - '0') : 0) + buf;
+			result.num[i + j] = int(cur % 10) + '0';
 			buf = int(cur / 10);
 		}
-	int last = s;
-	while (result[last - 1] == 0)
+	size_t last = s;
+	while (result.num[last - 1] == '0')
 		last--;
-	short*result_new = new short[last];
-	for (int i = 0; i < last; i++)
-		result_new[i] = result[i];
-	delete result;
-	return BigInt(result_new, last, is_positive == other.is_positive);
+	BigInt result_new;
+	result_new.resize(last);
+	result_new.fill_zeros();
+	for (size_t i = 0; i < last; i++)
+		result_new.num[i] = result.num[i];
+	result_new.set_sign(is_positive == other.is_positive);
+	return result_new;
 }
 BigInt BigInt::operator/(const BigInt& other) const
 {
@@ -228,25 +227,27 @@ BigInt BigInt::operator/(const BigInt& other) const
 		tmp = -tmp;
 	if (!other_tmp.is_positive)
 		other_tmp = -other_tmp;
-	if (size == 1 && num[0] == 0 || tmp<other_tmp)
+	if (size == 1 && num[0] == '0' || tmp<other_tmp)
 		return BigInt();
-	int counter = 0;
+	size_t counter = 0;
 	while (tmp >= other_tmp)
 	{
-		tmp = tmp - other_tmp;
+		tmp = std::move(tmp - other_tmp);
 		counter++;
 	}
 	BigInt result = counter;
-	return BigInt(result.num, result.size, is_positive == other.is_positive);
+	result.set_sign(is_positive == other.is_positive);
+	return result;
 }
 void BigInt::operator=(const BigInt& other)
 {
 	if (this == &other)
 		return;
+	delete[] num;
 	size = other.size;
-	num = new short[size];
+	num = new char[other.size];
 	is_positive = other.is_positive;
-	for (int i = 0; i < size; i++)
+	for (size_t i = 0; i < size; i++)
 		num[i] = other.num[i];
 	return;
 }
@@ -258,15 +259,20 @@ void BigInt::operator=(const int& number)
 		delete num;
 	}
 	size = a.size;
-	num = new short[size];
-	for (int i = 0; i < size; i++)
+	num = new char[size];
+	for (size_t i = 0; i < size; i++)
 		num[i] = a.num[i];
 }
 BigInt BigInt::operator-() const
 {
-	if (size == 1 && num[0] == 0)
+	if (size == 1 && num[0] == '0')
 		return *this;
-	return BigInt(num,size,!is_positive);
+	BigInt result;
+	result.resize(size);
+	for (size_t i = 0; i < size; i++)
+		result.num[i] = num[i];
+	result.set_sign(!is_positive);
+	return result;
 }
 bool BigInt::operator>(const BigInt& other) const
 {
@@ -323,7 +329,7 @@ bool BigInt::operator<(const BigInt& other) const
 }
 bool BigInt::operator==(const BigInt& other) const
 {
-	if (size == 1 && num[0] == 0 && other.size == 1 && other.num[0] == 0)
+	if (size == 1 && num[0] == '0' && other.size == 1 && other.num[0] == '0')
 		return true;
 	return !((*this > other) || (*this < other));
 }
@@ -339,13 +345,26 @@ bool BigInt::operator<=(const BigInt& other) const
 {
 	return (*this < other) || (*this == other);
 }
-
 std::ostream& operator<<(std::ostream& out, const BigInt& number)
 {
 	if (!number.is_positive)
 		out << '-';
 	for (int i = number.size - 1; i >= 0; i--)
-		out << number.num[i];
+		out << number.num[i]-'0';
 	return out;
 }
- 
+void BigInt::resize(size_t n)
+{
+	size = n;
+	delete num;
+	num = new char[n];
+}
+void BigInt::fill_zeros()
+{
+	for (size_t i = 0; i < size; i++)
+		num[i] = '0';
+}
+void BigInt::set_sign(bool sign)
+{
+	is_positive = sign;
+}
