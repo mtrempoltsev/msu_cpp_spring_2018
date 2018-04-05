@@ -6,10 +6,12 @@
 
 typedef int8_t digit;
 
+// TODO: template why not?
+
 class BigInt {
 private:
     const digit operator[](size_t i) const {
-        if (i >= length) {
+        if (i >= length or *this == BigInt(0)) {
             return 0;
         }
 
@@ -39,7 +41,7 @@ private:
 
             digit* memory_for_num;
             if (nulls_counter == length) {
-                memory_for_num = new int8_t[1];
+                memory_for_num = new digit[1];
                 *memory_for_num = 0;
                 length = 1;
                 is_negative = false;
@@ -186,7 +188,7 @@ public:
     BigInt(const int64_t input_number) {
         if (input_number == 0) {
             is_negative = false;
-            number = new int8_t[1];
+            number = new digit[1];
             *number = 0;
             length = 1;
             return;
@@ -204,7 +206,7 @@ public:
         }
 
         length = buffer_id;
-        number = new int8_t[length];
+        number = new digit[length];
         for (size_t i = 0; i < length; ++i) {
             number[i] = buffer[buffer_id - 1 - i];
         }
@@ -218,7 +220,7 @@ public:
 
     BigInt(const BigInt& copied) {
         length = copied.length;
-        number = new int8_t[length];
+        number = new digit[length];
         is_negative = copied.is_negative;
 
         for (size_t i = 0; i < length; ++i) {
@@ -271,7 +273,7 @@ public:
         delete[] number;
 
         length = copied.length;
-        number = new int8_t[length];
+        number = new digit[length];
         is_negative = copied.is_negative;
 
         for (size_t i = 0; i < length; ++i) {
@@ -351,6 +353,10 @@ public:
         {
             for (size_t i = 0; i < other.length; ++i) {
                 result.number[result.length - 1 - j] += mult_items[i][j];
+                if (result.number[result.length - 1 - j] > 100) {
+                    result.number[result.length - 1 - j - 1] += result.number[result.length - 1 - j] / 10;
+                    result.number[result.length - 1 - j] = result.number[result.length - 1 - j] % 10;
+                }
             }
         }
 
@@ -422,7 +428,7 @@ public:
             std::copy(dividend.number, dividend.number + cut.length, cut.number);
         }
 
-        result.fitSize();
+        //result.fitSize();
 
         return result;
     }
