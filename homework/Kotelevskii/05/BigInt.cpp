@@ -224,16 +224,43 @@ BigInt BigInt::operator/(const BigInt& other) const
 	BigInt tmp = *this;
 	BigInt other_tmp = other;
 	if (!tmp.is_positive)
-		tmp = -tmp;
+		tmp.set_sign(true);
 	if (!other_tmp.is_positive)
-		other_tmp = -other_tmp;
-	if (size == 1 && num[0] == '0' || tmp<other_tmp)
+		other_tmp.set_sign(true);
+	if (size == 1 && num[0] == '0' || tmp < other_tmp)
+	{
 		return BigInt();
+	}
+	else if ((*this) == other)
+	{
+		return BigInt(1);
+	}
 	size_t counter = 0;
+	unsigned mult = 1;
+	bool f;
 	while (tmp >= other_tmp)
 	{
-		tmp = std::move(tmp - other_tmp);
-		counter++;
+		f = false;
+		mult = 1;
+		while (tmp >= BigInt(mult)*other_tmp)
+		{
+			mult *= 100;
+		}
+		if (mult > 1)
+		{
+			mult /= 100;
+		}
+		while (tmp >= BigInt(mult)*other_tmp)
+		{
+			mult *= 2;
+			f = true;
+		}
+		if (f)
+		{
+			mult /= 2;
+		}
+		tmp = std::move(tmp - BigInt(mult)*other_tmp);
+		counter+=mult;
 	}
 	BigInt result = counter;
 	result.set_sign(is_positive == other.is_positive);

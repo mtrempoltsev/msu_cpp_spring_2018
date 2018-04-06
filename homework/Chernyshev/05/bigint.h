@@ -60,19 +60,7 @@ public:
         return *this;
     }
 
-    Vector &operator = (Vector &&v) noexcept
-    {
-        if (this != &v) {
-            alloc = v.alloc;
-            used = v.used;
-            delete[] data;
-            data = v.data;
-            v.data = nullptr;
-        }
-        return *this;
-    }
-
-    // resize
+    // reserve
     void reserve(size_t size)
     {
         if (size <= alloc) {
@@ -290,6 +278,13 @@ public:
     {
         sign = b.sign;
         number = b.number;
+        return *this;
+    }
+
+    BigInt &operator = (BigInt &&b)
+    {
+        sign = b.sign;
+        number = std::move(b.number);
         return *this;
     }
 
@@ -568,10 +563,11 @@ std::ostream &operator << (std::ostream &out, const BigInt &a)
     }
 
     out << a.number.back();
-    for (int i = static_cast<int>(a.size()) - 2; i >= 0; --i) {
-        out << std::setw(9) << std::setfill('0') << a.number[i];
+    if (a.size() >= 2) {
+        for (int i = a.size() - 2; i >= 0; --i) {
+            out << std::setw(9) << std::setfill('0') << a.number[i];
+        }
     }
-
     return out;
 }
 

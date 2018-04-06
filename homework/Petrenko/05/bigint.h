@@ -2,8 +2,12 @@
 #define SPHERE_01_C_HW05_BIGINT_H
 
 #include <ostream>
+#include <tuple>
 
 class BigInt {
+    static const size_t min_size = 21;
+    static const size_t base = 100;
+
     uint8_t * data;
     size_t real_size;
     size_t max_size;
@@ -12,8 +16,6 @@ class BigInt {
     void widen();
     std::pair<BigInt, BigInt> divmod(const BigInt & other) const;
 public:
-    static const size_t min_size = 21;
-    static const size_t base = 100;
     BigInt(int64_t v = 0);
     BigInt(const BigInt & other);
     BigInt(BigInt && other);
@@ -58,6 +60,8 @@ public:
     BigInt & operator--();
 
     friend std::ostream & operator<<(std::ostream & os, const BigInt & value);
+    friend std::pair<uint8_t, bool> modulo_addc(uint8_t a, uint8_t b);
+    friend std::pair<uint8_t, bool> modulo_subb(uint8_t a, uint8_t b);
 };
 
 #endif //SPHERE_01_C_HW05_BIGINT_H
