@@ -1,12 +1,15 @@
+#pragma once
 #include <algorithm>
 #include <iostream>
+#include <memory>
 
 class BigInt {
 private:
 	void allocate_to_len() {
 		cap *= 2;
-		int* newarr;
-		newarr = new int[cap];
+		auto newarr = std::make_unique<int[]>(cap);
+		//int* newarr;
+		//newarr = new int[cap];
 		size_t tmp = size_;
 		//size_ = std::min(size_, cap);
 		if (tmp != 0) {
@@ -14,13 +17,15 @@ private:
 				newarr[i] = arr[i];
 			}
 		}
-		delete[] arr;
-		arr = newarr;
+		//delete[] arr;
+		arr = std::move(newarr);
 	}
 
 public:
-	size_t size_, cap;
-	int* arr = nullptr;
+	size_t size_;
+	size_t cap = 32;
+	//int* arr;
+	std::unique_ptr<int[]> arr;
 	bool sign = true;
 	BigInt();
 	BigInt(const BigInt&);
@@ -50,11 +55,9 @@ public:
 
 
 	void push_back(int number) {
-		size_++;
+		arr[size_++] = number;
 		if (cap <= size_)
 			this->allocate_to_len();
-		arr[size_ - 1] = number;
-
 	}
 	void push_front(int number) {
 		for (size_t i = size_; i > 0; i--)
@@ -68,8 +71,8 @@ public:
 
 BigInt::BigInt() {
 	size_ = 0;
-	cap = 64;
-	arr = new int[cap];
+	arr = std::make_unique<int[]>(cap);
+	//arr = new int[cap];
 	push_back(0);
 }
 
@@ -77,7 +80,9 @@ BigInt::BigInt(const BigInt& number) {
 	cap = number.cap;
 	sign = number.sign;
 	size_ = number.size_;
-	arr = new int[cap];
+	arr = std::make_unique<int[]>(cap);
+	//delete[] arr;
+	//arr = new int[cap];
 
 	for (size_t i = 0; i < size_; i++) {
 		arr[i] = number.arr[i];
@@ -86,8 +91,9 @@ BigInt::BigInt(const BigInt& number) {
 
 BigInt::BigInt(int64_t number) {
 	size_ = 0;
-	cap = 64;
-	arr = new int[cap];
+	//delete[] arr;
+	//arr = new int[cap];
+	arr = std::make_unique<int[]>(cap);
 	if (number == 0) {
 		push_back(0);
 		return;
@@ -109,6 +115,7 @@ BigInt BigInt::operator-() {
 	sign = !sign;
 	return *this;
 }
+
 BigInt& BigInt::operator=(int64_t number) {
 	BigInt num(number);
 	*this = num;
@@ -119,11 +126,18 @@ BigInt& BigInt::operator=(const BigInt& number) {
 		return *this;
 	sign = number.sign;
 	size_ = number.size_;
-	arr = new int[size_];
+	cap = number.cap;
+	//delete[] arr;
+	//arr = new int[cap];
+	arr = std::make_unique<int[]>(cap);
 	for (size_t i = 0; i < size_; i++) {
 		arr[i] = number.arr[i];
 	}
 	return *this;
+}
+
+BigInt::~BigInt() {
+	//delete[] arr;
 }
 
 bool BigInt::operator==(const BigInt& number) const {
@@ -323,8 +337,8 @@ BigInt BigInt::operator-(const BigInt& number) const {
 
 BigInt BigInt::operator*(const BigInt& number) const {
 	BigInt result;
-	if(size_ > 32)
-		result.allocate_to_len();
+	//if(size_ > 32)
+		//result.allocate_to_len();
 	//BigInt res(*this);
 	BigInt num(number);
 
@@ -425,8 +439,4 @@ std::ostream& operator<<(std::ostream& out, const BigInt& value)
 	for (size_t i = value.size_ - 1; i !=-1; i--)
 		out << (value.arr[i]);
 	return out;
-}
-
-BigInt::~BigInt() {
-	delete[] arr;
 }
