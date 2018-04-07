@@ -2,212 +2,161 @@
 
 #include <string>
 #include <algorithm>
+#include <memory>
 
-class  Vector
+class U_Vector
 {
 public:
+	typedef std::unique_ptr<int[]> ptr;
 
-	typedef int* ptr;
+	U_Vector();
+	U_Vector(size_t size);
+	U_Vector(size_t size, const int & initial);
+	U_Vector(const U_Vector & v);
+	~U_Vector();
 
-	Vector();
-	Vector(size_t size);
-	Vector(size_t size, const int & initial);
-	Vector(const Vector & v);
-	~Vector();
-
-	size_t capacity() const;
 	size_t size() const;
-	ptr begin();
-	ptr end();
-	ptr begin() const ;
-	ptr end() const ;
-	int & front();
-	int & back();
+	size_t capacity() const;
+
 	void push_back(const int & value);
 	void push_front(const int & value);
-	void pop_back();
+	void pop();
 
 	void reserve(size_t capacity);
 	void resize(size_t size);
 
-	int & operator[](unsigned int index);
-	int & operator[](unsigned int index) const;
-	Vector & operator=(const Vector &);
-	void clear();
+	int & operator[](size_t index);
+	const int & operator[](size_t index) const;
+
+	U_Vector & operator=(const U_Vector &);
 
 private:
-	size_t my_size;
-	size_t my_capacity;
-	int * buffer;
+	size_t _size;
+	size_t _capacity;
+	std::unique_ptr<int[]> _buffer;
 };
 
-Vector::Vector()
+U_Vector::U_Vector()
 {
-	my_capacity = 0;
-	my_size = 0;
-	buffer = 0;
+	_size = 0;
+	_capacity = 0;
+	_buffer = nullptr;
 }
 
-Vector::Vector(const Vector & v)
+U_Vector::~U_Vector()
 {
-	my_size = v.my_size;
-	my_capacity = v.my_capacity;
-	buffer = new int[my_size];
-	for (size_t i = 0; i < my_size; i++)
-		buffer[i] = v.buffer[i];
+
 }
 
-Vector::Vector(size_t size)
+U_Vector::U_Vector(size_t size)
 {
-	my_capacity = size;
-	my_size = size;
-	buffer = new int[size];
+	_capacity = size;
+	_size = size;
+	_buffer = std::make_unique<int[]>(_size);
 }
 
-Vector::Vector(size_t size, const int & initial)
+U_Vector::U_Vector(const U_Vector & v)
 {
-	my_size = size;
-	my_capacity = size;
-	buffer = new int[size];
+	_size = v._size;
+	_capacity = v._capacity;
+	_buffer = std::make_unique<int[]>(_size);
+	for (size_t i = 0; i < _size; i++)
+		_buffer[i] = v._buffer[i];
+}
+
+U_Vector::U_Vector(size_t size, const int & initial)
+{
+	_size = size;
+	_capacity = size;
+	_buffer = std::make_unique<int[]>(_size);
 	for (size_t i = 0; i < size; i++)
-		buffer[i] = initial;
+		_buffer[i] = initial;
 }
 
-Vector & Vector::operator = (const Vector & v)
+U_Vector & U_Vector::operator=(const U_Vector & v)
 {
-	delete[] buffer;
-	my_size = v.my_size;
-	my_capacity = v.my_capacity;
-	buffer = new int[my_size];
-	for (size_t i = 0; i < my_size; i++)
-		buffer[i] = v.buffer[i];
+	_size = v._size;
+	_capacity = v._capacity;
+	_buffer = std::make_unique<int[]>(_capacity);
+	for (size_t i = 0; i < _size; i++)
+		_buffer[i] = v._buffer[i];
+
 	return *this;
 }
 
-Vector::ptr Vector::begin()
+void U_Vector::reserve(size_t capacity)
 {
-	return buffer;
-}
-
-Vector::ptr Vector::end()
-{
-	return buffer + size();
-}
-
-Vector::ptr Vector::begin() const
-{
-	return buffer;
-}
-
-Vector::ptr Vector::end() const
-{
-	return buffer + size();
-}
-
-int& Vector::front()
-{
-	return buffer[0];
-}
-
-int& Vector::back()
-{
-	return buffer[my_size - 1];
-}
-
-void Vector::push_back(const int & v)
-{
-	if (my_size >= my_capacity)
-		reserve(my_capacity + 5);
-	buffer[my_size++] = v;
-}
-
-void Vector::push_front(const int & v)
-{
-	int prev_size = my_size;
-	this->resize(my_size + 1);
-	for (int i = prev_size - 1; i >= 0; i--)
-		buffer[i + 1] = buffer[i];
-	buffer[0] = v;
-}
-
-void Vector::pop_back()
-{
-	my_size--;
-}
-
-void Vector::reserve(size_t capacity)
-{
-	if (buffer == 0)
-	{
-		my_size = 0;
-		my_capacity = 0;
-	}
-
-	if (capacity == my_size)
+	if (_size == capacity)
 		return;
 
-	ptr Newbuffer = new int[capacity];
-	size_t l_Size = capacity < my_size ? capacity : my_size;
+	ptr new_buffer = std::make_unique<int[]>(capacity);
+
+	size_t l_Size = capacity < _size ? capacity : _size;
 
 	for (size_t i = 0; i < l_Size; i++)
-		Newbuffer[i] = buffer[i];
+		new_buffer[i] = _buffer[i];
 
-	delete[] buffer;
+	if (capacity > _size)
+		for (size_t i = _size; i < capacity; i++)
+			new_buffer[i] = 0;
 
-	if (capacity > my_size)
-		for (size_t i = my_size; i < capacity; i++)
-			Newbuffer[i] = 0;
+	_capacity = capacity;
 
-	my_capacity = capacity;
-	buffer = Newbuffer;
-
+	_buffer = std::move(new_buffer);
 }
 
-size_t Vector::size()const
+void U_Vector::push_back(const int & v)
 {
-	return my_size;
+	if (_size >= _capacity)
+		reserve(_capacity * 2 + 1);
+	_buffer[_size++] = v;
 }
 
-void Vector::resize(size_t size)
+size_t U_Vector::size() const
+{
+	return _size;
+}
+
+size_t U_Vector::capacity() const
+{
+	return _capacity;
+}
+
+void U_Vector::resize(size_t size)
 {
 	reserve(size);
-	my_size = size;
+	_size = size;
 }
 
-int& Vector::operator[](unsigned int index)
+int& U_Vector::operator[](size_t index)
 {
-	return buffer[index];
+	return _buffer[index];
 }
 
-int& Vector::operator[](unsigned int index) const
+const int& U_Vector::operator[](size_t index) const
 {
-	return buffer[index];
+	return _buffer[index];
 }
 
-size_t Vector::capacity()const
+void U_Vector::push_front(const int & v)
 {
-	return my_capacity;
+	int prev_size = _size;
+	resize(_size + 1);
+	for (int i = prev_size - 1; i >= 0; i--)
+		_buffer[i + 1] = _buffer[i];
+	_buffer[0] = v;
 }
 
-Vector::~Vector()
+void U_Vector::pop()
 {
-	delete[] buffer;
-}
-
-void Vector::clear()
-{
-	my_capacity = 0;
-	my_size = 0;
-	buffer = 0;
+	_size--;
 }
 
 class BigInt
 {
 public:
-
 	BigInt();
 	BigInt(const BigInt& copied);
-	BigInt(const bool sign, const Vector num);
 	BigInt(const int64_t& i_copied);
 
 	BigInt& operator=(const BigInt& other);
@@ -242,8 +191,10 @@ public:
 	friend BigInt abs(const BigInt& other);
 	friend void ref_abs(BigInt& left, BigInt& right);
 
-public:
-	Vector bigInt;
+private:
+	BigInt(const bool sign, const U_Vector num);
+
+	U_Vector bigInt;
 	bool isNegative;
 };
 
@@ -259,7 +210,7 @@ BigInt::BigInt(const BigInt& copied)
 	isNegative = copied.isNegative;
 };
 
-BigInt::BigInt(const bool sign, const Vector num)
+BigInt::BigInt(const bool sign, const U_Vector num)
 {
 	isNegative = sign;
 	bigInt = num;
@@ -382,12 +333,12 @@ bool BigInt::operator>=(const BigInt& right) const
 BigInt& BigInt::delete_nulls()
 {
 	size_t length = this->size();
-	auto it = this->bigInt.end() - 1;
+	int end = bigInt.size() - 1;
 	int c = 0;
-	while (*it == 0 && it != this->bigInt.begin())
+	while (bigInt[end] == 0 && end != 0)
 	{
 		c++;
-		it--;
+		end--;
 	}
 	this->bigInt.resize(length - c);
 	return *this;
@@ -398,10 +349,10 @@ BigInt BigInt::operator+(const BigInt& right) const
 	if (isNegative == right.isNegative)
 	{
 		size_t length = std::max(bigInt.size(), right.bigInt.size());
-		Vector result(length + 1, 0);
+		U_Vector result(length + 1, 0);
 
-		Vector l = bigInt;
-		Vector r = right.bigInt;
+		U_Vector l = bigInt;
+		U_Vector r = right.bigInt;
 
 		l.resize(length);
 		r.resize(length);
@@ -433,10 +384,10 @@ BigInt BigInt::operator+(const BigInt& right) const
 		{
 			bool sign = this->isNegative;
 			size_t length = std::max(bigInt.size(), right.bigInt.size());
-			Vector result(length, 0);
+			U_Vector result(length, 0);
 
-			Vector l = absL.bigInt;
-			Vector r = absR.bigInt;
+			U_Vector l = absL.bigInt;
+			U_Vector r = absR.bigInt;
 
 			l.resize(length);
 			r.resize(length);
@@ -465,12 +416,12 @@ BigInt BigInt::operator*(const BigInt& right) const
 	if (*this == 0 || right == 0)
 		return BigInt(0);
 
-	Vector r_copy = right.bigInt;
-	Vector l_copy = this->bigInt;
+	U_Vector r_copy = right.bigInt;
+	U_Vector l_copy = this->bigInt;
 	bool isNeg = !(right.isNegative == this->isNegative);
 
 	size_t length = r_copy.size() + l_copy.size();
-	Vector res(length, 0);
+	U_Vector res(length, 0);
 
 	for (int ix = 0; ix < r_copy.size(); ix++)
 		for (int jx = 0; jx < l_copy.size(); jx++)
@@ -512,7 +463,7 @@ BigInt BigInt::operator/(const BigInt& number) const
 {
 	BigInt result;
 	BigInt aux;
-	aux.bigInt.pop_back();
+	aux.bigInt.pop();
 	BigInt abs_number = abs(number);
 	for (size_t i = 0; i < this->size(); i++)
 	{
