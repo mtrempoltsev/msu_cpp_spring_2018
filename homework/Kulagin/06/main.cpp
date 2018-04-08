@@ -141,7 +141,7 @@ int get_expr(char*& expr, int& opened_brackets_cnt) {
 	}
 }
 
-int eval(char* expr) {
+int calc(char* expr) {
 	if (*expr == '\0') {
 		throw std::invalid_argument("input expression is empty");
 	}
@@ -165,7 +165,7 @@ int eval(char* expr) {
 int main(int argc, char** argv) {
 	if (argc == 2) {
 		try {
-			int result = eval(argv[1]);
+			int result = calc(argv[1]);
 
 			std::cout << result << std::endl;
 		} catch (std::exception& err) {
