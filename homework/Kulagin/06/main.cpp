@@ -10,15 +10,9 @@ void skip_spaces(char*& expr) {
 	}
 }
 
-// IF '(' THEN opened_brackets_cnt += 1
-// ELSE IF ')' THEN opened_brackets_cnt -= 1
-// ENDIF
-
-
 int get_expr(char*& expr, int opened_brackets_cnt);
 
-// [GET_PRIM]: parsing [+-]?(?:Pi|e|\d+)
-// int get_prim(char*& expr);
+// [GET_PRIM]: parsing [+-]\d+
 int get_prim(char*& expr, int opened_brackets_cnt) {
 	skip_spaces(expr);
 
@@ -78,7 +72,6 @@ int get_prim(char*& expr, int opened_brackets_cnt) {
 }
 
 // [GET_TERM]: parsing 'prim | term * prim | term / prim'
-// int get_term(char*& expr);
 int get_term(char*& expr, int opened_brackets_cnt) {
 	int term_1 = get_prim(expr, opened_brackets_cnt);
 
@@ -115,7 +108,6 @@ int get_term(char*& expr, int opened_brackets_cnt) {
 }
 
 // [GET_EXPR]: parsing 'expr = term | expr + term | expr - term'
-// int get_expr(char*& expr);
 int get_expr(char*& expr, int opened_brackets_cnt) {
 	int term_1 = get_term(expr, opened_brackets_cnt);
 
