@@ -1,7 +1,7 @@
 #include <iostream>
 
 bool is_digit(char c) {
-	return (c >= '0' && c <= '9');
+	return (c >= '0') && (c <= '9');
 }
 
 void skip_spaces(char*& expr) {
@@ -19,8 +19,6 @@ int get_expr(char*& expr, int opened_brackets_cnt);
 
 // [GET_PRIM]: parsing [+-]?(?:Pi|e|\d+)
 // int get_prim(char*& expr);
-// int get_prim(char*& expr);
-// double get_prim(char*& expr);
 int get_prim(char*& expr, int opened_brackets_cnt) {
 	skip_spaces(expr);
 
@@ -48,7 +46,7 @@ int get_prim(char*& expr, int opened_brackets_cnt) {
 		expr++;
 		opened_brackets_cnt++;
 
-		long double prim = get_expr(expr, opened_brackets_cnt);
+		long prim = get_expr(expr, opened_brackets_cnt);
 
 		if (*expr != ')') {
 			throw std::runtime_error("mismached brackets - an extra \"(\"");
@@ -60,7 +58,7 @@ int get_prim(char*& expr, int opened_brackets_cnt) {
 		return is_negative ? -prim : prim;
 	}
 
-	long double prim = 0;
+	long prim = 0;
 
 	if (is_digit(*expr)) {
 		do {
