@@ -10,10 +10,10 @@ void skip_spaces(char*& expr) {
 	}
 }
 
-int get_expr(char*& expr, int opened_brackets_cnt);
+int get_expr(char*& expr, int& opened_brackets_cnt);
 
 // [GET_PRIM]: parsing [+-]\d+
-int get_prim(char*& expr, int opened_brackets_cnt) {
+int get_prim(char*& expr, int& opened_brackets_cnt) {
 	skip_spaces(expr);
 
 	bool is_negative = false;
@@ -38,6 +38,7 @@ int get_prim(char*& expr, int opened_brackets_cnt) {
 
 	if (*expr == '(') {
 		expr++;
+
 		opened_brackets_cnt++;
 
 		long prim = get_expr(expr, opened_brackets_cnt);
@@ -47,6 +48,7 @@ int get_prim(char*& expr, int opened_brackets_cnt) {
 		}
 
 		expr++;
+
 		opened_brackets_cnt--;
 
 		return is_negative ? -prim : prim;
@@ -72,7 +74,7 @@ int get_prim(char*& expr, int opened_brackets_cnt) {
 }
 
 // [GET_TERM]: parsing 'prim | term * prim | term / prim'
-int get_term(char*& expr, int opened_brackets_cnt) {
+int get_term(char*& expr, int& opened_brackets_cnt) {
 	int term_1 = get_prim(expr, opened_brackets_cnt);
 
 	while (1) {
@@ -108,7 +110,7 @@ int get_term(char*& expr, int opened_brackets_cnt) {
 }
 
 // [GET_EXPR]: parsing 'expr = term | expr + term | expr - term'
-int get_expr(char*& expr, int opened_brackets_cnt) {
+int get_expr(char*& expr, int& opened_brackets_cnt) {
 	int term_1 = get_term(expr, opened_brackets_cnt);
 
 	while (1) {
