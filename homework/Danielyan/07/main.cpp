@@ -5,11 +5,17 @@
 
 void CheckNumberCorrectness(const std::string& s) {
     bool double_dot = false;
-    for (auto&& x : s)
+    bool first_symbol = true;
+    for (auto &&x : s) {
+        if (first_symbol && x == '-') {
+            first_symbol = false;
+            continue;
+        }
         if (!(('0' <= x && x <= '9') || (x == '.' && !double_dot)))
             throw std::invalid_argument("");
         else if (x == '.')
             double_dot = true;
+    }
 }
 
 template <class T>
@@ -63,7 +69,7 @@ private:
     T evaluate(size_t from, size_t to) const {
         if (to - from == 1)
             return Parse<T>(splitted_[from]);
-        for (size_t i = to; i-- > 0; ) {
+        for (size_t i = to; i-- > from; ) {
             if (splitted_[i] == "+") {
                 return evaluate(from, i) + evaluate(i + 1, to);
             }
@@ -71,12 +77,15 @@ private:
                 return evaluate(from, i) - evaluate(i + 1, to);
             }
         }
-        for (size_t i = to; i-- > 0; ) {
+        for (size_t i = to; i-- > from; ) {
             if (splitted_[i] == "*") {
                 return evaluate(from, i) * evaluate(i + 1, to);
             }
             if (splitted_[i] == "/") {
-                return evaluate(from, i) / evaluate(i + 1, to);
+                auto a = evaluate(from, i), b = evaluate(i + 1, to);
+                if (b == 0)
+                    throw std::invalid_argument("");
+                return a / b;
             }
         }
         throw std::runtime_error("something bad happened!");
@@ -95,8 +104,12 @@ private:
                         throw std::invalid_argument("");
                     }
                 } else {
-                    splitted_[p++] = splitted_[i];
-                    prev_is_operation = true;
+                    if (splitted_[i][0] == '-' && p == 0) {
+                        prev_is_unary_minus = !prev_is_unary_minus;
+                    } else {
+                        splitted_[p++] = splitted_[i];
+                        prev_is_operation = true;
+                    }
                 }
             } else {
                 if (prev_is_operation) {
@@ -116,6 +129,9 @@ private:
                 prev_is_operation = false;
             }
         }
+        if (prev_is_operation || prev_is_unary_minus)
+            throw std::invalid_argument("");
+
         splitted_.resize(p);
         splitted_.shrink_to_fit();
     }
