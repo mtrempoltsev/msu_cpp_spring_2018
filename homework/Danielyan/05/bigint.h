@@ -29,6 +29,20 @@ public:
             module_length = 0;
     }
 
+    BigInt(long value) : module_capacity(2), module_length(2), sign(1) {
+        module = new unsigned int[module_capacity]();
+        if (value < 0) {
+            value *= -1;
+            sign = -1;
+        }
+        module[0] = static_cast<unsigned int>(value & static_cast<unsigned int>(-1));
+        module[1] = static_cast<unsigned int>(value >> 32);
+        if (module[1] == 0)
+            module_length = 1;
+        if (value == 0)
+            module_length = 0;
+    }
+
     BigInt(long long value) : module_capacity(2), module_length(2), sign(1) {
         module = new unsigned int[module_capacity]();
         if (value < 0) {
