@@ -21,6 +21,108 @@ private:
         return;
     }
 
+    void sum_bigInt(const List &x, const List &y) {
+        delete bigint_;
+        bigint_ = new List;
+        size_t size_x = x.get_size();
+        size_t size_y = y.get_size();
+        size_t min_size = size_x > size_y ?
+                          size_y :
+                          size_x;
+        int carry_over = 0;
+        int64_t sum;
+        for (int i = 0; i < min_size; ++i) {
+            sum = x[i] + y[i] + carry_over;
+            carry_over = sum / MAX_NUMBER;
+            bigint_->push_back(sum % MAX_NUMBER);
+        }
+        for (int j = size_y; j < size_x; ++j) {
+            sum = x[j] + carry_over;
+            carry_over = sum / MAX_NUMBER;
+            bigint_->push_back(sum % MAX_NUMBER);
+        }
+        for (int j = size_x; j < size_y; ++j) {
+            sum = y[j] + carry_over;
+            carry_over = sum / MAX_NUMBER;
+            bigint_->push_back(sum % MAX_NUMBER);
+        }
+        if (carry_over) {
+            bigint_->push_back(carry_over);
+        }
+        return;
+    }
+
+    void dif_bigInt(const List &x, const List &y) {
+        delete bigint_;
+        bigint_ = new List;
+        size_t size_x = x.get_size();
+        size_t size_y = y.get_size();
+        int carry_over = 0;
+        int64_t dif;
+        for (int i = 0; i < size_y; ++i) {
+            dif = x[i] - y[i] - carry_over;
+            if (dif < 0) {
+                carry_over = 1;
+                dif += MAX_NUMBER;
+            } else {
+                carry_over = 0;
+            }
+            bigint_->push_back(dif);
+        }
+        for (int j = size_y; j < size_x; ++j) {
+            dif = x[j] - carry_over;
+            if (dif < 0) {
+                carry_over = 1;
+                dif += MAX_NUMBER;
+            } else {
+                carry_over = 0;
+            }
+            bigint_->push_back(dif);
+        }
+
+        return;
+    }
+
+    List *simple_mul(const List &x, const int64_t y) {
+        delete bigint_;
+        bigint_ = new List;
+        List *tmp;
+        size_t size_x = x.get_size();
+        int carry_over = 0;
+        int64_t mul;
+        for (int i = 0; i < size_x; ++i) {
+            tmp = new List;
+            mul = x[i] * y;
+            for (int j = 0; j < i; ++j) {
+                tmp->push_back(0);
+            }
+            tmp->push_back(mul % MAX_NUMBER);
+            tmp->push_back(mul / MAX_NUMBER);
+            List copy(*bigint_);
+            this->sum_bigInt(copy, *tmp);
+            delete tmp;
+        }
+        return bigint_;
+    }
+
+    void mul_bigInt(const List &x, const List &y) {
+        delete bigint_;
+        bigint_ = new List;
+        size_t size_x = x.get_size();
+        size_t size_y = y.get_size();
+        BigInt mul;
+        List *mul_bigint;
+        for (int i = 0; i < size_y; ++i) {
+            mul_bigint = mul.simple_mul(x, y[i]);
+            for (int j = 0; j < i; ++j) {
+                mul_bigint->push_front(0);
+            }
+            List copy(*bigint_);
+            this->sum_bigInt(copy, *mul_bigint);
+        }
+        this->dell_zero();
+    }
+
 public:
     BigInt(const int64_t number = 0) {
         bigint_ = new List{};
@@ -150,108 +252,6 @@ public:
 
     bool operator<(const BigInt &bigInt) const {
         return !(*this >= bigInt);
-    }
-
-    void sum_bigInt(const List &x, const List &y) {
-        delete bigint_;
-        bigint_ = new List;
-        size_t size_x = x.get_size();
-        size_t size_y = y.get_size();
-        size_t min_size = size_x > size_y ?
-                          size_y :
-                          size_x;
-        int carry_over = 0;
-        int64_t sum;
-        for (int i = 0; i < min_size; ++i) {
-            sum = x[i] + y[i] + carry_over;
-            carry_over = sum / MAX_NUMBER;
-            bigint_->push_back(sum % MAX_NUMBER);
-        }
-        for (int j = size_y; j < size_x; ++j) {
-            sum = x[j] + carry_over;
-            carry_over = sum / MAX_NUMBER;
-            bigint_->push_back(sum % MAX_NUMBER);
-        }
-        for (int j = size_x; j < size_y; ++j) {
-            sum = y[j] + carry_over;
-            carry_over = sum / MAX_NUMBER;
-            bigint_->push_back(sum % MAX_NUMBER);
-        }
-        if (carry_over) {
-            bigint_->push_back(carry_over);
-        }
-        return;
-    }
-
-    void dif_bigInt(const List &x, const List &y) {
-        delete bigint_;
-        bigint_ = new List;
-        size_t size_x = x.get_size();
-        size_t size_y = y.get_size();
-        int carry_over = 0;
-        int64_t dif;
-        for (int i = 0; i < size_y; ++i) {
-            dif = x[i] - y[i] - carry_over;
-            if (dif < 0) {
-                carry_over = 1;
-                dif += MAX_NUMBER;
-            } else {
-                carry_over = 0;
-            }
-            bigint_->push_back(dif);
-        }
-        for (int j = size_y; j < size_x; ++j) {
-            dif = x[j] - carry_over;
-            if (dif < 0) {
-                carry_over = 1;
-                dif += MAX_NUMBER;
-            } else {
-                carry_over = 0;
-            }
-            bigint_->push_back(dif);
-        }
-
-        return;
-    }
-
-    List *simple_mul(const List &x, const int64_t y) {
-        delete bigint_;
-        bigint_ = new List;
-        List *tmp;
-        size_t size_x = x.get_size();
-        int carry_over = 0;
-        int64_t mul;
-        for (int i = 0; i < size_x; ++i) {
-            tmp = new List;
-            mul = x[i] * y;
-            for (int j = 0; j < i; ++j) {
-                tmp->push_back(0);
-            }
-            tmp->push_back(mul % MAX_NUMBER);
-            tmp->push_back(mul / MAX_NUMBER);
-            List copy(*bigint_);
-            this->sum_bigInt(copy, *tmp);
-            delete tmp;
-        }
-        return bigint_;
-    }
-
-    void mul_bigInt(const List &x, const List &y) {
-        delete bigint_;
-        bigint_ = new List;
-        size_t size_x = x.get_size();
-        size_t size_y = y.get_size();
-        BigInt mul;
-        List *mul_bigint;
-        for (int i = 0; i < size_y; ++i) {
-            mul_bigint = mul.simple_mul(x, y[i]);
-            for (int j = 0; j < i; ++j) {
-                mul_bigint->push_front(0);
-            }
-            List copy(*bigint_);
-            this->sum_bigInt(copy, *mul_bigint);
-        }
-        this->dell_zero();
     }
 
     BigInt operator-() const {
