@@ -9,11 +9,40 @@ class BigInt
 	int* bigNumber_;
 	size_t size_;
 public:
-	BigInt() : bigNumber_(NULL) {}
-	
-	BigInt(size_t size, int a = 0) : sign_(1), size_(size)
+	BigInt() : sign_(1), bigNumber_((int*)malloc(sizeof(int))), size_(1)
 	{
-		bigNumber_ = (int*) malloc(size * sizeof(int));
+		bigNumber_[0] = 0;
+	}
+
+	BigInt(int64_t a)
+	{
+		if (a >= 0)
+			sign_ = 1;
+		else
+		{
+			sign_ = -1;
+			a = a * (-1);
+		}
+		int buf = a % base;
+		bigNumber_ = (int*)malloc(sizeof(int));
+		bigNumber_[0] = buf;
+		a -= buf;
+		a /= base;
+		size_ = 1;
+		while (a != 0)
+		{
+			buf = a % base;
+			bigNumber_ = (int*)realloc(bigNumber_, sizeof(int) * (size_ + 1));
+			bigNumber_[size_] = buf;
+			a -= buf;
+			a /= base;
+			size_++;
+		}
+	}
+
+	BigInt(bool q, size_t size, int a = 0) : sign_(1), size_(size)
+	{
+		bigNumber_ = (int*)malloc(size * sizeof(int));
 		for (size_t i = 0; i < size_; i++)
 			bigNumber_[i] = 0;
 	}
@@ -25,8 +54,8 @@ public:
 
 	BigInt(const BigInt& a) : sign_(a.sign_), size_(a.size_)
 	{
-		bigNumber_ = (int*) malloc(size_ * sizeof(int));
-		for(size_t i = 0; i < size_; i++)
+		bigNumber_ = (int*)malloc(size_ * sizeof(int));
+		for (size_t i = 0; i < size_; i++)
 			bigNumber_[i] = a.bigNumber_[i];
 	}
 
@@ -37,7 +66,7 @@ public:
 		size_ = a.size_;
 		sign_ = a.sign_;
 		free(bigNumber_);
-		bigNumber_ = (int*) malloc(size_ * sizeof(int));
+		bigNumber_ = (int*)malloc(size_ * sizeof(int));
 		for (size_t i = 0; i < size_; i++)
 			bigNumber_[i] = a.bigNumber_[i];
 		return *this;
@@ -90,9 +119,11 @@ public:
 			return false;
 		if ((((*this).size_ < b.size_) && (b.sign_ == 1)) || (((*this).size_ > b.size_) && (b.sign_ == -1)))
 			return true;
+		if ((((*this).size_ > b.size_) && (b.sign_ == 1)) || (((*this).size_ < b.size_) && (b.sign_ == -1)))
+			return false;
 		if (b.sign_ == 1)
 		{
-			for(size_t i = b.size_ - 1;((i < b.size_) && (i >= 0)); i--)
+			for (size_t i = b.size_ - 1; ((i < b.size_) && (i >= 0)); i--)
 			{
 				if ((*this).bigNumber_[i] < b.bigNumber_[i])
 					return true;
@@ -104,7 +135,7 @@ public:
 		}
 		else
 		{
-			for(size_t i = b.size_ - 1;((i < b.size_) && (i >= 0)); i--)
+			for (size_t i = b.size_ - 1; ((i < b.size_) && (i >= 0)); i--)
 			{
 				if ((*this).bigNumber_[i] > b.bigNumber_[i])
 					return true;
@@ -137,16 +168,42 @@ public:
 		return !((*this) < b);
 	}
 
+	BigInt abs() const
+	{
+		BigInt result = (*this);
+		result.sign_ = 1;
+		return result;
+	}
+
 	BigInt operator+(const BigInt& b) const
 	{
 		BigInt result;
+		if ((*this).sign_ * b.sign_ == -1)
+		{
+			if ((*this).abs() > b.abs())
+			{
+				result = (*this).abs() - b.abs();
+				result.sign_ = (*this).sign_;
+				return result;
+			}
+			if ((*this).abs() == b.abs())
+			{
+				return result;
+			}
+			else
+			{
+				result = b.abs() - (*this).abs();
+				result.sign_ = b.sign_;
+				return result;
+			}
+		}
 		if ((*this).size_ >= b.size_)
 			result = *this;
 		else
 			result = b;
 		int toNextDigit = 0;
 		size_t i = 0;
-		for(i; i < std::min((*this).size_ , b.size_); i++)
+		for (i; i < std::min((*this).size_, b.size_); i++)
 		{
 			int buf = (*this).bigNumber_[i] + b.bigNumber_[i] + toNextDigit;
 			toNextDigit = buf / base;
@@ -156,39 +213,36 @@ public:
 			if ((*this).size_ == b.size_)
 			{
 				result.size_ += 1;
-				result.bigNumber_ = (int*) realloc (bigNumber_, sizeof(int));
+				result.bigNumber_ = (int*)realloc(bigNumber_, sizeof(int));
 				result.bigNumber_[result.size_ - 1] = 1;
 			}
 			else
-				result.bigNumber_[i + 1] += toNextDigit;
+				result.bigNumber_[i] += toNextDigit;
 		return result;
 	}
 
 	BigInt operator-()
 	{
+		if ((size_ == 1) && (bigNumber_[0] == 0))
+			return *this;
 		(*this).sign_ *= -1;
 		return *this;
 	}
 
-	BigInt abs() const
-	{
-		BigInt result = (*this);
-		result.sign_ = 1;
-		return result;
-	}
-
 	BigInt operator-(const BigInt& b) const
 	{
-		if (((*this).sign_ == 1) && (b.sign_ == -1))
-			return (*this) + b;
 		BigInt result;
-		if (((*this).sign_ == -1) && (b.sign_ == 1))
-			{
-				result = (*this) + b;
-				result.sign_ = -1;
-				return result;
+		if ((*this).sign_ * b.sign_ == -1)
+		{
+			result = (*this).abs() + b.abs();
+			result.sign_ = (*this).sign_;
+			return result;
 		}
 		BigInt bufBigInt;
+		if ((*this).abs() == b.abs())
+		{
+			return result;
+		}
 		if ((*this).abs() > b.abs())
 		{
 			result = (*this);
@@ -197,11 +251,12 @@ public:
 		else
 		{
 			result = b;
+			result.sign_ = b.sign_ * -1;
 			bufBigInt = (*this);
 		}
 		int toNextDigit = 0;
 		size_t i = 0;
-		for(i; i < bufBigInt.size_; i++)
+		for (i; i < bufBigInt.size_; i++)
 		{
 			int buf = result.bigNumber_[i] - bufBigInt.bigNumber_[i] + toNextDigit;
 			if (buf < 0)
@@ -227,13 +282,15 @@ public:
 			result.size_ = 1;
 			return result;
 		}
-		result.bigNumber_ = (int*) realloc(result.bigNumber_, result.size_ * sizeof(int));
+		result.bigNumber_ = (int*)realloc(result.bigNumber_, result.size_ * sizeof(int));
 		return result;
 	}
 
 	BigInt operator*(const BigInt& b) const
 	{
-		BigInt result((*this).size_ * b.size_ + 1, 0);
+		if ((((*this).size_ == 1) && ((*this).bigNumber_[0] == 0)) || ((b.size_ == 1) && (b.bigNumber_[0] == 0)))
+			return 0;
+		BigInt result(true, (*this).size_ * b.size_ + 1, 0);
 		for (size_t i = 0; i < b.size_; i++)
 		{
 			size_t j = 0;
@@ -257,31 +314,33 @@ public:
 				break;
 			i--;
 		}
-		result.bigNumber_ = (int*) realloc(result.bigNumber_, result.size_ * sizeof(int));
+		result.bigNumber_ = (int*)realloc(result.bigNumber_, result.size_ * sizeof(int));
 		return result;
 	}
 
 	BigInt operator*(int a) const
 	{
-		BigInt buf(1, 0);
+		BigInt buf(true, 1, 0);
 		buf.bigNumber_[0] = a;
 		return (*this) * buf;
 	}
 
 	void LevelUp()
 	{
-		(*this).bigNumber_ = (int*) realloc((*this).bigNumber_, sizeof(int) * ((*this).size_ + 1));
+		if ((size_ == 1) && (bigNumber_[0] == 0))
+			return ;
+		(*this).bigNumber_ = (int*)realloc((*this).bigNumber_, sizeof(int) * ((*this).size_ + 1));
 		(*this).size_++;
 		for (size_t i = size_ - 1; i >= 1; i--)
-			bigNumber_[i] = bigNumber_[i-1];
+			bigNumber_[i] = bigNumber_[i - 1];
 		bigNumber_[0] = 0;
 	}
 
 	BigInt operator/(const BigInt &b) const
 	{
-		BigInt result((*this).size_, 0);
-		BigInt curValue(1, 0);
-		for (size_t i = (*this).size_ - 1;((i < (*this).size_) && (i >= 0)); i--)
+		BigInt result(true, (*this).size_, 0);
+		BigInt curValue(true, 1, 0);
+		for (size_t i = (*this).size_ - 1; ((i < (*this).size_) && (i >= 0)); i--)
 		{
 			curValue.LevelUp();
 			curValue.bigNumber_[0] = (*this).bigNumber_[i];
@@ -290,7 +349,7 @@ public:
 			while (l <= r)
 			{
 				int m = (l + r) >> 1;
-				BigInt cur = b * m;
+				BigInt cur = b.abs() * m;
 				if (cur <= curValue)
 				{
 					x = m;
@@ -300,10 +359,10 @@ public:
 					r = m - 1;
 			}
 			result.bigNumber_[i] = x;
-			curValue = curValue - b * x;
+			curValue = curValue - b.abs() * x;
 		}
 		size_t i = result.size_ - 1;
-		while (result.size_ > 0)
+		while (i > 0)
 		{
 			if (result.bigNumber_[i] == 0)
 				result.size_--;
@@ -311,7 +370,9 @@ public:
 				break;
 			i--;
 		}
-		result.bigNumber_ = (int*) realloc(result.bigNumber_, result.size_ * sizeof(int));
+		result.bigNumber_ = (int*)realloc(result.bigNumber_, result.size_ * sizeof(int));
+		if ((result.size_ == 1) && (result.bigNumber_[0] == 0))
+			return 0;
 		result.sign_ = (*this).sign_ * b.sign_;
 		return result;
 	}
@@ -377,31 +438,30 @@ public:
 	friend std::ostream& operator<<(std::ostream& out, const BigInt& a)
 	{
 		if (a.sign_ == -1)
-			std::cout << "-";
-		std::cout << a.bigNumber_[a.size_ - 1];
+			out << "-";
+		out << a.bigNumber_[a.size_ - 1];
 		for (size_t i = a.size_ - 2; (i >= 0) && (i <= a.size_ - 1); i--)
 		{
 			if (a.bigNumber_[i] == 0)
 				if (a.size_ == 1)
-					{
-						std::cout << "0";
-						return out;
-					}
+				{
+					out << "0";
+					return out;
+				}
 				else
 				{
-					std:: cout << "0000";
+					out << "0000";
 					continue;
 				}
 			int buf = a.bigNumber_[i];
 			int secondBuf = base / 10;
-			while((buf / secondBuf) == 0)
+			while ((buf / secondBuf) == 0)
 			{
-				std::cout << "0";
+				out << "0";
 				secondBuf /= 10;
 			}
-			std::cout << a.bigNumber_[i];
+			out << a.bigNumber_[i];
 		}
-		std::cout << std::endl;
 		return out;
 	}
 };
