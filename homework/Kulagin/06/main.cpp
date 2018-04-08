@@ -67,7 +67,7 @@ int get_prim(char*& expr, int& opened_brackets_cnt) {
 
 		s += *expr;
 
-		throw std::runtime_error("unknown character \"" + s + "\"");
+		throw std::runtime_error("unexpected character \"" + s + "\"");
 	}
 
 	return is_negative ? -prim : prim;
@@ -155,7 +155,7 @@ int calc(char* expr) {
 	}
 
 	if (*expr != '\0') {
-		throw std::runtime_error("invalid character \"" + std::to_string(*expr) + "\"");
+		throw std::runtime_error("unexpected character \"" + std::to_string(*expr) + "\"");
 	}
 
 	return result;
