@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <stack>
 
 typedef int8_t digit;
 
@@ -195,21 +196,20 @@ public:
         }
 
 
-        auto buffer = new digit[30];
-        size_t buffer_id = 0;
+        std::stack<digit> buffer;
         auto abs_number = (input_number >= 0? input_number : -input_number);
         while (abs_number > 0) {
-            buffer[buffer_id++] = abs_number % 10;
+            buffer.push(abs_number % 10);
             abs_number /= 10;
         }
 
-        length = buffer_id;
+        length = buffer.size();
         number = new digit[length];
-        for (size_t i = 0; i < length; ++i) {
-            number[i] = buffer[buffer_id - 1 - i];
+        size_t i = 0;
+        while(!buffer.empty()) {
+            number[i++] = buffer.top();
+            buffer.pop();
         }
-
-        delete[] buffer;
     }
 
     ~BigInt() {
@@ -226,7 +226,7 @@ public:
         }
     }
 
-    bool operator<(const BigInt other) const
+    bool operator<(const BigInt& other) const
     {
         if (is_negative && !other.is_negative) {
             return true;
@@ -388,7 +388,7 @@ public:
         result.length = 0;
 
         auto cut = cutDividendToDivisor(dividend, divisor);
-        while(1)
+        while(true)
         {
             int i;
             for (i = 0; true; ++i) {
