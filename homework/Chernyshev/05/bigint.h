@@ -50,7 +50,7 @@ public:
         alloc = v.alloc;
         used = v.used;
         data = v.data;
-        v.data = 0;
+        v.data = nullptr;
     }
 
     // operator =
