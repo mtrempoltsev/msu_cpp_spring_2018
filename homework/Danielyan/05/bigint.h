@@ -138,36 +138,6 @@ public:
         return !(*this == other);
     }
 
-    template <class T>
-    bool operator<(T other) const {
-        return *this < BigInt(other);
-    }
-
-    template <class T>
-    bool operator<=(T other) const {
-        return *this <= BigInt(other);
-    }
-
-    template <class T>
-    bool operator>(T other) const {
-        return *this > BigInt(other);
-    }
-
-    template <class T>
-    bool operator>=(T other) const {
-        return *this >= BigInt(other);
-    }
-
-    template <class T>
-    bool operator==(T other) const {
-        return *this == BigInt(other);
-    }
-
-    template <class T>
-    bool operator!=(T other) const {
-        return *this != BigInt(other);
-    }
-
     BigInt& operator-() {
         if (*this != 0)
             sign *= -1;
@@ -230,16 +200,6 @@ public:
         return *this;
     }
 
-    template <class T>
-    BigInt& operator+=(T other) {
-        return *this += BigInt(other);
-    }
-
-    template <class T>
-    BigInt& operator-=(T other) {
-        return *this -= BigInt(other);
-    }
-
     BigInt operator+(const BigInt& other) const {
         BigInt result(*this);
         result += other;
@@ -282,11 +242,6 @@ public:
         BigInt result(*this);
         result *= other;
         return result;
-    }
-
-    template <class T>
-    BigInt& operator*=(T other) {
-        return *this *= BigInt(other);
     }
 
     BigInt& operator/=(const BigInt& other);
