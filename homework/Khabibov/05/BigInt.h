@@ -1,13 +1,22 @@
 #include<iostream>
 
-constexpr int base = 10000;
-constexpr int numberOfDigitsInBase = 4;
+namespace options
+{	
+	constexpr int base = 10000;
+	constexpr int numberOfDigitsInBase = 4;
+}
 
 class BigInt
 {
 	int sign_;
 	int* bigNumber_;
 	size_t size_;
+	BigInt(bool q, size_t size, int a = 0) : sign_(1), size_(size)
+	{
+		bigNumber_ = (int*)malloc(size * sizeof(int));
+		for (size_t i = 0; i < size_; i++)
+			bigNumber_[i] = 0;
+	}
 public:
 	BigInt() : sign_(1), bigNumber_((int*)malloc(sizeof(int))), size_(1)
 	{
@@ -23,28 +32,21 @@ public:
 			sign_ = -1;
 			a = a * (-1);
 		}
-		int buf = a % base;
+		int buf = a % options::base;
 		bigNumber_ = (int*)malloc(sizeof(int));
 		bigNumber_[0] = buf;
 		a -= buf;
-		a /= base;
+		a /= options::base;
 		size_ = 1;
 		while (a != 0)
 		{
-			buf = a % base;
+			buf = a % options::base;
 			bigNumber_ = (int*)realloc(bigNumber_, sizeof(int) * (size_ + 1));
 			bigNumber_[size_] = buf;
 			a -= buf;
-			a /= base;
+			a /= options::base;
 			size_++;
 		}
-	}
-
-	BigInt(bool q, size_t size, int a = 0) : sign_(1), size_(size)
-	{
-		bigNumber_ = (int*)malloc(size * sizeof(int));
-		for (size_t i = 0; i < size_; i++)
-			bigNumber_[i] = 0;
 	}
 
 	~BigInt()
@@ -74,7 +76,7 @@ public:
 
 	BigInt(BigInt &&a) : sign_(a.sign_), bigNumber_(a.bigNumber_), size_(a.size_)
 	{
-		a.bigNumber_ = NULL;
+		a.bigNumber_ = nullptr;
 	}
 
 	BigInt& operator=(BigInt &&a)
@@ -85,7 +87,7 @@ public:
 		sign_ = a.sign_;
 		free(bigNumber_);
 		bigNumber_ = a.bigNumber_;
-		a.bigNumber_ = NULL;
+		a.bigNumber_ = nullptr;
 		return *this;
 	}
 
@@ -149,18 +151,12 @@ public:
 
 	bool operator>(const BigInt& b) const
 	{
-		if (!((*this) <= b))
-			return true;
-		else
-			return false;
+		return !((*this) < b) && !((*this) == b);
 	}
 
 	bool operator<=(const BigInt& b) const
 	{
-		if (((*this) == b) || ((*this) < b))
-			return true;
-		else
-			return false;
+		return !((*this) > b);
 	}
 
 	bool operator>=(const BigInt& b) const
@@ -206,8 +202,8 @@ public:
 		for (i; i < std::min((*this).size_, b.size_); i++)
 		{
 			int buf = (*this).bigNumber_[i] + b.bigNumber_[i] + toNextDigit;
-			toNextDigit = buf / base;
-			result.bigNumber_[i] = buf % base;
+			toNextDigit = buf / options::base;
+			result.bigNumber_[i] = buf % options::base;
 		}
 		if (toNextDigit == 1)
 			if ((*this).size_ == b.size_)
@@ -261,9 +257,9 @@ public:
 			int buf = result.bigNumber_[i] - bufBigInt.bigNumber_[i] + toNextDigit;
 			if (buf < 0)
 			{
-				result.bigNumber_[i] = base + buf;
-				int debug = buf - base;
-				toNextDigit = debug / base;
+				result.bigNumber_[i] = options::base + buf;
+				int debug = buf - options::base;
+				toNextDigit = debug / options::base;
 			}
 			else
 				result.bigNumber_[i] = buf;
@@ -299,8 +295,8 @@ public:
 			{
 				result.bigNumber_[j + i] += toNextDigit;
 				result.bigNumber_[j + i] += b.bigNumber_[i] * (*this).bigNumber_[j];
-				toNextDigit = result.bigNumber_[j + i] / base;
-				result.bigNumber_[j + i] %= base;
+				toNextDigit = result.bigNumber_[j + i] / options::base;
+				result.bigNumber_[j + i] %= options::base;
 			}
 			result.bigNumber_[j + i] += toNextDigit;
 		}
@@ -325,27 +321,16 @@ public:
 		return (*this) * buf;
 	}
 
-	void LevelUp()
-	{
-		if ((size_ == 1) && (bigNumber_[0] == 0))
-			return ;
-		(*this).bigNumber_ = (int*)realloc((*this).bigNumber_, sizeof(int) * ((*this).size_ + 1));
-		(*this).size_++;
-		for (size_t i = size_ - 1; i >= 1; i--)
-			bigNumber_[i] = bigNumber_[i - 1];
-		bigNumber_[0] = 0;
-	}
-
 	BigInt operator/(const BigInt &b) const
 	{
 		BigInt result(true, (*this).size_, 0);
 		BigInt curValue(true, 1, 0);
 		for (size_t i = (*this).size_ - 1; ((i < (*this).size_) && (i >= 0)); i--)
 		{
-			curValue.LevelUp();
+			curValue = curValue * options::base;
 			curValue.bigNumber_[0] = (*this).bigNumber_[i];
 			int x = 0;
-			int l = 0, r = base;
+			int l = 0, r = options::base;
 			while (l <= r)
 			{
 				int m = (l + r) >> 1;
@@ -383,7 +368,7 @@ public:
 		char* stringOfNumber = new char[1024 * 1024];
 		in >> ch;
 		size_t i = 0;
-		size_t bufNumberOfDigitsInBase = numberOfDigitsInBase;
+		size_t bufNumberOfDigitsInBase = options::numberOfDigitsInBase;
 		int buf = 0;
 		if (ch == '-')
 			a.sign_ = -1;
@@ -400,9 +385,9 @@ public:
 			i++;
 			in >> ch;
 		}
-		size_t sizeOfBigNumber = i / numberOfDigitsInBase;
+		size_t sizeOfBigNumber = i / options::numberOfDigitsInBase;
 		bool flag = false;
-		if (i % numberOfDigitsInBase != 0)
+		if (i % options::numberOfDigitsInBase != 0)
 		{
 			a.size_ = sizeOfBigNumber + 1;
 			a.bigNumber_ = new int[a.size_];
@@ -415,17 +400,17 @@ public:
 		}
 		for (size_t j = 0; j < sizeOfBigNumber; j++)
 		{
-			char bufString[numberOfDigitsInBase];
-			for (size_t k = 0; k < numberOfDigitsInBase; k++)
+			char bufString[options::numberOfDigitsInBase];
+			for (size_t k = 0; k < options::numberOfDigitsInBase; k++)
 			{
-				char nBuf = stringOfNumber[i - numberOfDigitsInBase * (j + 1) + k];
+				char nBuf = stringOfNumber[i - options::numberOfDigitsInBase * (j + 1) + k];
 				bufString[k] = nBuf;
 			}
 			a.bigNumber_[j] = atoi(bufString);
 		}
 		if (flag == true)
 		{
-			size_t buff = i % numberOfDigitsInBase;
+			size_t buff = i % options::numberOfDigitsInBase;
 			char* bufString = new char[buff + 1];
 			for (size_t k = 0; k < buff; k++)
 				bufString[k] = stringOfNumber[k];
@@ -454,7 +439,7 @@ public:
 					continue;
 				}
 			int buf = a.bigNumber_[i];
-			int secondBuf = base / 10;
+			int secondBuf = options::base / 10;
 			while ((buf / secondBuf) == 0)
 			{
 				out << "0";
