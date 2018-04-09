@@ -3,7 +3,11 @@
 #include <cmath>
 
 inline int get_sign(long long int a) {
-    return (0 < a) - (a < 0);
+    if (a < 0)
+    	return -1;
+    else if (a > 0)
+    	return 1;
+    return 0;
 }
 
 class BigInt
@@ -116,10 +120,10 @@ public:
 
 	void setSign(int s)
 	{
-		if (real_len == 0)
+		if (real_len == 0 or s == 0)
 			sign = 0;
 		else 
-			sign = s;
+			sign = s > 0 ? 1 : -1;
 	}
 
 
