@@ -8,21 +8,47 @@ private:
     int size;
 
     bool is_minus;
-    int64_t BASE = 10000;
-    
-void resize(int size_){
-    delete[] coef;
-    max_size = size_;
-    size = 0;
-    coef = new int[max_size];
-    for(int i = 0; i < max_size; i++){
-        coef[i] = 0;
+    const int64_t BASE = 10000;
+    int max_size;
+    BigInt operator*(const int value){
+        BigInt tmp;
+        if ((value == 0) || this->size == 0) return tmp;
+        
+        if(size + 1 > max_size){
+            tmp.resize(max_size*2);
+        }
+        
+        int r = 0;
+        tmp.size = size;
+        for(int i = 0; i < tmp.size | r; i++){
+            tmp.coef[i] = coef[i] * value + r;
+            r = tmp.coef[i]/BASE;
+            tmp.coef[i] -= r*BASE;
+        }
+        if(tmp.coef[tmp.size]){
+            tmp.size++;
+        }
+        return tmp;
     }
-}
+    
+    void shiftLeft(){
+        size++;
+        for(int i = size - 1; i >= 1; i--){
+            coef[i] = coef[i-1];
+        }    
+    }
+    
+    void resize(int size_){
+        delete[] coef;
+        max_size = size_;
+        size = 0;
+        coef = new int[max_size];
+        for(int i = 0; i < max_size; i++){
+            coef[i] = 0;
+        }
+    }
     
 public:
-    
-    int max_size;
     
     BigInt(){
         max_size = 8;
@@ -84,23 +110,41 @@ public:
     }
     
     BigInt(BigInt &&moved){
-        coef = moved.coef;
-        size = moved.size;
-        is_minus = moved.is_minus;
-        max_size = moved.max_size;
-        moved.coef = nullptr;
+        if(moved.coef == nullptr){
+            coef = nullptr;
+            size = 0;
+            is_minus = false;
+            max_size = 4;
+        } else {
+            coef = moved.coef;
+            size = moved.size;
+            is_minus = moved.is_minus;
+            max_size = moved.max_size;
+            moved.coef = nullptr;
+        }     
     }
     
     BigInt& operator=(BigInt &&moved){
         if (this == &moved)
             return *this;
-        delete[] coef;
-        coef = moved.coef;
-        is_minus = moved.is_minus;
-        size = moved.size;
-        max_size = moved.max_size;
-        moved.coef = nullptr;
-        return *this;        
+           
+        if(moved.coef == nullptr){
+            delete[] coef;
+            coef = nullptr;
+            size = 0;
+            is_minus = false;
+            max_size = 4;
+            return *this;
+        } else {
+            delete[] coef;
+            coef = moved.coef;
+            is_minus = moved.is_minus;
+            size = moved.size;
+            max_size = moved.max_size;
+            moved.coef = nullptr;
+            return *this;
+        }
+                
     }
     
     BigInt operator+(const BigInt& other) const
@@ -265,34 +309,6 @@ public:
         return tmp;
     }
     
-    BigInt operator*(const int value){
-        BigInt tmp;
-        if ((value == 0) || this->size == 0) return tmp;
-        
-        if(size + 1 > max_size){
-            tmp.resize(max_size*2);
-        }
-        
-        int r = 0;
-        tmp.size = size;
-        for(int i = 0; i < tmp.size | r; i++){
-            tmp.coef[i] = coef[i] * value + r;
-            r = tmp.coef[i]/BASE;
-            tmp.coef[i] -= r*BASE;
-        }
-        if(tmp.coef[tmp.size]){
-            tmp.size++;
-        }
-        return tmp;
-    }
-    
-    void shiftLeft(){
-        size++;
-        for(int i = size - 1; i >= 1; i--){
-            coef[i] = coef[i-1];
-        }    
-    }
-    
     BigInt operator/(const BigInt& other) const
     {
         
@@ -400,20 +416,20 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& os, const BigInt& data) 
-    {
-        if (data.size == 0){
-            os << "0";
-            return os;
-        }
-        
-        os.fill('0');
-        if(data.is_minus){
-            os << "-";
-        }
-        os << data.coef[data.size - 1];
-        for(int i = data.size - 2; i >= 0; i--){
-            os << std::setw(4) << data.coef[i];
-        }
-        
+{
+    if (data.size == 0){
+        os << "0";
         return os;
     }
+        
+    os.fill('0');
+    if(data.is_minus){
+        os << "-";
+    }
+    os << data.coef[data.size - 1];
+    for(int i = data.size - 2; i >= 0; i--){
+        os << std::setw(4) << data.coef[i];
+    }
+        
+    return os;
+}
