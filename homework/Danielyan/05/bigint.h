@@ -4,6 +4,7 @@
 #include <string>
 #include <limits>
 #include <sstream>
+#include <algorithm>
 
 class BigInt {
 public:
