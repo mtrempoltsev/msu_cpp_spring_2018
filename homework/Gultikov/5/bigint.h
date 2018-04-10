@@ -2,7 +2,7 @@
 #define BIGINT_H_INCLUDED
 #pragma once
 
-typedef char cell_type;
+using cell_type = signed char;
 
 class BigInt
 {
@@ -11,8 +11,8 @@ class BigInt
     //sign = 1 -
     bool sign;
     size_t size;
-    size_t cells;
-    cell_type* elements;
+    size_t cells = 10;
+    cell_type* elements = nullptr;
 
     ///to control cells
     void push_back(cell_type new_element);
@@ -102,13 +102,13 @@ void BigInt::normalization(size_t idx)
 }
 
 ///constructos, destructors
-BigInt::BigInt(): sign(0), size(0), cells(10)
+BigInt::BigInt(): sign(0), size(0)
 {
-    elements = new cell_type[10];
+    elements = new cell_type[cells];
     push_back(0);
 }
 
-BigInt::BigInt(int64_t new_element):size(0), cells(10)
+BigInt::BigInt(int64_t new_element):size(0)
 {
     if(new_element < 0){
         sign = 1;
@@ -117,7 +117,7 @@ BigInt::BigInt(int64_t new_element):size(0), cells(10)
     else
         sign = 0;
 
-    elements = new cell_type[10];
+    elements = new cell_type[cells];
 
     if(new_element == 0)
         push_back(0);
@@ -173,8 +173,8 @@ BigInt BigInt::operator+(const BigInt& other) const
     b_sign = b.sign ? -1: 1;
 
     for(size_t i = 0; i < b.size; ++i){
-            cell_type jjj = a_sign*(a.elements[i] * a_sign + b.elements[i] * b_sign + remainder);
-        if(a.sign != b.sign && (jjj<0)){
+            cell_type n = a_sign*(a.elements[i] * a_sign + b.elements[i] * b_sign + remainder);
+        if(a.sign != b.sign && (n<0)){
             a.normalization(i);
         }
         ans.push_back((a.elements[i] * a_sign + b.elements[i] * b_sign + remainder)%10);

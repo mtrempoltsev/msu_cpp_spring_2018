@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
         std::cout << count << std::endl; 
     }
 
-    free(arr_prime);    
+    delete[] arr_prime;    
 
     return 0;
 }

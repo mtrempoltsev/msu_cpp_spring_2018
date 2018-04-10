@@ -6,8 +6,6 @@
 #include <iomanip>
 #include <cstring>
 
-using namespace std;
-
 class BigIntDec {
 
 public:
@@ -15,7 +13,7 @@ public:
 		data_ = new int[size_]();
 	}
 
-	void operator*=(const int value) {
+	BigIntDec& operator*=(const int value) {
 		int mod = 0;
 
 		for (int i = 0; i < size_ - 1; i++) {
@@ -25,9 +23,11 @@ public:
 
 			data_[i] = mult % 10;
 		}
+
+		return *this;
 	}
 
-	void operator+=(const int value) {
+	BigIntDec& operator+=(const int value) {
 		int mod = value;
 
 		for (int i = 0; i < size_ - 1; i++) {
@@ -41,46 +41,13 @@ public:
 				break;
 			}
 		}
+
+		return *this;
 	}
 
-	void inc(const int ind) {
-		int mod = 1;
-
-		for (int i = ind; i < size_ - 1; i++) {
-			int mult = data_[i] + mod;
-			mod = mult / 10;
-
-			data_[i] = mult % 10;
-
-			if (mod == 0) {
-				break;
-			}
-		}
-	}
-
-	int left_ind() const {
-		int b_1 = 0;
-		for (int i = size_ - 1; i >= 0; i--) {
-			if (data_[i]) {
-				b_1 = i;
-				break;
-			}
-		}
-
-		return b_1;
-	}
-
-	void print() const {
-		for (int i = size_ - 1; i >= 0; i--) {
-			std::cout << data_[i];
-		}
-
-		std::cout << std::endl;
-	}
-
-	friend std::ostream& operator<<(std::ostream & out, const BigIntDec & mid) {
-		for (int i = mid.left_ind(); i >= 0; i--) {
-			out << mid.data_[i];
+	friend std::ostream& operator<<(std::ostream & out, const BigIntDec & x) {
+		for (int i = x.left_ind(); i >= 0; i--) {
+			out << x.data_[i];
 		}
 
 		return out;
@@ -91,35 +58,33 @@ public:
 	}
 
 private:
+	// позиция старшего ненулевого бита
+	int left_ind() const {
+		int ind = 0;
+
+		for (int i = size_ - 1; i >= 0; i--) {
+			if (data_[i]) {
+				ind = i;
+				break;
+			}
+		}
+
+		return ind;
+	}
+
 	int size_;
 	int* data_;
 };
 
-int LOG2(int64_t x) {
-	int cnt = 0;
-
-	do {
-		x >>= 1;
-		cnt++;
-	} while (x);
-
-	return cnt - 1;
-}
-
-const int BLOCK_SIZE = 8;
 
 class BigInt {
 
 public:
-	void alloc() {
-		data_ = new bool[size_]();
-	}
-
 	BigInt(int64_t value = 0) {
 		sign_ = value < 0;
-		value = abs(value);
+		value = std::abs(value);
 
-		size_ = (value) ? (LOG2(value) + 1) : 1;
+		size_ = (value) ? ceil(log2(value)) : 1;
 		size_ = (size_ / BLOCK_SIZE + 1) * BLOCK_SIZE;
 
 		if (size_) {
@@ -164,19 +129,6 @@ public:
 		(*this) = BigInt(value);
 
 		return (*this);
-	}
-
-	void resize(size_t new_size) {
-		bool* NEWDATA = new bool[new_size]();
-
-		memcpy(NEWDATA, data_, size_);
-		size_ = new_size;
-
-		if (size_) {
-			delete[] data_;
-		}
-
-		data_ = NEWDATA;
 	}
 
 	bool operator==(const BigInt& b) const {
@@ -331,19 +283,6 @@ public:
 		return c;
 	}
 
-	int left_ind() const {
-		int ind = 0;
-
-		for (int i = size_ - 1; i >= 0; i--) {
-			if (at(i)) {
-				ind = i;
-				break;
-			}
-		}
-
-		return ind;
-	}
-
 	BigInt operator/(const BigInt& other) const {
 		BigInt a_tmp(*this);
 		BigInt b_tmp(other);
@@ -383,7 +322,7 @@ public:
 			b_tmp <<= a_1 - b_1;
 		}
 
-		while (1) {
+		while (true) {
 			if (c < b_tmp) {
 				if (b_lshift == 0) {
 					break;
@@ -465,14 +404,6 @@ public:
 		return c;
 	}
 
-	size_t size() const {
-		return size_;
-	}
-
-	void bit_flip(const size_t pos) {
-		data_[pos] = !data_[pos];
-	}
-
 	BigInt operator-(const BigInt & other) const {
 		if (negative() && other.negative()) {
 			return ((*this) + (-other));
@@ -514,34 +445,26 @@ public:
 		return c;
 	}
 
-	bool at(size_t index) const {
-		return data_[index];
-	}
-
-	friend std::ostream& operator<<(std::ostream & out, const BigInt & mid) {
-		if (mid.size_ == 0) {
+	friend std::ostream& operator<<(std::ostream & out, const BigInt & x) {
+		if (x.size_ == 0) {
 			return out;
 		}
 
-		size_t i = mid.size_ - 1;
+		bool sign = x.at(x.size_ - 1) == 1;
 
-		uint64_t v = 0;
-
-		bool sign = mid.at(mid.size_ - 1) == 1;
-
-		if (mid.sign_ && !mid.is_zero()) {
+		if (x.sign_ && !x.is_zero()) {
 			out << "-";
 		}
 
-		BigIntDec b(mid.size_);
+		BigIntDec b(x.left_ind() + 2);
 
-		int l0 = 2;
+		int base = 2;
 
-		b += mid.data_[mid.left_ind()];
+		b += x.data_[x.left_ind()];
 
-		for (int i = mid.left_ind() - 1; i >= 0; i--) {
-			b *= l0;
-			b += mid.data_[i];
+		for (int i = x.left_ind() - 1; i >= 0; i--) {
+			b *= base;
+			b += x.data_[i];
 		}
 
 		return out << b;
@@ -562,6 +485,53 @@ public:
 	}
 
 private:
+	static const int BLOCK_SIZE = 8;
+
+	void alloc() {
+		data_ = new bool[size_]();
+	}
+
+	void resize(size_t new_size) {
+		if (new_size == size_) {
+			return;
+		}
+
+		bool *new_data_ = new bool[new_size]();
+
+		std::copy(data_, data_ + std::min(size_, new_size), new_data_);
+
+		delete[] data_;
+
+		data_ = new_data_;
+		size_ = new_size;
+	}
+
+	size_t size() const {
+		return size_;
+	}
+
+	void bit_flip(const size_t pos) {
+		data_[pos] = !data_[pos];
+	}
+
+	// позиция старшего ненулевого бита
+	int left_ind() const {
+		int ind = 0;
+
+		for (int i = size_ - 1; i >= 0; i--) {
+			if (at(i)) {
+				ind = i;
+				break;
+			}
+		}
+
+		return ind;
+	}
+
+	bool at(size_t index) const {
+		return data_[index];
+	}
+
 	size_t size_;
 	bool sign_;
 

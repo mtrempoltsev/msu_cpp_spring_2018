@@ -138,3 +138,6 @@ ENV/
 
 # mac
 .DS_STORE
+
+# cmake
+cmake-build*
