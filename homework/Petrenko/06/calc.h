@@ -9,7 +9,7 @@
 class calc_exception : public std::exception {
     std::string msg;
 public:
-    explicit calc_exception(std::string && err) : msg(err) {
+    explicit calc_exception(std::string && err) : msg(std::move(err)) {
     }
     std::string & get_msg() {
         return msg;
@@ -135,7 +135,7 @@ calc<T>::calc(const std::string &expr) : expression(expr), parse_pos(expression.
 }
 
 template<typename T>
-calc<T>::calc(std::string &&expr) : expression(expr), parse_pos(expression.begin()) {
+calc<T>::calc(std::string &&expr) : expression(std::move(expr)), parse_pos(expression.begin()) {
     expression.erase(std::remove_if(expression.begin(), expression.end(), ::isspace), expression.end());
 }
 
