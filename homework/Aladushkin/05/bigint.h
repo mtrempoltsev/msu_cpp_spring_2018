@@ -189,7 +189,6 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& os, const BigInt& dt);
 	friend BigInt abs(const BigInt& other);
-	friend void ref_abs(BigInt& left, BigInt& right);
 
 private:
 	BigInt(const bool sign, const U_Vector num);
@@ -542,11 +541,5 @@ BigInt abs(const BigInt& other)
 	BigInt copy(other);
 	copy.isNegative = false;
 	return copy;
-}
-
-void ref_abs(BigInt& left, BigInt& right)
-{
-	left.isNegative = false;
-	right.isNegative = false;
 }
 
