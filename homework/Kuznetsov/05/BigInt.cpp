@@ -20,8 +20,8 @@ public:
     }
     BigInt(const BigInt& other){
         mCapacity = other.mCapacity;
-        mNumbers = new long[mCapacity];
-        std::memcpy(mNumbers, other.mNumbers, sizeof(long)*other.mCapacity);
+        mNumbers = new char[mCapacity];
+        std::memcpy(mNumbers, other.mNumbers, sizeof(char)*other.mCapacity);
         isPositive = other.isPositive;
         isStringRepresentActuale = other.isStringRepresentActuale;
         if(isStringRepresentActuale)
@@ -30,8 +30,8 @@ public:
     BigInt&operator=(const BigInt& other){
         mCapacity = other.mCapacity;
         delete[] mNumbers;
-        mNumbers = new long[mCapacity];
-        std::memcpy(mNumbers, other.mNumbers, sizeof(long)*other.mCapacity);
+        mNumbers = new char[mCapacity];
+        std::memcpy(mNumbers, other.mNumbers, sizeof(char)*other.mCapacity);
         isPositive = other.isPositive;
         isStringRepresentActuale = other.isStringRepresentActuale;
         if(isStringRepresentActuale)
@@ -40,10 +40,7 @@ public:
     }
 
 
-    long* const getNumbers() const{
-        return mNumbers;
-    }
-    int getCapacity() const{
+    size_t getCapacity() const{
         return mCapacity;
     }
     const std::string& getString() const{
@@ -69,8 +66,8 @@ public:
     BigInt operator+(const BigInt& other) const{
         BigInt out;
         if(other.isPositive == isPositive){
-            long* deltas = this->sum(mNumbers, other.mNumbers, mCapacity, other.mCapacity);
-            int maxLength = std::max(mCapacity, other.mCapacity);
+            char* deltas = this->sum(mNumbers, other.mNumbers, mCapacity, other.mCapacity);
+            size_t maxLength = std::max(mCapacity, other.mCapacity);
             for(int i =0; i< maxLength; i++){
                 if(deltas[i] >= MODULE) {
                     deltas[i] -= MODULE;
@@ -82,7 +79,7 @@ public:
             out.mCapacity = maxLength+1;
             out.isPositive = isPositive;
         } else{
-            long* deltas;
+            char* deltas;
             bool positive;
             if(abs(*this) > abs(other)) {
                 positive = true;
@@ -91,21 +88,16 @@ public:
                 positive = false;
                 deltas = this->difference(other.mNumbers, mNumbers, other.mCapacity, mCapacity);
             }
-            int maxLength = std::max(mCapacity, other.mCapacity);
-            int endIndex = getEndIndex(deltas, maxLength);
+            size_t maxLength = std::max(mCapacity, other.mCapacity);
+            size_t endIndex = getEndIndex(deltas, maxLength);
             for(int i =0; i <= endIndex; i++){
                 if(i<endIndex) {
                     if(deltas[i]<0) {
-                        //if(deltas[i+1] >= 0) {
                         deltas[i] += MODULE;
                         deltas[i + 1] -= 1;
                     }
-                        //}else{
-                        //    deltas[i] = std::abs(deltas[i]);
-                        //}
                 }
             }
-           // out.isPositive = !(!isPositive && (deltas[endIndex] >= 0) || isPositive && !(deltas[endIndex] >= 0));// обранное исключающее или
             out.isPositive = isPositive == positive;
             delete[] out.mNumbers;
 
@@ -117,27 +109,24 @@ public:
     }
 
     BigInt operator*(const BigInt& other) const{
-        long long trans;
-        long long sum;
-        int i, j = 0;
+        char trans;
+        char sum;
+        size_t i, j = 0;
         BigInt a = 0;
         const BigInt* const big = mCapacity>other.mCapacity?this:&other;
         const BigInt* const small = mCapacity>other.mCapacity?&other:this;
-        int lenBig = getEndIndex((*big).mNumbers,(*big).mCapacity)+1;
-        int lenSmall= getEndIndex((*small).mNumbers, (*small).mCapacity)+1;
+        size_t lenBig = getEndIndex((*big).mNumbers,(*big).mCapacity)+1;
+        size_t lenSmall= getEndIndex((*small).mNumbers, (*small).mCapacity)+1;
         for(i =0; i < lenSmall; i++){
             BigInt tmp = 0;
-            tmp.resize(mCapacity + lenSmall);
             trans = 0;
             for(j = 0; j < lenBig; j++){
-                sum = (long long)big->mNumbers[j]*small->mNumbers[i] + trans;
+                sum = big->mNumbers[j]*small->mNumbers[i] + trans;
 
                 trans = sum/MODULE;
                 if(tmp.mCapacity <= i+j)
                     tmp.resize((i+j)*2);
                 tmp.mNumbers[i+j] = (sum % MODULE);
-                //std::cout<< sum % MODULE << std::endl;
-                //std::cout<<big->mNumbers[j]<< " * "<< small->mNumbers[i] <<" = "<< sum << std::endl;
             }
 
             if(tmp.mCapacity <= i+j)
@@ -153,8 +142,8 @@ public:
     bool operator >(const BigInt& other) const{
         if(isPositive == !other.isPositive)
             return isPositive;
-        int endIndexThis = getEndIndex(mNumbers,mCapacity);
-        int endIndexOther= getEndIndex(other.mNumbers, other.mCapacity);
+        size_t endIndexThis = getEndIndex(mNumbers,mCapacity);
+        size_t endIndexOther= getEndIndex(other.mNumbers, other.mCapacity);
         if(endIndexThis != endIndexOther)
             return (endIndexThis > endIndexOther) == isPositive;
         for(int i =endIndexThis; i>=0; i--)
@@ -168,8 +157,8 @@ public:
     bool operator < (const BigInt other) const{
         if(isPositive == !other.isPositive)
             return other.isPositive;
-        int endIndexThis  = getEndIndex(mNumbers,mCapacity);
-        int endIndexOther = getEndIndex(other.mNumbers, other.mCapacity);
+        size_t endIndexThis  = getEndIndex(mNumbers,mCapacity);
+        size_t endIndexOther = getEndIndex(other.mNumbers, other.mCapacity);
         if(endIndexThis != endIndexOther)
             return (endIndexThis < endIndexOther) == isPositive;
         for(int i =endIndexThis; i>=0; i--)
@@ -182,8 +171,8 @@ public:
         return !(*this < other);
     }
     bool operator ==(const BigInt& other) const{
-        int endIndexThis  = getEndIndex(mNumbers,mCapacity);
-        int endIndexOther = getEndIndex(other.mNumbers, other.mCapacity);
+        size_t endIndexThis  = getEndIndex(mNumbers,mCapacity);
+        size_t endIndexOther = getEndIndex(other.mNumbers, other.mCapacity);
         if(endIndexThis != endIndexOther)
             return false;
         for(int i =0; i<= endIndexThis; i++)
@@ -205,24 +194,24 @@ public:
         if((isPositive?*this:dividend) < (other.isPositive?other:abs(other)))
             return 0;
         BigInt out = 0;
-        int endIndexThis  = getEndIndex(mNumbers,mCapacity);
-        int endIndexOther = getEndIndex(other.mNumbers, other.mCapacity);
+        size_t endIndexThis  = getEndIndex(mNumbers,mCapacity);
+        size_t endIndexOther = getEndIndex(other.mNumbers, other.mCapacity);
         if(endIndexOther ==0 && endIndexThis == 0)
             return mNumbers[0]/other.mNumbers[0];
         int shift = endIndexThis - endIndexOther;
         delete[] out.mNumbers;
         out.mCapacity = shift+1;
-        out.mNumbers = new long[shift+1];
+        out.mNumbers = new char[shift+1];
         out.isStringRepresentActuale = false;
         out._init();
         while(shift >=0){
             BigInt localeDividend;
             delete [] localeDividend.mNumbers;
-            localeDividend.mNumbers = new long[other.mCapacity + shift];
+            localeDividend.mNumbers = new char[other.mCapacity + shift];
             localeDividend.mCapacity = other.mCapacity + shift;
             localeDividend.isStringRepresentActuale = false;
             localeDividend._init();
-            std::memcpy(localeDividend.mNumbers + shift, other.mNumbers, sizeof(long)*other.mCapacity);
+            std::memcpy(localeDividend.mNumbers + shift, other.mNumbers, sizeof(char)*other.mCapacity);
             int count;
             for(count = 0; dividend >= localeDividend; ){
                 count++;
@@ -241,8 +230,8 @@ public:
     }
 
 private:
-    int getEndIndex(long* const deltas, int capacity) const{
-        int endIndex = 0;
+    size_t getEndIndex(char* const deltas, size_t capacity) const{
+        size_t endIndex = 0;
         for(int i =capacity-1; i>=0; i--){
             if(deltas[i] != 0) {
                 endIndex = i;
@@ -251,12 +240,12 @@ private:
         }
         return endIndex;
     }
-    long* sum(long* const l1, long* const l2, int len1, int len2) const{
-        int maxLength = std::max(len1, len2);
-        int minLength = std::min(len1, len2);
-        long* arrMaxLen = len1 > len2 ? l1 : l2;
-        int len = maxLength + 1;
-        long* out = new long[len];
+    char* sum(char* const l1, char* const l2, size_t len1, size_t len2) const{
+        size_t maxLength = std::max(len1, len2);
+        size_t minLength = std::min(len1, len2);
+        char* arrMaxLen = len1 > len2 ? l1 : l2;
+        size_t len = maxLength + 1;
+        char* out = new char[len];
         for(int i =0; i< len; i++){
             if(i<minLength)
                 out[i] = l1[i] + l2[i];
@@ -267,13 +256,13 @@ private:
         }
         return out;
     }
-    long* difference(long* const l1, long* const l2, int len1, int len2) const{
-        int maxLength = std::max(len1, len2);
-        int minLength = std::min(len1, len2);
-        long* arrMaxLen = len1 > len2 ? l1 : l2;
-        long sign = len1 > len2 ? 1 : -1;
-        int len = maxLength + 1;
-        long* out = new long[len];
+    char* difference(char* const l1, char* const l2, size_t len1, size_t len2) const{
+        size_t maxLength = std::max(len1, len2);
+        size_t minLength = std::min(len1, len2);
+        char* arrMaxLen = len1 > len2 ? l1 : l2;
+        char sign = len1 > len2 ? 1 : -1;
+        size_t len = maxLength + 1;
+        char* out = new char[len];
         for(int i =0; i< len; i++){
             if(i<minLength)
                 out[i] = l1[i] - l2[i];
@@ -306,9 +295,8 @@ private:
                 blockString = str.substr(str.length() - i - POW, POW);
             else
                 blockString = str.substr(0, str.length() - i);
-//            if(i/POW >= mCapacity)
-//                resize(mCapacity*2);
-            mNumbers[i/POW] = std::stol(blockString);
+
+            mNumbers[i/POW] = (char)std::stoi(blockString);
 
         }
     }
@@ -328,7 +316,7 @@ private:
                 continue;
             else
                 flag = false;
-            std::string numStr = std::to_string(mNumbers[i]);
+            std::string numStr = std::to_string((int)mNumbers[i]);
             if(flag2)
                 for(int j = numStr.length(); j < POW; j++)
                     numStr = "0" + numStr;
@@ -340,22 +328,22 @@ private:
         isStringRepresentActuale = true;
     }
 
-    void resize(int newCapacity){
-        int oldCapacity = mCapacity;
+    void resize(size_t newCapacity){
+        size_t oldCapacity = mCapacity;
         mCapacity = newCapacity;
-        long* old = mNumbers;
-        mNumbers = new long[mCapacity];
+        char* old = mNumbers;
+        mNumbers = new char[mCapacity];
         //std::memset(mNumbers, 0, sizeof(long)*newCapacity);
         _init();
-        std::memcpy(mNumbers, old, sizeof(long)*oldCapacity);
+        std::memcpy(mNumbers, old, sizeof(char)*oldCapacity);
         delete[] old;
 
     }
-    const static int START_CAPACITY = 4;
-    const static size_t POW = 2;
-    const long MODULE = (long)std::pow(10,POW); //модуль системы счислени€. ƒолжен быть кратен 10
-    int mCapacity = START_CAPACITY;
-    long* mNumbers = new long[START_CAPACITY];
+    const static size_t START_CAPACITY = 4;
+    const static size_t POW = 1;
+    const size_t MODULE = (size_t)std::pow(10,POW); //модуль системы счислени€. ƒолжен быть кратен 10. мен€ть его не актуально дл€ типов данных char.
+    size_t mCapacity = START_CAPACITY;
+    char* mNumbers = new char[START_CAPACITY];
     bool isPositive = true;
     mutable std::string mStringRepresent;
     mutable bool isStringRepresentActuale = false;
