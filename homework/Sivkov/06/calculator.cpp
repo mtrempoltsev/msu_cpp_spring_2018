@@ -12,8 +12,6 @@ public:
 
     T expression(const std::string &arg, size_t start, size_t fin);
 
-    T to_numb(const std::string &arg, size_t start, size_t fin);
-
     T from_string(const std::string &numb);
 };
 
@@ -21,13 +19,13 @@ template<>
 int Parser<int>::from_string(const std::string &numb) {
     for (auto symbol : numb)
         if (operations.find(symbol) == operations.end() && !(symbol < '9' && symbol > '0'))
-            throw std::invalid_argument("");
+            throw std::invalid_argument("invalid symbol");
     return std::stoi(numb);
 }
 
 template<class T>
 T Parser<T>::calculate(const std::string &arg) {
-    std::string clear_arg = std::string();
+    std::string clear_arg;
     clear_arg.reserve(arg.size());
 
     for (char symbol:arg) {
@@ -44,7 +42,7 @@ T Parser<T>::calculate(const std::string &arg) {
         throw;
     }
     catch (std::out_of_range &error) {
-        std::cerr << "error" << std::endl;
+        std::cerr << "error" << error.what() <<std::endl;
         throw;
     }
 }
@@ -68,7 +66,7 @@ T Parser<T>::expression(const std::string &arg, size_t start, size_t fin) {
         }
     }
     if (operator_pos == 0) {
-        return to_numb(arg, start, fin);
+        return from_string(arg.substr(start, fin));
     } else {
         char operation = arg[operator_pos];
         switch (operation) {
@@ -81,18 +79,13 @@ T Parser<T>::expression(const std::string &arg, size_t start, size_t fin) {
             case '/': {
                 auto dividend = expression(arg, start, operator_pos);
                 auto divider = expression(arg, operator_pos + 1, fin);
-                if (divider == T(0)) throw std::invalid_argument("");
+                if (divider == T(0)) throw std::invalid_argument("zero division");
                 return dividend / divider;
             }
             default:
-                throw std::invalid_argument("");
+                throw std::invalid_argument("invalid operation");
         }
     }
-}
-
-template<class T>
-T Parser<T>::to_numb(const std::string &arg, size_t start, size_t fin) {
-    return from_string(arg.substr(start, fin));
 }
 
 int main(int argc, char *argv[]) {
@@ -102,7 +95,7 @@ int main(int argc, char *argv[]) {
     }
     auto calculator = Parser<int>();
     try {
-        std::cout << calculator.calculate(std::string(std::string(argv[1]))) << std::endl;
+        std::cout << calculator.calculate(argv[1]) << std::endl;
     }
     catch (std::invalid_argument &error) {
         return 1;
