@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <stdexcept>
-#include <stack>
 
 typedef int8_t digit;
 
@@ -196,19 +195,20 @@ public:
         }
 
 
-        std::stack<digit> buffer;
+        number = new digit[30];
         auto abs_number = (input_number >= 0? input_number : -input_number);
+        length = 0;
+        auto init_value = abs_number;
         while (abs_number > 0) {
-            buffer.push(abs_number % 10);
+            length++;
             abs_number /= 10;
         }
+        abs_number = init_value;
 
-        length = buffer.size();
-        number = new digit[length];
-        size_t i = 0;
-        while(!buffer.empty()) {
-            number[i++] = buffer.top();
-            buffer.pop();
+        for (int i = length - 1; i >= 0; --i)
+        {
+            number[i] = abs_number % 10;
+            abs_number /= 10;
         }
     }
 
