@@ -1,12 +1,13 @@
 #pragma once
 #include <string>
 #include <sstream>
+#include <stdexcept>
+
+class CalcError : std::exception {};
 
 template <typename T>
 class Calc
 {
-public:
-    class Error {};
 private:
         std::string::const_iterator find_last_plus_or_minus(std::string::const_iterator start, std::string::const_iterator stop) const {
         bool prev_op = true;
@@ -62,7 +63,7 @@ private:
         std::istringstream ss(std::string(start, stop));
         if (ss >> res && (res != 0 || !check_zero))
             return res;
-        throw Calc::Error();
+        throw CalcError();
     }
 public:
     T calculate(const std::string& s) const {

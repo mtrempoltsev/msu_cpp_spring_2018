@@ -10,7 +10,7 @@ int main(int argc, char* argv[]) {
     try {
         std::cout << c.calculate(argv[1]) << std::endl;
     }
-    catch(const Calc<int>::Error& error) {
+    catch(CalcError& error) {
         std::cerr << "error\n";
         return 1;
     }
