@@ -333,7 +333,6 @@ private:
         mCapacity = newCapacity;
         char* old = mNumbers;
         mNumbers = new char[mCapacity];
-        //std::memset(mNumbers, 0, sizeof(long)*newCapacity);
         _init();
         std::memcpy(mNumbers, old, sizeof(char)*oldCapacity);
         delete[] old;
