@@ -3,19 +3,21 @@
 #include <sstream>
 #include <string>
 #include <memory>
-typedef std::shared_ptr<std::basic_istream<char>> point;
+#include <stdexcept>
+typedef std::istringstream point;
+//typedef std::shared_ptr<std::basic_istream<char>> point;
 template <class T>
 class calculator
 {
     T number_value;
-    //T result;
+    T result;
 
-    char get_token(point input, char& curr_token)
+    char get_token(point& input, char& curr_token)
     {
 
         char ch;
         do {    // Пропустить все пробельные символы кроме '\n'.
-            if (!input->get(ch))
+            if (!input.get(ch))
             {
                 return curr_token = 'E'; // Завершить работу калькулятора.
             }
@@ -40,17 +42,17 @@ class calculator
             case '0': case '1': case '2': case '3': case '4':
             case '5': case '6': case '7': case '8': case '9':
             case '.':
-                input->putback(ch); // Положить назад в поток...
-                *input >> number_value; // И считать всю лексему.
+                input.putback(ch); // Положить назад в поток...
+                input >> number_value; // И считать всю лексему.
                 return curr_token = 'N';
             default:
-                throw "Bad Token";
+                throw std::logic_error("Bad token");
         }
 
     }
 
     // prim() - обрабатывает первичные выражения.
-    T prim(point input, bool get, char& curr_token)
+    T prim(point& input, bool get, char& curr_token)
     {
         if (get)
         {
@@ -78,12 +80,12 @@ class calculator
                 return e;
             }
             default:
-                throw "primary expected";
+                throw std::logic_error("primary expected");
         }
     }
 
 // term() - умножение и деление.
-    T term(point input, bool get, char& curr_token )
+    T term(point& input, bool get, char& curr_token )
     {
         T result = prim(input, get, curr_token);
 
@@ -100,7 +102,7 @@ class calculator
                         result /= d;
                         break;
                     }
-                    throw "Divide by 0";
+                    throw std::logic_error("Divide by 0");
                 default:
                     return result;
             }
@@ -108,7 +110,7 @@ class calculator
     }
 
 // expr() - сложение и вычитание.
-    T expr(point input, bool get, char& curr_token)
+    T expr(point& input, bool get, char& curr_token)
     {
         T result = term(input, get, curr_token);
 
@@ -128,12 +130,11 @@ class calculator
         }
     }
 
-    void calculus(point input)
+    void calculus(point& input)
     {
         char curr_token;
-        try {
 
-            while (*input) {
+            while (input) {
                 get_token(input, curr_token);
                 if (curr_token == 'E') {
                     break;
@@ -145,25 +146,21 @@ class calculator
                 }
 
                 // expr() -> term() -> prim() -> expr() ...
-                std::cout << expr(input, false, curr_token) << std::endl;
+                result = expr(input, false, curr_token);
             }
-        }
-        catch (const char* arr)
-        {
-            error(arr);
-            throw;
-        }
     }
 
-    void error(const std::string& error_message)
-    {
-        std::cerr << "error" << std::endl;
-    }
 public:
-    calculator(point input)
+    calculator(point& input)
     {
         calculus(input);
     }
+
+    T Get()
+    {
+        return result;
+    }
+
 };
 
 int main(int argc, char* argv[])
@@ -173,12 +170,14 @@ int main(int argc, char* argv[])
         std::cout << "error" << std::endl;
         return 1;
     }
-    auto input = std::shared_ptr<std::istream>(new std::istringstream(argv[1]));
+    auto input = std::istringstream(argv[1]);
     try {
         calculator<int> a(input);
+        std::cout<<a.Get()<<std::endl;
     }
-    catch(...)
+    catch(std::logic_error&)
     {
+        std::cout << "error" << std::endl;
         return 1;
     }
     return 0;
