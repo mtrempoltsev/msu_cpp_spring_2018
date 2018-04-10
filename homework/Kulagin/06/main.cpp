@@ -11,9 +11,9 @@ public:
 			throw std::invalid_argument("input expression is empty");
 		}
 
-		int opened_brackets_cnt = 0;
+		opened_brackets_cnt = 0;
 
-		int result = get_expr(expr);
+		T result = get_expr(expr);
 
 		if (opened_brackets_cnt != 0 || *expr == ')') {
 			throw std::runtime_error("mismached brackets - an extra \")\"");
