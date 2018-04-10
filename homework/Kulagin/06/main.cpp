@@ -43,7 +43,7 @@ private:
 
 	// [GET_EXPR]: parsing 'expr = term | expr + term | expr - term'
 	T get_expr(char*& expr) {
-		int term_1 = get_term(expr);
+		T term_1 = get_term(expr);
 
 		while (1) {
 			skip_spaces(expr);
@@ -78,7 +78,7 @@ private:
 
 	// [GET_TERM]: parsing 'prim | term * prim | term / prim'
 	T get_term(char*& expr) {
-		int term_1 = get_prim(expr);
+		T term_1 = get_prim(expr);
 
 		while (1) {
 			skip_spaces(expr);
@@ -96,7 +96,7 @@ private:
 			case '/': {
 				expr++;
 
-				int term_2 = get_prim(expr);
+				T term_2 = get_prim(expr);
 
 				if (term_2 == 0) {
 					throw std::logic_error("division by zero in \"" + std::to_string(term_1) + " / " + std::to_string(term_2) + "\"");
