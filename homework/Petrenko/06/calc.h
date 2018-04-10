@@ -35,15 +35,15 @@ bool is_num(char c) {
     return c >= '0' && c <= '9';
 }
 
-template<>
-int calc<int>::get_val() {
+template<typename T>
+T calc<T>::get_val() {
     if(parse_pos == expression.end()) {
         throw calc_exception("Unexpected end of string");
     }
     if(!is_num(*parse_pos)) {
         throw calc_exception("Not a number");
     } else {
-        int acc = 0;
+        T acc = 0;
         do {
             acc *= 10;
             acc += *parse_pos++ - '0';
