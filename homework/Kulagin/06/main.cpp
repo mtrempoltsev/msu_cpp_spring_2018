@@ -1,19 +1,121 @@
 #include <iostream>
 
-bool is_digit(char c) {
-	return (c >= '0') && (c <= '9');
-}
+template <class T>
+class Calculator {
 
-void skip_spaces(char*& expr) {
-	while (*expr == ' ') {
-		expr++;
+public:
+	Calculator() {}
+
+	T eval(char* expr) {
+		if (*expr == '\0') {
+			throw std::invalid_argument("input expression is empty");
+		}
+
+		int opened_brackets_cnt = 0;
+
+		int result = get_expr(expr);
+
+		if (opened_brackets_cnt != 0 || *expr == ')') {
+			throw std::runtime_error("mismached brackets - an extra \")\"");
+		}
+
+		if (*expr != '\0') {
+			throw std::runtime_error("unexpected character \"" + std::to_string(*expr) + "\"");
+		}
+
+		return result;
 	}
-}
 
-int get_expr(char*& expr, int& opened_brackets_cnt);
+	~Calculator() {}
 
-// [GET_PRIM]: parsing [+-]\d+
-int get_prim(char*& expr, int& opened_brackets_cnt) {
+private:
+	int opened_brackets_cnt;
+
+	bool is_digit(char c) {
+		return (c >= '0') && (c <= '9');
+	}
+
+	void skip_spaces(char*& expr) {
+		while (*expr == ' ') {
+			expr++;
+		}
+	}
+
+	// [GET_EXPR]: parsing 'expr = term | expr + term | expr - term'
+	T get_expr(char*& expr) {
+		int term_1 = get_term(expr);
+
+		while (1) {
+			skip_spaces(expr);
+
+			char op = *expr;
+
+			switch (op) {
+			case '+': {
+				expr++;
+
+				term_1 += get_term(expr);
+
+				break;
+			}
+			case '-': {
+				skip_spaces(expr);
+
+				expr++;
+
+				term_1 -= get_term(expr);
+
+				break;
+			}
+			default:
+				return term_1;
+			}
+		}
+	}
+
+	// [GET_PRIM]: parsing [+-]\d+
+	T get_prim(char*& expr);
+
+	// [GET_TERM]: parsing 'prim | term * prim | term / prim'
+	T get_term(char*& expr) {
+		int term_1 = get_prim(expr);
+
+		while (1) {
+			skip_spaces(expr);
+
+			char op = *expr;
+
+			switch (op) {
+			case '*': {
+				expr++;
+
+				term_1 *= get_prim(expr);
+
+				break;
+			}
+			case '/': {
+				expr++;
+
+				int term_2 = get_prim(expr);
+
+				if (term_2 == 0) {
+					throw std::logic_error("division by zero in \"" + std::to_string(term_1) + " / " + std::to_string(term_2) + "\"");
+				}
+
+				term_1 /= term_2;
+
+				break;
+			}
+			default:
+				return term_1;
+			}
+		}
+	}
+};
+
+
+template <>
+int Calculator<int>::get_prim(char*& expr) {
 	skip_spaces(expr);
 
 	bool is_negative = false;
@@ -41,7 +143,7 @@ int get_prim(char*& expr, int& opened_brackets_cnt) {
 
 		opened_brackets_cnt++;
 
-		long prim = get_expr(expr, opened_brackets_cnt);
+		long prim = get_expr(expr);
 
 		if (*expr != ')') {
 			throw std::runtime_error("mismached brackets - an extra \"(\"");
@@ -73,99 +175,12 @@ int get_prim(char*& expr, int& opened_brackets_cnt) {
 	return is_negative ? -prim : prim;
 }
 
-// [GET_TERM]: parsing 'prim | term * prim | term / prim'
-int get_term(char*& expr, int& opened_brackets_cnt) {
-	int term_1 = get_prim(expr, opened_brackets_cnt);
-
-	while (1) {
-		skip_spaces(expr);
-
-		char op = *expr;
-
-		switch (op) {
-		case '*': {
-			expr++;
-
-			term_1 *= get_prim(expr, opened_brackets_cnt);
-
-			break;
-		}
-		case '/': {
-			expr++;
-
-			int term_2 = get_prim(expr, opened_brackets_cnt);
-
-			if (term_2 == 0) {
-				throw std::logic_error("division by zero in \"" + std::to_string(term_1) + " / " + std::to_string(term_2) + "\"");
-			}
-
-			term_1 /= term_2;
-
-			break;
-		}
-		default:
-			return term_1;
-		}
-	}
-}
-
-// [GET_EXPR]: parsing 'expr = term | expr + term | expr - term'
-int get_expr(char*& expr, int& opened_brackets_cnt) {
-	int term_1 = get_term(expr, opened_brackets_cnt);
-
-	while (1) {
-		skip_spaces(expr);
-
-		char op = *expr;
-
-		switch (op) {
-		case '+': {
-			expr++;
-
-			term_1 += get_term(expr, opened_brackets_cnt);
-
-			break;
-		}
-		case '-': {
-			skip_spaces(expr);
-
-			expr++;
-
-			term_1 -= get_term(expr, opened_brackets_cnt);
-
-			break;
-		}
-		default:
-			return term_1;
-		}
-	}
-}
-
-int calc(char* expr) {
-	if (*expr == '\0') {
-		throw std::invalid_argument("input expression is empty");
-	}
-
-	int opened_brackets_cnt = 0;
-
-	int result = get_expr(expr, opened_brackets_cnt);
-
-	if (opened_brackets_cnt != 0 || *expr == ')') {
-		throw std::runtime_error("mismached brackets - an extra \")\"");
-	}
-
-	if (*expr != '\0') {
-		throw std::runtime_error("unexpected character \"" + std::to_string(*expr) + "\"");
-	}
-
-	return result;
-}
-
 
 int main(int argc, char** argv) {
 	if (argc == 2) {
+		Calculator<int> calc;
 		try {
-			int result = calc(argv[1]);
+			int result = calc.eval(argv[1]);
 
 			std::cout << result << std::endl;
 		} catch (std::exception& err) {
