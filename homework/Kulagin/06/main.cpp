@@ -179,6 +179,7 @@ int Calculator<int>::get_prim(char*& expr) {
 int main(int argc, char** argv) {
 	if (argc == 2) {
 		Calculator<int> calc;
+
 		try {
 			int result = calc.eval(argv[1]);
 
