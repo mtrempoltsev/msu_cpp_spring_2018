@@ -16,12 +16,12 @@ template<typename T>
 struct Result{
     T acc;
     std::string rest;
-    Result(T _acc, std::string _rest): acc(_acc), rest(_rest) {}
+    Result(T _acc, std::string& _rest): acc(_acc), rest(_rest) {}
 };
 
 template <typename T>
 struct Parser{
-    T eval(std::string s) {
+    T eval(std::string& s) {
         while (isspace(s[0])) {
             s.erase(s.begin());
         }
@@ -31,7 +31,7 @@ struct Parser{
         }
         return r.acc;
     }
-    Result<T> plusminus(std::string s) {
+    Result<T> plusminus(std::string& s) {
         while (isspace(s[0])) {
             s.erase(s.begin());
         }
@@ -52,7 +52,7 @@ struct Parser{
         }
         return Result<T>(acc, r.rest);
     }
-    Result<T> muldiv(std::string s) {
+    Result<T> muldiv(std::string& s) {
         while (isspace(s[0])) {
             s.erase(s.begin());
         }
@@ -76,7 +76,7 @@ struct Parser{
         }
         return Result<T>(acc, r.rest);
     }
-    Result<T> num(std::string s) {
+    Result<T> num(std::string& s) {
         int sig = 1, step = 0;
         while (isspace(s[0])) {
             s.erase(s.begin());
@@ -115,7 +115,8 @@ int main(int argc, char *argv[]) {
     }
     try {
         Parser<int> p;
-        std::cout << p.eval(argv[1]) << std::endl;
+        std::string s(argv[1]);
+        std::cout << p.eval(s) << std::endl;
     } catch(err& e) {
         std::cout << "error" << std::endl;
         return 1;
