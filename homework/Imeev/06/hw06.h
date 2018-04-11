@@ -10,53 +10,53 @@ template <class T> class Calculator
     std::string str{};
     size_t index = 0;
 
-    T expression(T value = T(0), char op = '+');
-    T term(T value = T(1), char op = '*');
+    T expression();
+    T term();
     T number();
 public:
-    Calculator(std::string str_);
-
-    T calculate() { return expression(); };
+    T calculate(const std::string &str_);
 };
 
 template <class T>
-Calculator<T>::Calculator(std::string str_): str(str_)
+T Calculator<T>::calculate(const std::string &str_)
 {
+    str = str_;
     str.erase(std::remove_if(str.begin(), str.end(), isspace), str.end());
+    index = 0;
+    return expression();
 }
 
 template <class T>
-T Calculator<T>::expression(T value, char op)
+T Calculator<T>::expression()
 {
-    if(op == '+') {
-        value = value + term();
-    } else {
-        value = value - term();
+    T value = term();
+    while(index < str.size() && (str[index] == '+' || str[index] == '-')) {
+        ++index;
+        if(str[index - 1] == '+') {
+            value = value + term();
+        } else {
+            value = value - term();
+        }
     }
     if(index < str.size()) {
-        if(str[index] == '+' || str[index] == '-') {
-            ++index;
-            return expression(value, str[index - 1]);
-        } else {
-            throw wrong_operation();
-        }
+        throw wrong_operation();
     }
     return value;
 }
 
 template <class T>
-T Calculator<T>::term(T value, char op)
+T Calculator<T>::term()
 {
-    if(op == '*') {
-        value = value * number();
-    } else {
-        T num = number();
-        if(num == T(0)) throw division_by_zero();
-        value = value / num;
-    }
-    if(index < str.size() && (str[index] == '*' || str[index] == '/')) {
+    T value = number();
+    while(index < str.size() && (str[index] == '*' || str[index] == '/')) {
         ++index;
-        return term(value, str[index - 1]);
+        if(str[index - 1] == '*') {
+            value = value * number();
+        } else {
+            T num = number();
+            if(num == T(0)) throw division_by_zero();
+            value = value / num;
+        }
     }
     return value;
 }

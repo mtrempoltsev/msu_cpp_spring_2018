@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <iostream>
 #include "hw06.h"
 
@@ -8,8 +9,8 @@ int main(int argc, char **argv)
 {
     try {
         if(argc != ARGNUM) throw std::invalid_argument("Wrong number of arguments");
-        Calculator<int> calc(argv[EXERCISE]);
-        std::cout << calc.calculate() << std::endl;
+        Calculator<int> calc{};
+        std::cout << calc.calculate(argv[EXERCISE]) << std::endl;
     } catch(...) {
         std::cout << "error" << std::endl;
         return 1;
