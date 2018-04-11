@@ -13,7 +13,7 @@ public:
 
 		opened_brackets_cnt = 0;
 
-		T result = get_expr((char *&)expr);
+		T result = get_expr(expr);
 
 		if (opened_brackets_cnt != 0 || *expr == ')') {
 			throw std::runtime_error("mismached brackets - an extra \")\"");
@@ -35,14 +35,14 @@ private:
 		return (c >= '0') && (c <= '9');
 	}
 
-	void skip_spaces(char*& expr) {
+	void skip_spaces(const char*& expr) {
 		while (*expr == ' ') {
 			expr++;
 		}
 	}
 
 	// [GET_EXPR]: parsing 'expr = term | expr + term | expr - term'
-	T get_expr(char*& expr) {
+	T get_expr(const char*& expr) {
 		T term_1 = get_term(expr);
 
 		while (1) {
@@ -74,10 +74,10 @@ private:
 	}
 
 	// [GET_PRIM]: parsing [+-]\d+
-	T get_prim(char*& expr);
+	T get_prim(const char*& expr);
 
 	// [GET_TERM]: parsing 'prim | term * prim | term / prim'
-	T get_term(char*& expr) {
+	T get_term(const char*& expr) {
 		T term_1 = get_prim(expr);
 
 		while (1) {
@@ -115,7 +115,7 @@ private:
 
 
 template <>
-int Calculator<int>::get_prim(char*& expr) {
+int Calculator<int>::get_prim(const char*& expr) {
 	skip_spaces(expr);
 
 	bool is_negative = false;
