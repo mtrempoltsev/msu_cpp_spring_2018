@@ -6,14 +6,14 @@ class Calculator {
 public:
 	Calculator() {}
 
-	T eval(char* expr) {
+	T eval(const char* expr) {
 		if (*expr == '\0') {
 			throw std::invalid_argument("input expression is empty");
 		}
 
 		opened_brackets_cnt = 0;
 
-		T result = get_expr(expr);
+		T result = get_expr((char *&)expr);
 
 		if (opened_brackets_cnt != 0 || *expr == ')') {
 			throw std::runtime_error("mismached brackets - an extra \")\"");
