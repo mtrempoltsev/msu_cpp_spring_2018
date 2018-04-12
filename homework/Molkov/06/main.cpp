@@ -6,8 +6,7 @@
 
 struct Expression {
 	Expression(std::string token) : token(token) {}
-	Expression(std::string token, Expression a) : token(token), args{ a } {}
-	Expression(std::string token, Expression a, Expression b) : token(token), args{ a, b } {}
+
 	std::string token;
 	std::vector<Expression> args;
 };
@@ -32,20 +31,15 @@ std::string Parser::parse_token() {
 		return number;
 	}
 	
-	switch (*input) {
+	switch (*input++) {
 	case('+'):
-		input++;
 		return "+";
 	case('-'):
-		input++;
 		return "-";
 	case('*'):
-		input++;
 		return "*";
 	case('/'):
-		input++;
 		return "/";
-
 	}
 	
 	return "";
@@ -57,8 +51,9 @@ Expression Parser::parse_simple_expression() {
 
 	if (std::isdigit(token[0]))
 		return Expression(token);
-
-	return Expression(token, parse_simple_expression());
+	auto expr = Expression(token);
+	expr.args.push_back(parse_simple_expression());
+	return expr;
 }
 
 int get_priority(const std::string& binary_op) {
@@ -80,16 +75,20 @@ Expression Parser::parse(int min_priority) {
 			return left_expr;
 		}
 		auto right_expr = parse(priority);
-		left_expr = Expression(op, left_expr, right_expr);
+		auto expr = Expression(op);
+		expr.args.push_back(left_expr);
+		expr.args.push_back(right_expr);
+		left_expr = expr;
 	}
 }
 
 
 template <class T>
-class Calc {
+class Calc{
 public:
 	Parser p;
-	Calc(char* argv) : p(argv) {}
+	Calc(const char* argv) : p(argv) {}
+
 	T eval(const Expression& expr) {
 		switch (expr.args.size()) {
 		case 2: {
@@ -114,7 +113,7 @@ public:
 		}
 
 		case 0:
-			return atoi(expr.token.c_str());
+			return static_cast<T>(strtod(expr.token.c_str(), nullptr));
 		}
 
 		throw std::runtime_error("Unknown expression type");
