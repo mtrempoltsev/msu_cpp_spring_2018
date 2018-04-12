@@ -6,8 +6,8 @@
 class err{
     std::string s;
 public:
-    err(std::string _s): s(_s) {};
-    std::string get() {
+    err(const std::string& _s): s(_s) {};
+    std::string get() const{
         return s;
     }
 };
@@ -16,7 +16,7 @@ template<typename T>
 struct Result{
     T acc;
     std::string rest;
-    Result(T _acc, std::string& _rest): acc(_acc), rest(_rest) {}
+    Result(T _acc,const std::string& _rest): acc(_acc), rest(_rest) {}
 };
 
 template <typename T>
