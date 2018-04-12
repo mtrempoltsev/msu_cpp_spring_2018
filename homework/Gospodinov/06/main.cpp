@@ -1,4 +1,4 @@
-#include "Parser.h"
+#include "Calculator.h"
 #include <iostream>
 
 int main(int argc, char* argv[])
@@ -10,9 +10,8 @@ int main(int argc, char* argv[])
 	}
 	try 
 	{
-		Parser p(argv[1]);
-		auto result = p.parse().eval<int>();
-		std::cout << result << std::endl;
+		Calculator<int> calc(argv[1]);
+		std::cout << calc.run() << std::endl;
 	}
 	catch (std::exception& expr) 
 	{

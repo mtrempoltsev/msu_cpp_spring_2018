@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <stdexcept>
 
 template<typename type>
 class Calculator
@@ -19,12 +20,12 @@ class Calculator
     {
         type ans = 0;
         if(start == last)
-            throw "error";
+            throw std::invalid_argument("Empty value");
         for(auto i = start; i!= last; ++i){
             if(*i == ' ')
                 continue;
             else if(!(*i >= '0' && *i <= '9'))
-                throw "error";
+                throw std::invalid_argument("Unknown symbol");
             else
                 ans = ans * 10 + *i - 0x30;
         }
@@ -67,7 +68,7 @@ class Calculator
             else if(*i == '/'){
                 auto num = to_num(i + 1, last);
                 if(num == 0)
-                    throw "error";
+                    throw std::invalid_argument("Division by zero");
                 return mul_div(start, i) / num;
             }
         }
@@ -101,11 +102,6 @@ public:
         ans_ = parser(expr.begin(), expr.end());
         return ans_;
     }
-
-    type result()
-    {
-        return ans_;
-    }
 };
 
 int main(int argc, char* argv[])
@@ -118,10 +114,9 @@ int main(int argc, char* argv[])
     try
     {
         Calculator<int> c;
-        c.calculate(argv[1]);
-        std::cout << c.result() << std::endl;
+        std::cout << c.calculate(argv[1]) << std::endl;
     }
-    catch(const char* s)
+    catch(std::invalid_argument&)
     {
         std::cerr << "error\n";
         return 1;

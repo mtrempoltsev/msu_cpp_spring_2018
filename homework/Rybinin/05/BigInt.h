@@ -1,7 +1,7 @@
 #include <ostream>
 using std::ostream;
 
-const int BASE = 10000;
+const int BASE = 10;
 
 class BigInt
 {
@@ -9,40 +9,42 @@ class BigInt
     private:
         int mr;
         int size_BI;
-        int *ptr;
+        char *ptr;
         int zn;
-        int &operator[] (int);
-        int &operator[] (int) const;
+        char &operator[] (int);
+        char &operator[] (int) const;
         void change_sz(int);
+        void shift();
     public:
         BigInt();
         BigInt(long long);
         BigInt(const BigInt&);
+        BigInt& operator=(BigInt &&);
         BigInt& operator=(const BigInt&);
         ~BigInt();
 
         BigInt operator-() const;
-        BigInt operator+ (const BigInt&) const;
-        BigInt &operator+= (const BigInt&);
-        BigInt operator- (const BigInt&) const;
-        BigInt &operator-= (const BigInt&);
-        BigInt operator* (int right) const;
-        BigInt operator* (const BigInt&) const;
-        BigInt operator/ (const BigInt&) const;
-        bool operator< (const BigInt&) const;
-        bool operator> (const BigInt&) const;
-        bool operator<= (const BigInt&) const;
-        bool operator>= (const BigInt&) const;
-        bool operator== (const BigInt&) const;
-        bool operator!= (const BigInt&) const;
+        BigInt operator+ (const BigInt &) const;
+        BigInt &operator+= (const BigInt &);
+        BigInt operator- (const BigInt &) const;
+        BigInt &operator-= (const BigInt &);
+        BigInt operator* (int) const;
+        BigInt operator* (const BigInt &) const;
+        BigInt operator/ (const BigInt &) const;
+        bool operator< (const BigInt &) const;
+        bool operator> (const BigInt &) const;
+        bool operator<= (const BigInt &) const;
+        bool operator>= (const BigInt &) const;
+        bool operator== (const BigInt &) const;
+        bool operator!= (const BigInt &) const;
 };
 
 BigInt::BigInt()
 {
     size_BI = 1;
-    mr = 1;
+    mr = 16;
     zn = 0;
-    ptr = new int[1];
+    ptr = new char[16];
     ptr[0] = 0;
 }
 
@@ -55,18 +57,18 @@ BigInt::BigInt(long long a)
         zn = 0;
     long long b = a;
     size_BI = 1;
-    while(b >= 10000)
+    while(b >= BASE)
     {
         size_BI++;
-        b /= 10000;
+        b /= BASE;
     }
-    mr = 1;
+    mr = 16;
     while(mr < size_BI)
         mr *= 2;
-    ptr = new int[mr];
+    ptr = new char[mr];
     for(int i = 0; i < size_BI; ++i){
-        ptr[i] = a % 10000;
-        a /= 10000;
+        ptr[i] = a % BASE;
+        a /= BASE;
     }
     for(int i = size_BI; i < mr; ++i)
         ptr[i] = 0;
@@ -77,7 +79,7 @@ BigInt::BigInt (const BigInt &copied)
     mr = copied.mr;
     size_BI = copied.size_BI;
     zn = copied.zn;
-    ptr = new int [mr];
+    ptr = new char[mr];
     for(int i = 0; i < mr; i++)
         ptr[i] = copied[i];
 }
@@ -88,9 +90,20 @@ BigInt &BigInt::operator=(const BigInt &copied)
     size_BI = copied.size_BI;
     zn = copied.zn;
     mr = copied.mr;
-    ptr = new int [mr];
+    ptr = new char[mr];
     for(int i = 0; i < copied.mr; i++)
         ptr[i] = copied[i];
+    return *this;
+}
+
+BigInt &BigInt::operator=(BigInt &&copied)
+{
+    size_BI = copied.size_BI;
+    zn = copied.zn;
+    mr = copied.mr;
+    ptr = copied.ptr;
+    copied.ptr = nullptr;
+    return *this;
 }
 
 BigInt::~BigInt()
@@ -102,16 +115,11 @@ ostream &operator<< (ostream &out, const BigInt &obj)
 {
     if(obj.zn == 1)
         out << '-';
-    out << obj[obj.size_BI-1];
+    out << obj[obj.size_BI-1]-0;
     for(int i = obj.size_BI - 2; i >= 0; --i){
-        if(obj[i] < 1000)
-            out << '0';
-        if(obj[i] < 100)
-            out << '0';
-        if(obj[i] < 10)
-            out << '0';
-        out << obj[i];
+        out << obj[i]-0;
     }
+    //out << '(' << obj.size_BI << ')';
     return out;
 }
 
@@ -123,11 +131,21 @@ void BigInt::change_sz(int f)
     else
         mr /= 2;
     delete[] ptr;
-    ptr = new int[mr];
+    ptr = new char[mr];
     for(int i = 0; i < tmp.size_BI; ++i)
         ptr[i] = tmp.ptr[i];
     for(int i = tmp.size_BI; i < mr; ++i)
         ptr[i] = 0;
+}
+
+void BigInt::shift()
+{
+    if(size_BI == mr)
+        change_sz(1);
+    size_BI++;
+    for(int i = size_BI - 1; i > 0; --i)
+        ptr[i] = ptr[i - 1];
+    ptr[0] = 0;
 }
 
 BigInt BigInt::operator-() const
@@ -138,18 +156,20 @@ BigInt BigInt::operator-() const
     return tmp;
 }
 
-int &BigInt::operator[] (int i)
+char &BigInt::operator[] (int i)
 {
     return ptr[i];
 }
 
-int &BigInt::operator[] (int i) const
+char &BigInt::operator[] (int i) const
 {
     return ptr[i];
 }
 
 BigInt BigInt::operator+ (const BigInt &right) const
 {
+    if(right == 0)
+        return *this;
     if(zn == right.zn){
         if(size_BI < right.size_BI)
             return (right + *this);
@@ -172,7 +192,7 @@ BigInt BigInt::operator+ (const BigInt &right) const
         tmp.size_BI = (i < tmp.size_BI) ? tmp.size_BI : i;
         return tmp;
     }else
-        return (*this-(-right));
+        return (*this - (-right));
 }
 
 BigInt &BigInt::operator+= (const BigInt &right)
@@ -208,16 +228,13 @@ BigInt BigInt::operator- (const BigInt &right) const
             i++;
             tmp[i] -= ost;
         }
-        while(tmp[tmp.size_BI-1] == 0)
+        while(tmp[tmp.size_BI-1] == 0 && tmp.size_BI != 1)
             tmp.size_BI--;
-        if(tmp.size_BI == 0)
-            tmp.size_BI == 1;
-        while(tmp.size_BI < (tmp.mr / 2)){
+        while(tmp.size_BI < (tmp.mr / 2) && tmp.mr != 32)
             tmp.change_sz(0);
-        }
         return tmp;
     }else
-        return (*this+(-right));
+        return (*this + (-right));
 }
 
 BigInt &BigInt::operator-= (const BigInt &right)
@@ -243,14 +260,14 @@ BigInt BigInt::operator* (int right) const //right <= BASE
         tmp[i] %= BASE;
     }
     int i = tmp.size_BI;
-        while(ost != 0){
-            if(i >= tmp.mr)
-                tmp.change_sz(1);
-            tmp[i] += ost;
-            ost = tmp[i] / BASE;
-            tmp[i] %= BASE;
-            i++;
-        }
+    while(ost != 0){
+        if(i >= tmp.mr)
+            tmp.change_sz(1);
+        tmp[i] += ost;
+        ost = tmp[i] / BASE;
+        tmp[i] %= BASE;
+        i++;
+    }
     tmp.size_BI = (i < tmp.size_BI) ? tmp.size_BI : i;
     return tmp;
 }
@@ -264,7 +281,7 @@ BigInt BigInt::operator* (const BigInt &right) const
     for(int i = 0; i < right.size_BI; ++i){
         k = pr * right[i];
         for(int j = 0; j < i; ++j){
-            k = k * BASE;
+            k.shift();
         }
         tmp += k;
     }
@@ -272,33 +289,35 @@ BigInt BigInt::operator* (const BigInt &right) const
     return tmp;
 }
 
-BigInt BigInt::operator/ (const BigInt& right) const
+BigInt BigInt::operator/ (const BigInt &right) const
 {
     if(*this == 0)
         return 0;
-    BigInt otv(0), del = *this, st = right;
-    st.zn = 0;
+    BigInt otv(0), del = *this, rig = right;
+    rig.zn = 0;
     del.zn = 0;
-    while(del >= st){
-        BigInt tmp = right, k(1);
-        tmp.zn = 0;
+    while(del >= rig){
+        BigInt tmp(rig), sh_tmp(rig), tmp_otv(1);
         int j = 0;
-        while(del >= (tmp * BASE)){
-            tmp = tmp * BASE;
-            k = k * BASE;
+        sh_tmp.shift();
+        while(del > sh_tmp){
+            tmp = sh_tmp;
+            tmp_otv.shift();
+            sh_tmp.shift();
         }
-        while(del>=tmp){
+        while(del >= tmp){
             del -= tmp;
-            j++;
+            ++j;
         }
-        otv += k * j;
+        otv += tmp_otv * j;
     }
     otv.zn = zn ^ right.zn;
     if(-otv == 0)
         otv.zn = 0;
     return otv;
 }
-bool BigInt::operator== (const BigInt& right) const
+
+bool BigInt::operator== (const BigInt &right) const
 {
     if(this == &right)
         return 1;
@@ -313,7 +332,7 @@ bool BigInt::operator== (const BigInt& right) const
     return 1;
 }
 
-bool BigInt::operator< (const BigInt& right) const
+bool BigInt::operator< (const BigInt &right) const
 {
     if(*this == right)
         return 0;
@@ -334,28 +353,28 @@ bool BigInt::operator< (const BigInt& right) const
     return 0;
 }
 
-bool BigInt::operator> (const BigInt& right) const
+bool BigInt::operator> (const BigInt &right) const
 {
     if(*this == right)
         return 0;
     return !(*this < right);
 }
 
-bool BigInt::operator>= (const BigInt& right) const
+bool BigInt::operator>= (const BigInt &right) const
 {
     if(*this == right)
         return 1;
     return (*this > right);
 }
 
-bool BigInt::operator<= (const BigInt& right) const
+bool BigInt::operator<= (const BigInt &right) const
 {
     if(*this == right)
         return 1;
     return (*this < right);
 }
 
-bool BigInt::operator!=(const BigInt& right) const
+bool BigInt::operator!=(const BigInt &right) const
 {
     return !(*this == right);
 }

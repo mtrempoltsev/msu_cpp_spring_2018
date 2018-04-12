@@ -8,7 +8,7 @@ public:
     const double &operator[](int index) const;
     bool operator== (const Col &h) const;
     Col &operator*= (double x);
-    ~Col(){delete[] data;}
+    ~Col();
 
 };
 
@@ -19,24 +19,22 @@ class Matrix{
 public:
     Matrix(int c, int r);
     Matrix(const Matrix& m);
-    int getColumns() const {return cols;}
-    int getRows() const {return rows;}
+    int getColumns() const;
+    int getRows() const;
     Col &operator[](int index);
     const Col &operator[](int index) const;
-    bool operator== (const Matrix &m) const ;
-    bool operator!= (const Matrix &m) const {return !(*this == m);}
+    bool operator== (const Matrix &m) const;
+    bool operator!= (const Matrix &m) const;
     Matrix &operator*= (double x);
     ~Matrix();
 };
 
 
-Col::Col(int r) {
-    rows =r;
+Col::Col(int r): rows(r) {
     data = new double[r];
 }
 
-Col::Col(const Col &c) {
-    rows = c.rows;
+Col::Col(const Col &c): rows(c.rows) {
     data = new double[rows];
     for (int i =0; i<rows; i++)
         data[i] = c.data[i];
@@ -68,19 +66,18 @@ bool Col::operator==(const Col &h) const{
     return true;
 }
 
+Col::~Col() {
+    delete[] data;
+}
 
 
-Matrix::Matrix(int c, int r){
-    rows = r;
-    cols = c;
+Matrix::Matrix(int c, int r): rows(r), cols(c){
     data = new Col* [cols];
     for(int i=0; i<cols; i++)
         data[i] = new Col(rows);
 }
 
-Matrix::Matrix(const Matrix &m) {
-    rows = m.rows;
-    cols = m.cols;
+Matrix::Matrix(const Matrix &m): rows(m.rows), cols(m.cols) {
     data = new Col* [cols];
     for(int i=0; i<cols; i++) {
         data[i] = new Col(rows);
@@ -115,6 +112,18 @@ bool Matrix::operator==(const Matrix &m) const {
         if (this->data[i] != m.data[i])
             return false;
     return true;
+}
+
+int Matrix::getColumns() const {
+    return cols;
+}
+
+int Matrix::getRows() const {
+    return rows;
+}
+
+bool Matrix::operator!=(const Matrix &m) const {
+    return !(*this == m);
 }
 
 Matrix::~Matrix() {

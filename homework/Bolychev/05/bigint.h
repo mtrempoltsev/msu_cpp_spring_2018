@@ -194,21 +194,17 @@ public:
             is_negative = input_number < 0;
         }
 
-
-        number = new digit[30];
+        digit buffer[30];
         auto abs_number = (input_number >= 0? input_number : -input_number);
         length = 0;
-        auto init_value = abs_number;
         while (abs_number > 0) {
-            length++;
+            buffer[length++] = abs_number % 10;
             abs_number /= 10;
         }
-        abs_number = init_value;
 
-        for (int i = length - 1; i >= 0; --i)
-        {
-            number[i] = abs_number % 10;
-            abs_number /= 10;
+        number = new digit[length];
+        for (int i = 0; i < length; ++i) {
+            number[i] = buffer[length - i - 1];
         }
     }
 
