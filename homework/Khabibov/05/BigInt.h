@@ -76,6 +76,7 @@ public:
 
 	BigInt(BigInt &&a) : sign_(a.sign_), bigNumber_(a.bigNumber_), size_(a.size_)
 	{
+		a.size_ = 0;
 		a.bigNumber_ = nullptr;
 	}
 
@@ -87,6 +88,7 @@ public:
 		sign_ = a.sign_;
 		free(bigNumber_);
 		bigNumber_ = a.bigNumber_;
+		a.size_ = 0;
 		a.bigNumber_ = nullptr;
 		return *this;
 	}
