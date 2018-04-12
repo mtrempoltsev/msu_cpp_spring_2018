@@ -10,6 +10,7 @@ public:
 	BigInt();
 	BigInt(int64_t);
 	BigInt(const BigInt&);
+	BigInt(BigInt&&);
 	BigInt operator-() const;
 	~BigInt();
 	BigInt operator+(const BigInt& other) const;
@@ -23,6 +24,7 @@ public:
 	bool operator>=(const BigInt& other) const;
 	bool operator<=(const BigInt& other) const;
 	void operator=(const BigInt&);
+	void operator=(BigInt&&);
 	void operator=(const int&);
 	void resize(size_t);
 	void fill_zeros();
