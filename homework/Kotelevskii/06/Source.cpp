@@ -4,7 +4,7 @@
 template <class T>
 class Calculator
 {
-	T divider(std::string& s) const
+	T divider(std::string s) const
 	{
 		for (size_t i = s.length(); i >= 1; i--)
 		{
@@ -20,7 +20,7 @@ class Calculator
 		}
 		return s[0] == '-' ? -1 * mult_div(s.substr(1)) : mult_div(s);
 	}
-	T mult_div(std::string& s) const
+	T mult_div(std::string s) const
 	{
 		std::string helper;
 		for (size_t i = s.length(); i > 0; i--)
@@ -39,7 +39,7 @@ class Calculator
 		return s[0] == '-' ? -1 * std::stoi(s.substr(1)) : std::stoi(s);
 	}
 	
-	std::string normalization(std::string s) const
+	std::string normalization(std::string& s) const
 	{
 		s.erase(std::remove(s.begin(), s.end(), ' '), s.end());
 		for (size_t i = 0; i < s.length() - 1; i++)
@@ -58,7 +58,7 @@ class Calculator
 		s.erase(std::remove(s.begin(), s.end(), ' '), s.end());
 		return s;
 	}
-	void checker(std::string s) const
+	void checker(std::string& s) const
 	{
 		if (s.find("/0") != std::string::npos)
 		{
