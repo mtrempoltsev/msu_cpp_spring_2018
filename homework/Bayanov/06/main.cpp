@@ -24,25 +24,23 @@ class Calc<int> {
         return '0' <= f && f <= '9';
     }
 
+    inline void shift_spaces(const char* str, size_t& ind, size_t len){
+        while(ind < len && str[ind] == ' '){
+            ++ind;
+        }
+    }
+
 public:
-    int operator()(char *str) {
+    int operator()(const char *str) {
         operands.clear();
         operations.clear();
 
-        size_t len = 0;
-        size_t walk = 0;
-        while (str[walk]) {
-            if (str[walk] != ' ') {
-                if (!IsOperation(str[walk]) && !IsDigit(str[walk])) {
-                    throw std::logic_error("");
-                }
-                str[len++] = str[walk];
-            }
-            ++walk;
-        }
+        size_t len = strlen(str);
+
         size_t ind = 0;
         bool odd = true;
         while (ind < len) {
+            shift_spaces(str, ind, len);
             if (ind < len) {
                 if (odd) {
                     bool pos = true;
@@ -50,14 +48,15 @@ public:
                         pos = str[ind] == '+';
                         ++ind;
                     }
+                    shift_spaces(str, ind, len);
                     if (ind >= len || !IsDigit(str[ind])) {
-                        throw std::logic_error("");
+                        throw std::logic_error("Invalid input");
                     }
                     long long value = 0;
                     while (ind < len && IsDigit(str[ind])) {
                         value = value * 10 + (str[ind] - '0');
                         if (value > (1ll << 31) - 1) {
-                            throw std::logic_error("");
+                            throw std::logic_error("Invalid input");
                         }
                         ++ind;
                     }
@@ -76,7 +75,7 @@ public:
                             res *= a;
                         } else {
                             if (!a) {
-                                throw std::logic_error("");
+                                throw std::logic_error("Impossible divide by zero");
                             }
                             res /= a;
                         }
@@ -85,7 +84,7 @@ public:
                     }
                 } else {
                     if (!IsOperation(str[ind])) {
-                        throw std::logic_error("");
+                        throw std::logic_error("Invalid input");
                     } else {
                         operations.push_back(str[ind]);
                         ++ind;
@@ -96,7 +95,7 @@ public:
             odd ^= true;
         }
         if (operands.size() != operations.size() + 1 || !operands.size()) {
-            throw std::logic_error("");
+            throw std::logic_error("Invalid input");
         }
         int result = operands[0];
         for (size_t it = 1; it < operands.size(); ++it) {
@@ -121,7 +120,7 @@ int main(int argc, char* argv[]) {
     try{
         int value = calc(argv[1]);
         std::cout << value << "\n";
-    }catch(std::logic_error){
+    }catch(std::logic_error&){
         std::cout << "error";
         return 1;
     }
