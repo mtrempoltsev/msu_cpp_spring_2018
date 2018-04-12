@@ -25,16 +25,16 @@ private:
         T value = get_number();
         while(index < str.size() && (str[index] == '*' || str[index] == '/'))
         {
-            ++index;
-            if(str[index - 1] == '*')
-                value = value * get_number();
+            if(str[index] == '*')
+                value *= get_number();
             else
             {
-                T num = get_number();
-                if(num == T(0))
+                T number = get_number();
+                if(number == T(0))
                     throw division_by_zero();
-                value = value / num;
+                value /= number;
             }
+            index++;
         }
         return value;
     }
@@ -44,12 +44,12 @@ private:
         T value = get_operator();
         while(index < str.size() && (str[index] == '+' || str[index] == '-'))
         {
-            ++index;
-            if(str[index - 1] == '+')
+            if(str[index] == '+')
                 value += get_operator();
             else
                 value -= get_operator();
         }
+        index++;
         return value;
     }
 
