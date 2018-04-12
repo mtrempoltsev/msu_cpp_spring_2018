@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
             throw std::range_error("argc mast have 2 parameters!");
         Calculator<int> calculator;
         std::cout << calculator.calculate(argv[1]) << std::endl;
-    }catch (std::exception e){
+    }catch (const std::exception& e){
         std::cout<<"error"<<std::endl;
         return 1;
     }catch (...){
