@@ -1,7 +1,22 @@
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <cstdlib>
 #include <algorithm>
+
+
+class CalculatorError
+{
+    std::string message_;
+public:
+    CalculatorError(const std::string& message):
+    	message_(message)
+    { }
+    const std::string& getMessage() const
+    {
+    	return message_;
+    }
+};
 
 
 
@@ -38,14 +53,16 @@ private:
 	    	if (str.at(found) == '*')    		
 	    		return val1 * val2;
 	    	else if (val2 == 0) // check if divided by 0
-	    		throw std::string("Divide by zero");
+	    		throw CalculatorError("Divide by zero");
 	    	else
 	    		return val1 / val2;
 	    }
-	    // getting value
-	    T Value = strtol(str.c_str(), NULL, 10);
+	    // getting value and checking value
+	    std::istringstream iss (str);
+	    T Value;
+	    iss >> Value;
 		if (str.compare(std::to_string(Value)) != 0)
-			throw std::string("Not vaid value");
+			throw CalculatorError("Not vaid value");
 		return Value;
 	}
 
@@ -68,15 +85,15 @@ private:
 	}
 };
 
-int main(int argc, char const *argv[])
+int main(int argc, char *argv[])
 {
 	try {
 		if (argc != 2)
-			throw std::string("Not valid argv");
+			throw CalculatorError("Not valid argv");
 		Calculator<int> calc;
 		std::cout << calc.runCalculator(argv[1]) << std::endl;
 	} 
-	catch (const std::string str) {
+	catch (const CalculatorError& calc_error) {
 		std::cout << "error" << std::endl;
 		return 1;
 	}
