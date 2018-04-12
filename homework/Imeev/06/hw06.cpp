@@ -12,7 +12,7 @@ int main(int argc, char **argv)
         Calculator<int> calc{};
         std::cout << calc.calculate(argv[EXERCISE]) << std::endl;
     } catch(...) {
-        std::cout << "error" << std::endl;
+        std::cerr << "error" << std::endl;
         return 1;
     }
     return 0;
