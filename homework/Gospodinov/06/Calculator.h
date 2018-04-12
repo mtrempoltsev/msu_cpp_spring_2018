@@ -6,15 +6,25 @@
 #include <cctype>
 #include <stdexcept>
 #include <cstring>
+#include <sstream>
 
 class Expression
 {
 	std::string token;
 	std::vector<Expression> args;
+
+	template<class T>
+	static T cast(const std::string& str)
+	{
+		std::istringstream ss(str);
+		T num;
+		ss >> num;
+		return num;
+	}
 public:
-	Expression(std::string token) : token(token) {}
-	Expression(std::string token, Expression a) : token(token), args{ a } {}
-	Expression(std::string token, Expression a, Expression b) : token(token), args{ a, b } {}
+	Expression(const std::string& token) : token(token) {}
+	Expression(const std::string& token, const Expression& a) : token(token), args{ a } {}
+	Expression(const std::string& token, const Expression& a, const Expression& b) : token(token), args{ a, b } {}
 
 	template <class T>
 	T evaluate()
@@ -49,7 +59,7 @@ public:
 			throw std::runtime_error("Unknown unary operator");
 		}
 		case 0:
-			return atoi(token.c_str());
+			return cast<T>(token);
 		}
 		throw std::runtime_error("Unknown expression type");
 	}

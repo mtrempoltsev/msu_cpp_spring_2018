@@ -26,6 +26,13 @@ BigInt::BigInt(int64_t x)
 		x /= 10;
 	}
 }
+BigInt::BigInt(BigInt&& other)
+{
+	is_positive = other.is_positive;
+	size = other.size;
+	num = other.num;
+	other.num=nullptr;
+}
 
 BigInt::BigInt(const BigInt& other)
 {
@@ -276,6 +283,17 @@ void BigInt::operator=(const BigInt& other)
 	is_positive = other.is_positive;
 	for (size_t i = 0; i < size; i++)
 		num[i] = other.num[i];
+	return;
+}
+void BigInt::operator=(BigInt&& other)
+{
+	if (this == &other)
+		return;
+	size = other.size;
+	is_positive = other.is_positive;
+	delete[] num;
+	num = other.num;
+	other.num = nullptr;
 	return;
 }
 void BigInt::operator=(const int& number)

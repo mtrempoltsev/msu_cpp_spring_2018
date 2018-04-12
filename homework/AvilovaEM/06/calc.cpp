@@ -153,9 +153,9 @@ public:
                     return;
             }
             
-            if (((c >= '0') && (c <= '9')) || (c == '.'))
+            if (c >= '0' && c <= '9' || c == '.')
             {
-                for (auto c = *text; ((c >= '0') && (c <= '9')) || (c == '.');)
+                for (auto c = *text; c >= '0' && c <= '9' || c == '.';)
                 {
                     text++;
                     c = *text;
@@ -305,10 +305,10 @@ int main(int argc, char *argv[])
 {
     const char *text = "1 + 2";
 
-    if (argc == 1)
+    if(argc != 2)
     {
-      std::cerr << "error";
-      return 1;
+        std::cerr << "error";
+        return 1;
     }
     
     text = argv[1];
