@@ -22,9 +22,9 @@ class Expression
 		return num;
 	}
 public:
-	Expression(std::string token) : token(token) {}
-	Expression(std::string token, Expression a) : token(token), args{ a } {}
-	Expression(std::string token, Expression a, Expression b) : token(token), args{ a, b } {}
+	Expression(const std::string& token) : token(token) {}
+	Expression(const std::string& token, const Expression& a) : token(token), args{ a } {}
+	Expression(const std::string& token, const Expression& a, const Expression& b) : token(token), args{ a, b } {}
 
 	template <class T>
 	T evaluate()
