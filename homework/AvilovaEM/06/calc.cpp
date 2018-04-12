@@ -153,9 +153,9 @@ public:
                     return;
             }
             
-            if (c >= '0' && c <= '9' || c == '.')
+            if (((c >= '0') && (c <= '9')) || (c == '.'))
             {
-                for (auto c = *text; c >= '0' && c <= '9' || c == '.';)
+                for (auto c = *text; ((c >= '0') && (c <= '9')) || (c == '.');)
                 {
                     text++;
                     c = *text;
