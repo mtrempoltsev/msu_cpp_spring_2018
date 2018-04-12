@@ -72,12 +72,15 @@ public:
 int main(int argc, char* argv[]) {
     try {
         if (argc > 2)
-            throw std::range_error("argc have not 2 parameters!");
+            throw std::range_error("argc mast have 2 parameters!");
         Calculator<int> calculator;
         //calculator.calculate(argv[1]);
         //int x = calculator.calculate("3*4/2*10/2/2/2*2/1/1/7");
         //int x = calculator.calculate("2-3*4+-5/0");
         std::cout << calculator.calculate(argv[1]) << std::endl;
+    }catch (std::exception e){
+        std::cout<<"error"<<std::endl;
+        return 1;
     }catch (...){
         std::cout<<"error";
         return 1;
