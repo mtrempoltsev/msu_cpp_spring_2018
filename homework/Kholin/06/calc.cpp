@@ -2,8 +2,10 @@
 #include <iostream>
 #include <stdint.h>
 
+template <typename T>
 class Calculator {
 public:
+    
     Calculator(int32_t argc, char* argv[]) {
         if (argc != 2) {
             throw std::string("error");
@@ -17,11 +19,12 @@ public:
         }
     }
 
-    int result() {
+    
+    T result() {
         return _result;
     }
 private:
-    int32_t _result;
+    T _result;
 
     std::string deleteSpaces(const std::string& input) {
         std::string answer = "";
@@ -33,7 +36,7 @@ private:
         return answer;
     }
 
-    int32_t solve(const std::string& input, const uint32_t begin, const uint32_t end, const int minus) {
+    T solve(const std::string& input, const uint32_t begin, const uint32_t end, const T minus) {
         if (begin >= end) {
             return 0;
         }
@@ -93,7 +96,7 @@ private:
                 if (i + 1 == end) {
                     throw std::string("error");
                 }
-                int x, y;
+                T x, y;
                 try {
                     x = solve(input, begin, i, 1);
                     y = solve(input, i + 1, end, 1);
@@ -108,7 +111,7 @@ private:
                 }
             }
         }
-        int32_t x = 0;
+        T x = 0;
         for (uint32_t i = end; i > begin; --i) {
             if ('0' <= input[i - 1] && input[i - 1] <= '9') {
                 x = x * 10 + (input[i - 1] - '0');
@@ -122,7 +125,7 @@ private:
 
 int main(int argc, char* argv[]) {
     try {
-        Calculator calc(argc, argv);
+        Calculator<int> calc(argc, argv);
         std::cout << calc.result() << std::endl;
         return 0;
     }
