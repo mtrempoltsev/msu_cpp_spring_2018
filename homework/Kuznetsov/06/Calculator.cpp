@@ -3,16 +3,16 @@
 #include <exception>
 template<class T>class Calculator{
 private:
-    T calculateStr(std::string str){
+    T calculateStr(const std::string& str) const{
         for(size_t i = str.length(); i> 0; i--){
-            if(str[i] == '+')
+                if(str[i] == '+')
                 return multiple(str.substr(i+1)) +  calculateStr(str.substr(0,i));
             else if(str[i] == '-' )
                 return calculateStr(str.substr(0,i)) - multiple(str.substr(i+1));
         }
         return multiple(str);
     }
-    T multiple(std::string str){
+    T multiple(const std::string& str) const{
         for(size_t i = str.length(); i> 0; i--){
             if(str[i] == '*')
                 return multiple(str.substr(0,i))*std::stoi(str.substr(i+1));
@@ -21,7 +21,7 @@ private:
         }
         return std::stoi(str);
     }
-    T dividion(std::string delimoe, T delitel){
+    T dividion(const std::string& delimoe, const T delitel) const{
         for(size_t i = delimoe.length(); i> 0; i--){
             if(delimoe[i] == '*')
                 return multiple(delimoe.substr(0,i)) * std::stoi(delimoe.substr(i+1)) /delitel;
