@@ -3,22 +3,7 @@
 #include <string>
 #include <cstdlib>
 #include <algorithm>
-
-
-class CalculatorError
-{
-    std::string message_;
-public:
-    CalculatorError(const std::string& message):
-    	message_(message)
-    { }
-    const std::string& getMessage() const
-    {
-    	return message_;
-    }
-};
-
-
+#include <exception>
 
 template <class T>
 class Calculator
@@ -53,7 +38,7 @@ private:
 	    	if (str.at(found) == '*')    		
 	    		return val1 * val2;
 	    	else if (val2 == 0) // check if divided by 0
-	    		throw CalculatorError("Divide by zero");
+	    		throw std::runtime_error("Divide by zero");
 	    	else
 	    		return val1 / val2;
 	    }
@@ -62,7 +47,7 @@ private:
 	    T Value;
 	    iss >> Value;
 		if (str.compare(std::to_string(Value)) != 0)
-			throw CalculatorError("Not vaid value");
+			throw std::runtime_error("Not vaid value");
 		return Value;
 	}
 
@@ -89,11 +74,11 @@ int main(int argc, char *argv[])
 {
 	try {
 		if (argc != 2)
-			throw CalculatorError("Not valid argv");
+			throw std::runtime_error("Not valid argv");
 		Calculator<int> calc;
 		std::cout << calc.runCalculator(argv[1]) << std::endl;
 	} 
-	catch (const CalculatorError& calc_error) {
+	catch (const std::exception& excep) {
 		std::cout << "error" << std::endl;
 		return 1;
 	}
