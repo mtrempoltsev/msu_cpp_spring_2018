@@ -6,7 +6,6 @@
 #define SPHERE_01_C_HW07_MY_VECT_H
 
 #include <iterator>
-#include <cstdlib>
 #include <memory>
 #include <limits>
 
