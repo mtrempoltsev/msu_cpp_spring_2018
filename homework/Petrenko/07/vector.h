@@ -25,7 +25,7 @@ class Iterator : std::iterator<std::random_access_iterator_tag, T>
 {
     T * ptr_;
 public:
-    using difference_type = ptrdiff_t;
+    using difference_type = std::ptrdiff_t;
     using value_type = T;
     using pointer = T*;
     using reference = T&;
