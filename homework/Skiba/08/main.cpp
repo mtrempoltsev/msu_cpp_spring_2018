@@ -20,11 +20,15 @@ public:
 template <class T>
 class Iterator {
     T* ptr;
+    bool dir = false;
 public:
-    explicit Iterator(const Iterator<T>& mid): ptr(mid.ptr) {}
-    explicit Iterator(const T* midptr): ptr(midptr) {}
+    Iterator(T* midptr, bool _dir = true): ptr(midptr), dir(_dir) {}
+    Iterator(const Iterator<T>& mid) {
+        dir = mid.dir;
+        ptr = mid.ptr;
+    }
     bool operator==(const Iterator<T>& mid) const {
-        return ptr == mid.ptr;
+        return (ptr == mid.ptr) && (dir == mid.dir);
     }
     bool operator!=(const Iterator<T>& mid) const {
         return !(*this == mid);
@@ -33,58 +37,40 @@ public:
         return *ptr;
     }
     Iterator& operator++() {
-        ++ptr;
+        if (dir) {
+            ++ptr;
+        } else {
+            --ptr;
+        }
         return *this;
     }
     Iterator& operator--() {
-        --ptr;
+        if (dir) {
+            --ptr;
+        } else {
+            ++ptr;
+        }
         return *this;
     }
     Iterator operator+(size_t step) const {
-        return Iterator<T>(ptr + step);
+        if (dir) {
+            return Iterator<T>(ptr + step);
+        } else {
+            return Iterator<T>(ptr - step);
+        }
     }
     Iterator operator-(size_t step) const {
+        if (dir) {
+            return Iterator<T>(ptr - step);
+        } else {
+            return Iterator<T>(ptr + step);
+        }
         return Iterator<T>(ptr - step);
     }
     size_t operator-(const Iterator<T>& mid) const {
         return ptr - mid.ptr;
     }
 };
-
-template <class T>
-class ReIterator {
-    T* ptr;
-public:
-    explicit ReIterator(const ReIterator<T>& mid): ptr(mid.ptr) {}
-    explicit ReIterator(const T* midptr): ptr(midptr) {}
-    bool operator==(const ReIterator<T>& mid) const {
-        return ptr == mid.ptr;
-    }
-    bool operator!=(const ReIterator<T>& mid) const {
-        return !(*this == mid);
-    }
-    T& operator*() const{
-        return *ptr;
-    }
-    ReIterator& operator++() {
-        --ptr;
-        return *this;
-    }
-    ReIterator& operator--() {
-        ++ptr;
-        return *this;
-    }
-    ReIterator operator+(size_t step) const {
-        return ReIterator<T>(ptr - step);
-    }
-    ReIterator operator-(size_t step) const {
-        return Iterator<T>(ptr + step);
-    }
-    size_t operator-(const ReIterator<T>& mid) const {
-        return ptr - mid.ptr;
-    }
-};
-
 
 template <class T, class Alloc = Allocator<T> >
 class Vector {
@@ -93,7 +79,7 @@ class Vector {
     Alloc alloc;
 public:
     Vector(size_t _sz = 0) {
-        sz = _sz;
+        sz = _sz + 1;
         cp = sz * 2 + 10;
         ptr = alloc.allocate(cp);
     }
@@ -101,12 +87,16 @@ public:
         alloc.deallocate(ptr, cp);
     }
     bool empty() const noexcept{
-        return !(sz);
+        return !(sz - 1);
     }
     size_t size() const noexcept{
-        return sz;
+        return sz - 1;
+    }
+    size_t capacity() const noexcept{
+        return cp;
     }
     T& operator[](size_t ind) {
+        ind++;
         if (ind < sz) {
             return *(ptr + ind);
         } else {
@@ -114,6 +104,7 @@ public:
         }
     }
     const T& operator[](size_t ind) const {
+        ind++;
         if (ind < sz) {
             return *(ptr + ind);
         } else {
@@ -127,10 +118,13 @@ public:
         sz--;
     }
     void push_back(const T& arg) {
-        resize(sz + 1);
+        resize(sz + 1, 0);
         ptr[sz - 1] = arg;
     }
-    void resize(size_t newsz) {
+    void resize(size_t newsz, size_t add = 1) {
+        newsz += add;
+        size_t old_sz = sz;
+        size_t old_cp = cp;
         if (cp < newsz + 1) {
             size_t newcp = newcp * 2 + 10;
             T* newptr = alloc.allocate(newcp);
@@ -141,6 +135,9 @@ public:
             sz = newsz;
         } else {
             sz = newsz;
+        }
+        for (size_t i = old_sz; (i < cp) && (i < old_cp); i++) {
+            ptr[i] = T{};
         }
     }
     void reserve(size_t newcp) {
@@ -153,21 +150,32 @@ public:
         }
     }
     Iterator<T> begin() const {
-        return Iterator<T>(ptr);
+        return Iterator<T>(ptr + 1, true);
     }
     Iterator<T> end() const {
-        return Iterator<T>(ptr + sz + 1);
+        return Iterator<T>(ptr + sz, true);
     }
-    ReIterator<T> rbegin() const {
-        return ReIterator<T>(ptr + sz + 1);
+    Iterator<T> rbegin() const {
+        return Iterator<T>(ptr + sz - 1, false);
     }
-    ReIterator<T> rend() const {
-        return ReIterator<T>(ptr);
+    Iterator<T> rend() const {
+        return Iterator<T>(ptr, false);
     }
 };
 
 int main(int argc, char *argv[]) {
-    std::string s = {"KEK"};
-    std::cout << s << std::endl;
+    Vector<int> a;
+    for (int i = 0; i < 10; i++) {
+        a.push_back(i);
+    }
+    int m = 0;
+    for (auto i = a.begin(); (i != a.end()) && (m < 100); ++i) {
+        std::cout << *(i) << std::endl;
+        m++;
+    }
+    for (auto i = a.rbegin(); (i != a.rend()) && (m < 100); ++i) {
+        std::cout << *(i) << std::endl;
+        m++;
+    }
     return 0;
 }
