@@ -1,3 +1,7 @@
+#pragma once
+#include <vector>
+#include <cstring>
+
 template <class T> class Allocator {
   public:
     typedef T value_type;
@@ -8,9 +12,7 @@ template <class T> class Allocator {
     Allocator(const Allocator &) noexcept = default;
     template <class U> explicit Allocator(const Allocator<U> &) noexcept {};
 
-    T *allocate(size_t n) {
-        return (T*)malloc(sizeof(T) * n);
-    }
+    T *allocate(size_t n) { return static_cast<T*> (::operator new(sizeof(T) * n)); }
     void deallocate(T *p, size_t n) { free(p); }
 };
 
@@ -171,7 +173,8 @@ template <class T, class Alloc = Allocator<T>> class Vector {
     typedef typename std::reverse_iterator<const_iterator>
         const_reverse_iterator;
 
-    Vector() noexcept(noexcept(allocator_type())) : begin_(nullptr), end_(nullptr), capacity_(0) {};
+    Vector() noexcept(noexcept(allocator_type()))
+        : begin_(nullptr), end_(nullptr), capacity_(0){};
     explicit Vector(const allocator_type &alloc) noexcept : alloc_(alloc) {}
 
     Vector(size_type count, const_reference value)
@@ -188,14 +191,15 @@ template <class T, class Alloc = Allocator<T>> class Vector {
         auto size_ = std::distance(first, last);
         resize(size_);
         for (size_type i = 0; i < size_; ++i) {
-            *(begin_ + i) = *first++;
+            *(begin_ + i) = *first;
+            ++first;
         }
     }
     Vector(const Vector &other) : Vector(other.begin_, other.end_) {}
     Vector(Vector &&other) noexcept
-        : begin_(other.begin_), end_(other.end_), capacity_(other.capacity_) {
-        other.begin_ = iterator(nullptr);
-        other.begin_ = iterator(nullptr);
+        : begin_(std::move(other.begin_)), end_(std::move(other.end_)), capacity_(std::move(other.capacity_)) {
+        other.begin_ = nullptr;
+        other.begin_ = nullptr;
     }
 
     Vector(std::initializer_list<T> init) : Vector(init.begin(), init.end()) {}
@@ -205,16 +209,18 @@ template <class T, class Alloc = Allocator<T>> class Vector {
 
     void push_back(const_reference value) {
         if (size() == capacity_) {
-            allocate(capacity_ !=  0 ? 2 * capacity_ :  2 * capacity_ + 1);
+            allocate(capacity_ != 0 ? 2 * capacity_ : 2 * capacity_ + 1);
         }
-        *end_++ = value;
+        *end_ = value;
+        ++end_;
     }
 
     void push_back(move_reference value) {
         if (size() == capacity_) {
-            allocate(capacity_ !=  0 ?  2 * capacity_ : 2 * capacity_ + 1);
+            allocate(capacity_ != 0 ? 2 * capacity_ : 2 * capacity_ + 1);
         }
-        *end_++ = std::move(value);
+        *end_ = std::move(value);
+        ++end_;
     }
 
     void pop_back() { (--end_)->~value_type(); }
@@ -223,9 +229,11 @@ template <class T, class Alloc = Allocator<T>> class Vector {
 
     size_type size() const noexcept { return end_ - begin_; }
 
-    void clear() noexcept { while (end_ != begin_) {
+    void clear() noexcept {
+        while (end_ != begin_) {
             (--end_)->~value_type();
-    } }
+        }
+    }
     iterator begin() noexcept { return begin_; }
     const_iterator cbegin() const noexcept { return begin_; }
     iterator end() noexcept { return end_; }
@@ -247,12 +255,14 @@ template <class T, class Alloc = Allocator<T>> class Vector {
         if (count > size()) {
             if (count > capacity_) {
                 while (end_ - begin_ < capacity_) {
-                    *end_++ = value_type();
+                    *end_ = value_type();
+                    ++end_;
                 }
                 allocate(count);
             }
             while (end_ - begin_ < count) {
-                *end_++ = value_type();
+                *end_ = value_type();
+                ++end_;
             }
         } else {
             while (end_ - begin_ > count) {
@@ -269,7 +279,8 @@ template <class T, class Alloc = Allocator<T>> class Vector {
                 allocate(count);
             }
             while (end_ - begin_ < count) {
-                *end_++ = value;
+                *end_ = value;
+                ++end_;
             }
         }
     }
@@ -285,7 +296,7 @@ template <class T, class Alloc = Allocator<T>> class Vector {
     ~Vector() {
         clear();
         if (begin_)
-        alloc_.deallocate(begin_, capacity_);
+            alloc_.deallocate(begin_, capacity_);
     }
 
   private:
