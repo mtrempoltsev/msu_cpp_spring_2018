@@ -1,6 +1,7 @@
 #include<string>
 #include<iostream>
 #include<stdexcept>
+#include <type_traits>
 
 class CalcError : std::exception {};
 template <typename T>
@@ -36,18 +37,31 @@ class Calc
 
         T MulOrDiv(std::string::const_iterator start, std::string::const_iterator finish)
         {
+            bool flag = false;
             for(auto it = finish - 1; it != start-1; --it)
             {
-                if(*it == '*')
-                    return MulOrDiv(start,it) * MulOrDiv(it + 1, finish);
+                if(*it == '*'){
+                    if(flag)
+                        return MulOrDiv(start,it) * MulOrDiv(it + 1, finish);
+                    else
+                        throw CalcError();
+                }
                 if(*it == '/'){
+                    if(!flag)
+                        throw CalcError();
                     T a = MulOrDiv(it + 1, finish);
                     if(a == 0)
                         throw CalcError();
                     return MulOrDiv(start,it) / a;
                 }
+                if(*it >= '0' && *it <= '9')
+                    flag = true;
             }
-            return std::stoi(std::string(start, finish));
+            if(std::is_same<T, int>::value)
+                return std::stoi(std::string(start, finish));
+            if(std::is_same<T, long long>::value)
+                return std::stoll(std::string(start, finish));
+            throw CalcError();
         }
 
         std::string Clearing(const std::string& str) const
