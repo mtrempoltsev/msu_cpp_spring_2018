@@ -5,7 +5,7 @@
 #include <stdexcept>
 
 struct Expression {
-	Expression(std::string token) : token(token) {}
+	Expression(const std::string& token) : token(token) {}
 
 	std::string token;
 	std::vector<Expression> args;
