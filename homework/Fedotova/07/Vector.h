@@ -45,7 +45,11 @@ public:
         return !(*this == other);
     }
 
-    reference operator*() const {
+    reference operator*() {
+        return *ptr_;
+    }
+
+    const reference operator*() const {
         return *ptr_;
     }
 
@@ -195,7 +199,7 @@ public:
             else
                 reserve(2 * size_);
         }
-        data_[size_] = val;
+        data_[size_] = std::move(val);
         ++size_;
     }
     
