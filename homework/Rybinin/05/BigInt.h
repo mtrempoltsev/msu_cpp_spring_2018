@@ -12,14 +12,13 @@ class BigInt
         char *ptr;
         int zn;
         char &operator[] (int);
-        char &operator[] (int) const;
+        char operator[] (int) const;
         void change_sz(int);
         void shift();
     public:
         BigInt();
         BigInt(long long);
         BigInt(const BigInt&);
-        BigInt& operator=(BigInt &&);
         BigInt& operator=(const BigInt&);
         ~BigInt();
 
@@ -96,16 +95,6 @@ BigInt &BigInt::operator=(const BigInt &copied)
     return *this;
 }
 
-BigInt &BigInt::operator=(BigInt &&copied)
-{
-    size_BI = copied.size_BI;
-    zn = copied.zn;
-    mr = copied.mr;
-    ptr = copied.ptr;
-    copied.ptr = nullptr;
-    return *this;
-}
-
 BigInt::~BigInt()
 {
     delete [] ptr;
@@ -119,7 +108,6 @@ ostream &operator<< (ostream &out, const BigInt &obj)
     for(int i = obj.size_BI - 2; i >= 0; --i){
         out << obj[i]-0;
     }
-    //out << '(' << obj.size_BI << ')';
     return out;
 }
 
@@ -161,7 +149,7 @@ char &BigInt::operator[] (int i)
     return ptr[i];
 }
 
-char &BigInt::operator[] (int i) const
+char BigInt::operator[] (int i) const
 {
     return ptr[i];
 }
