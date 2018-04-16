@@ -2,15 +2,21 @@
 #include <limits>
 #include <algorithm>
 #include <string>
+#include <cstdlib>
+#include <cstring>
 
 template <class T>
 class Allocator {
 public:
     T* allocate(size_t count) {
-        return new T[count];
+        return (T*) malloc(sizeof(T) * count);
+        //T* ptr = new T[count];
+        //ptr->~T();
+        //return ptr;
     }
     void deallocate(T* ptr, size_t count) {
-        delete[] ptr;
+        free(ptr);
+        //delete[] ptr;
     }
     size_t max_size() const noexcept {
         return std::numeric_limits<size_t>::max();
@@ -84,6 +90,9 @@ public:
         ptr = alloc.allocate(cp);
     }
     ~Vector() {
+        for (size_t i = 1; i < sz; i++) {
+            (ptr + i)->~T();
+        }
         alloc.deallocate(ptr, cp);
     }
     bool empty() const noexcept{
@@ -112,38 +121,39 @@ public:
         }
     }
     void clear() {
-        sz = 0;
+        for (size_t i = 1; i < sz; i++) {
+            (ptr + i)->~T();
+        }
+        sz = 1;
     }
     void pop_back() {
+        (ptr + sz - 1)->~T();
         sz--;
     }
     void push_back(const T& arg) {
-        resize(sz + 1, 0);
+        sz++;
+        if (sz >= cp) {
+            resize(sz, 0);
+        }
         ptr[sz - 1] = arg;
     }
     void resize(size_t newsz, size_t add = 1) {
         newsz += add;
-        size_t old_sz = sz;
-        size_t old_cp = cp;
-        if (cp < newsz + 1) {
-            size_t newcp = newcp * 2 + 10;
-            T* newptr = alloc.allocate(newcp);
-            std::copy(ptr, ptr + cp, newptr);
-            std::swap(ptr, newptr);
-            alloc.deallocate(newptr, cp);
-            cp = newcp;
-            sz = newsz;
-        } else {
-            sz = newsz;
+        if (cp <= newsz) {
+            reserve(newsz * 2 + 10);
         }
-        for (size_t i = old_sz; (i < cp) && (i < old_cp); i++) {
-            ptr[i] = T{};
+        for (size_t j = sz; j < newsz; j++) {
+            new (ptr + j) T{};
         }
+        for (size_t j = newsz; j < sz; j++) {
+            (ptr + j)->~T();
+        }
+        sz = newsz;
     }
     void reserve(size_t newcp) {
-        if (cp < newcp + 1) {
+        if (cp <= newcp) {
             T* newptr = alloc.allocate(newcp);
-            std::copy(ptr, ptr + cp, newptr);
+            std::memcpy(newptr, ptr, sizeof(T) * cp);
             std::swap(ptr, newptr);
             alloc.deallocate(newptr, cp);
             cp = newcp;
