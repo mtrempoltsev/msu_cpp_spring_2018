@@ -64,12 +64,8 @@ BigInt::BigInt(long long i): size(8), num_size(0) {
         }
 
 
-BigInt::BigInt(BigInt &&moved) {
-    num_size = moved.num_size;
-    size = moved.size;
-    data = moved.data;
+BigInt::BigInt(BigInt &&moved): num_size(moved.num_size), size(moved.size), data(moved.data), is_neg(moved.is_neg){
     moved.data = nullptr;
-    is_neg = moved.is_neg;
 }
 
 
