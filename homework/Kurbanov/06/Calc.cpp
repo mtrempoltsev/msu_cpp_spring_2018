@@ -9,19 +9,21 @@
 
 enum class Operation
 {
-	NOP=0, // just a value
+	NOP = 0, // just a value
 	ADD, // +
 	SUB, // -
 	MUL, // *
 	DIV, // /
 	MOD, // %
-};	
+	POW // ^
+};
 
 
 template<typename T>
 class Expression
 {
 	T value = 0;
+	T result;
 	Operation op = Operation::NOP;
 	std::shared_ptr<Expression> pLeft;
 	std::shared_ptr<Expression> pRight;
@@ -50,9 +52,9 @@ class Expression
 				return left;
 			}
 			str = remainingStr;
-			std::shared_ptr<Expression> right  = ParseMulDiv(str);
+			std::shared_ptr<Expression> right = ParseMulDiv(str);
 			std::shared_ptr<Expression> expr(new Expression);
-				expr->pLeft = left;
+			expr->pLeft = left;
 			expr->pRight = right;
 			expr->op = op;
 			left = expr;
@@ -62,7 +64,7 @@ class Expression
 	}
 	std::shared_ptr<Expression> ParseMulDiv(std::string &str)
 	{
-		std::shared_ptr<Expression> left = ParseAtom(str);
+		std::shared_ptr<Expression> left = ParsePow(str);
 		while (true)
 		{
 			Operation op = Operation::NOP;
@@ -74,6 +76,33 @@ class Expression
 			case Operation::MUL:
 			case Operation::DIV:
 			case Operation::MOD:
+				break;
+			default:
+				return left;
+			}
+			str = remainingStr;
+			std::shared_ptr<Expression> right = ParseMulDiv(str);
+			std::shared_ptr<Expression> expr(new Expression);
+			expr->pLeft = left;
+			expr->pRight = right;
+			expr->op = op;
+			left = expr;
+		}
+
+		return left;
+	}
+	std::shared_ptr<Expression> ParsePow(std::string &str)
+	{
+		std::shared_ptr<Expression> left = ParseAtom(str);
+		while (true)
+		{
+			Operation op = Operation::NOP;
+			std::string remainingStr = str;
+			if (!ParseOperator(remainingStr, op) || (op != Operation::POW))
+				return left;
+			switch (op)
+			{
+			case Operation::POW:
 				break;
 			default:
 				return left;
@@ -103,39 +132,38 @@ class Expression
 		std::string remainingStr = expression;
 		SkipSpaces(remainingStr);
 		size_t numSize = 0;
-		bool isnegative=false;
-		if(remainingStr[0]=='-')
+		bool isnegative = false;
+		if (remainingStr[0] == '-')
 		{
-			remainingStr=remainingStr.substr(1);
+			remainingStr = remainingStr.substr(1);
 			SkipSpaces(remainingStr);
-			isnegative=true;
+			isnegative = true;
 		}
 		if (remainingStr.size() > 0 && isdigit(remainingStr[0]))
 		{
 			while (numSize < remainingStr.size() && isdigit(remainingStr[numSize]))
 				++numSize;
 			result = atof(remainingStr.substr(0, numSize).c_str());
-			if(isnegative){
-				result*=-1;
-				op=Operation::ADD;
+			if (isnegative) {
+				result *= -1;
+				op = Operation::ADD;
 			}
 			expression = remainingStr.substr(numSize);
 			return true;
 		}
 		return false;
 	}
-	
 	bool ParseNum(std::string &expression, int &result)
 	{
 		std::string remainingStr = expression;
 		SkipSpaces(remainingStr);
 		size_t numSize = 0;
-		bool isnegative=false;
-		if(remainingStr[0]=='-')
+		bool isnegative = false;
+		if (remainingStr[0] == '-')
 		{
-			remainingStr=remainingStr.substr(1);
+			remainingStr = remainingStr.substr(1);
 			SkipSpaces(remainingStr);
-			isnegative=true;
+			isnegative = true;
 		}
 		SkipSpaces(remainingStr);
 		if (remainingStr.size() > 0 && isdigit(remainingStr[0]))
@@ -143,16 +171,15 @@ class Expression
 			while (numSize < remainingStr.size() && isdigit(remainingStr[numSize]))
 				++numSize;
 			result = atoi(remainingStr.substr(0, numSize).c_str());
-			if(isnegative){
-				result*=-1;
-				op=Operation::ADD;
+			if (isnegative) {
+				result *= -1;
+				op = Operation::ADD;
 			}
 			expression = remainingStr.substr(numSize);
 			return true;
 		}
 		return false;
 	}
-
 	bool ParseOperator(std::string &expression, Operation &op)
 	{
 		std::string remainingStr = expression;
@@ -174,6 +201,8 @@ class Expression
 			op = Operation::DIV; break;
 		case '%':
 			op = Operation::MOD; break;
+		case '^':
+			op = Operation::POW; break;
 		default:
 			op = Operation::NOP; break;
 		}
@@ -211,6 +240,9 @@ class Expression
 		case Operation::MOD:
 			pExpr->value = fmod(pExpr->pLeft->value, pExpr->pRight->value);
 			break;
+		case Operation::POW:
+			pExpr->value = pow(pExpr->pLeft->value, pExpr->pRight->value);
+			break;
 		case Operation::NOP:
 			assert(false);
 			break;
@@ -225,21 +257,22 @@ public:
 	{
 		std::string remainingStr = str;
 		std::shared_ptr<Expression> pExpr = ParseAddSub(remainingStr);
-		SkipSpaces(remainingStr); 
+		SkipSpaces(remainingStr);
 		if (!remainingStr.empty())
 		{
 			const auto message = "Unexpected symbol at: " + remainingStr;
 			throw std::runtime_error(message);
 		}
 
-		std::cout << CalculateExpression(std::move(pExpr)) << std::endl;
+		result = CalculateExpression(std::move(pExpr));
 	}
+	T show_result() { return result; }
 	~Expression() {}
 };
 
 
 
-int main(int argc,char** argv)
+int main(int argc, char** argv)
 {
 	if (argc != 2) {
 		std::cout << "error";
@@ -248,6 +281,7 @@ int main(int argc,char** argv)
 	std::string str = argv[1];
 	try {
 		Expression<int> a(str);
+		std::cout << a.show_result() << std::endl;
 	}
 	catch (const std::runtime_error) {
 		std::cout << "error";
