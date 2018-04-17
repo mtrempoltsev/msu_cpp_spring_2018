@@ -23,12 +23,6 @@ class BigInt{
         return false;
     }
 
-    bool CheckEmptyNumber() const {
-        if(digits_ == nullptr){
-            throw std::logic_error("Impossible to do any operation with an empty number!");
-        }
-    }
-
     bool SegmentsLess(size_t first_start, size_t first_finish, bool first_pos,
                       const BigInt& second, size_t second_start, size_t second_finish, bool second_pos) const {
         if(first_pos != second_pos){
@@ -186,14 +180,16 @@ public:
     };
 
     BigInt(BigInt&& other): radix_(10),
-                                 size_(other.size_),
-                                 capacity_(other.size_),
-                                 positive_(other.positive_){
+                            size_(other.size_),
+                            capacity_(other.size_),
+                            positive_(other.positive_){
+        delete[] digits_;
         digits_ = other.digits_;
 
-        other.digits_ = nullptr;
-        other.size_ = 0;
-        other.capacity_ = 0;
+        other.digits_ = new char[1];
+        other.digits_[0] = 0;
+        other.size_ = 1;
+        other.capacity_ = 1;
     };
 
     ~BigInt(){
@@ -210,24 +206,20 @@ public:
     };
 
     BigInt& operator=(BigInt&& other){
-        if(digits_ != nullptr){
-            delete[] digits_;
-        }
+        delete[] digits_;
         digits_ = other.digits_;
         size_ = other.size_;
         capacity_ = other.capacity_;
         positive_ = other.positive_;
 
-        other.digits_ = nullptr;
-        other.size_ = 0;
-        other.capacity_ = 0;
+        other.digits_ = new char[1];
+        other.digits_[0] = 0;
+        other.size_ = 1;
+        other.capacity_ = 1;
     }
 
 
     BigInt operator+(const BigInt& other) const{
-        CheckEmptyNumber();
-        other.CheckEmptyNumber();
-
         BigInt result(*this);
         if(positive_ == other.positive_) {
             SumPositive(result, other);
@@ -240,8 +232,6 @@ public:
     };
 
     BigInt operator-(){
-        CheckEmptyNumber();
-
         BigInt result(*this);
         if(!result.CheckZero())
             result.positive_ ^= true;
@@ -249,9 +239,6 @@ public:
     }
 
     BigInt operator-(const BigInt& other) const{
-        CheckEmptyNumber();
-        other.CheckEmptyNumber();
-
         BigInt result(*this);
         if(positive_ == other.positive_){
             SubtrPositive(result, other);
@@ -264,9 +251,6 @@ public:
     };
 
     BigInt operator*(const BigInt& other) const{
-        CheckEmptyNumber();
-        other.CheckEmptyNumber();
-
         BigInt result = BigInt();
         bool pos = positive_ == other.positive_;
         result.realloc(size_ + other.size_ + 1);
@@ -292,9 +276,6 @@ public:
     };
 
     BigInt operator/(const BigInt& other) const{
-        CheckEmptyNumber();
-        other.CheckEmptyNumber();
-
         if(other.size_ == 1 && other.digits_[0] == 0){
             throw std::logic_error("Imposible divide by zero!");
         }
@@ -331,9 +312,6 @@ public:
     };
 
     bool operator==(const BigInt& other) const {
-        CheckEmptyNumber();
-        other.CheckEmptyNumber();
-
         if(positive_ != other.positive_){
             return false;
         }
@@ -353,9 +331,6 @@ public:
     };
 
     bool operator<(const BigInt& other) const{
-        CheckEmptyNumber();
-        other.CheckEmptyNumber();
-
         return SegmentsLess(0, size_, positive_,
                              other, 0, other.size_, other.positive_);
     };
@@ -373,8 +348,6 @@ public:
     };
 
     friend std::ostream& operator<<(std::ostream& out, const BigInt& number){
-        number.CheckEmptyNumber();
-
         if(!number.positive_){
             out << "-";
         }
