@@ -5,7 +5,7 @@
 template<class T>
 class Calc{
 public:
-    T operator()(char* str);
+    T operator()(const char* str);
 
 };
 
@@ -24,7 +24,7 @@ class Calc<int> {
         return '0' <= f && f <= '9';
     }
 
-    inline void shift_spaces(const char* str, size_t& ind, size_t len){
+    inline void ShiftSpaces(const char *str, size_t &ind, size_t len){
         while(ind < len && str[ind] == ' '){
             ++ind;
         }
@@ -40,7 +40,7 @@ public:
         size_t ind = 0;
         bool odd = true;
         while (ind < len) {
-            shift_spaces(str, ind, len);
+            ShiftSpaces(str, ind, len);
             if (ind < len) {
                 if (odd) {
                     bool pos = true;
@@ -48,7 +48,7 @@ public:
                         pos = str[ind] == '+';
                         ++ind;
                     }
-                    shift_spaces(str, ind, len);
+                    ShiftSpaces(str, ind, len);
                     if (ind >= len || !IsDigit(str[ind])) {
                         throw std::logic_error("Invalid input");
                     }
