@@ -13,15 +13,15 @@ public:
     using size_type = size_t;
     
     void construct(pointer ptr) {
-        *ptr = value_type();
+        ptr = new (ptr) value_type();
     }
     
     void construct(pointer ptr, const value_type& val) {
-        *ptr = value_type(val);
+        ptr = new (ptr) value_type(val);
     }
     
     void construct(pointer ptr, value_type&& val) {
-        *ptr = value_type(std::move(val));
+        ptr = new (ptr) value_type(std::move(val));
     }
     
     void destroy(pointer ptr) {
