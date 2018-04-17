@@ -13,7 +13,7 @@ template <class T> class Allocator {
     template <class U> explicit Allocator(const Allocator<U> &) noexcept {};
 
     T *allocate(size_t n) { return static_cast<T*> (::operator new(sizeof(T) * n)); }
-    void deallocate(T *p, size_t n) { free(p); }
+    void deallocate(T *p, size_t n) { ::operator delete(p); }
 };
 
 template <class T1, class T2>
