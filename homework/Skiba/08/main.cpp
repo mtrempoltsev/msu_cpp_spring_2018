@@ -5,21 +5,34 @@
 #include <cstdlib>
 #include <cstring>
 
+
+class v_err{
+    std::string err;
+public:
+    v_err(const std::string& _err) {
+        err = _err;
+    }
+    std::string get() {
+        return err;
+    }
+};
 template <class T>
 class Allocator {
 public:
     T* allocate(size_t count) {
         return (T*) malloc(sizeof(T) * count);
-        //T* ptr = new T[count];
-        //ptr->~T();
-        //return ptr;
     }
     void deallocate(T* ptr, size_t count) {
         free(ptr);
-        //delete[] ptr;
     }
     size_t max_size() const noexcept {
         return std::numeric_limits<size_t>::max();
+    }
+    void construct(T* ptr) {
+        new (ptr) T{};
+    }
+    void destroy(T* ptr) {
+        (ptr)->~T();
     }
 };
 
@@ -71,7 +84,6 @@ public:
         } else {
             return Iterator<T>(ptr + step);
         }
-        return Iterator<T>(ptr - step);
     }
     size_t operator-(const Iterator<T>& mid) const {
         return ptr - mid.ptr;
@@ -109,7 +121,7 @@ public:
         if (ind < sz) {
             return *(ptr + ind);
         } else {
-            throw("Invalig index");
+            throw(v_err("Invalig index"));
         }
     }
     const T& operator[](size_t ind) const {
@@ -117,7 +129,7 @@ public:
         if (ind < sz) {
             return *(ptr + ind);
         } else {
-            throw("Invalig index");
+            throw(v_err("Invalig index"));
         }
     }
     void clear() {
@@ -143,10 +155,12 @@ public:
             reserve(newsz * 2 + 10);
         }
         for (size_t j = sz; j < newsz; j++) {
-            new (ptr + j) T{};
+            //new (ptr + j) T{};
+            alloc.construct(ptr + j);
         }
         for (size_t j = newsz; j < sz; j++) {
-            (ptr + j)->~T();
+            //(ptr + j)->~T();
+            alloc.destroy(ptr + j);
         }
         sz = newsz;
     }
