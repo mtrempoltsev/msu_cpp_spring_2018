@@ -17,8 +17,8 @@ class Calculator {
     Token<T> get_token();
 
    private:
-    Token<T> get_digit_token(std::string str_digit);
-    void putback(Token<T>);
+    Token<T> get_digit_token(const std::string&);
+    void putback(Token<T>&);
     std::string number;
     size_t indx{0};
     bool full{false};
@@ -30,13 +30,13 @@ template <typename T>
 Calculator<T>::Calculator(const std::string _number) : number{_number} {}
 
 template <typename T>
-void Calculator<T>::putback(Token<T> token) {
+void Calculator<T>::putback(Token<T>& token) {
     full = true;
-    buf = token;
+    buf = std::move(token);
 }
 
 template <typename T>
-Token<T> Calculator<T>::get_digit_token(std::string str_digit) {
+Token<T> Calculator<T>::get_digit_token(const std::string& str_digit) {
     std::istringstream ss(str_digit);
     T num;
     ss >> num;
@@ -48,7 +48,7 @@ template <typename T>
 Token<T> Calculator<T>::get_token() {
     if (full) {  // if we already have token in buffer
         full = false;
-        return buf;
+        return std::move(buf);
     }
     std::string str_digit;
     while (indx < number.size()) {
