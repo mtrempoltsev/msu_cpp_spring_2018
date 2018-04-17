@@ -199,7 +199,7 @@ template <class T, class Alloc = Allocator<T>> class Vector {
     Vector(Vector &&other) noexcept
         : begin_(std::move(other.begin_)), end_(std::move(other.end_)), capacity_(std::move(other.capacity_)) {
         other.begin_ = nullptr;
-        other.begin_ = nullptr;
+        other.end_ = nullptr;
     }
 
     Vector(std::initializer_list<T> init) : Vector(init.begin(), init.end()) {}
