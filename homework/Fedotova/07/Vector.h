@@ -11,6 +11,22 @@ public:
     using value_type = T;
     using pointer = T*;
     using size_type = size_t;
+    
+    void construct(pointer ptr) {
+        *ptr = value_type();
+    }
+    
+    void construct(pointer ptr, const value_type& val) {
+        *ptr = value_type(val);
+    }
+    
+    void construct(pointer ptr, value_type&& val) {
+        *ptr = value_type(std::move(val));
+    }
+    
+    void destroy(pointer ptr) {
+        ptr->~value_type();
+    }
 
     pointer allocate(size_type count) {
         if (count > max_size())
@@ -45,11 +61,7 @@ public:
         return !(*this == other);
     }
 
-    reference operator*() {
-        return *ptr_;
-    }
-
-    const reference operator*() const {
+    reference operator*() const {
         return *ptr_;
     }
 
@@ -83,6 +95,8 @@ public:
     Vector(size_type count = 0) {
         if (count != 0) {
             data_ = alloc_.allocate(count);
+            for (size_type i = 0; i < count; i++)
+                alloc_.construct(data_ + i);
             size_ = count;
             capacity_ = count;
         }
@@ -147,7 +161,10 @@ public:
     void reserve(size_type n) {
         if (n > capacity_) {
             pointer newData = alloc_.allocate(n);
-            std::memcpy(newData, data_, size_ * sizeof(value_type));
+            for (size_type i = 0; i < size_; i++) {
+                alloc_.construct(newData + i, data_[i]);
+                alloc_.destroy(data_ + i);
+            }
             std::swap(data_, newData);
             alloc_.deallocate(newData, size_);
             
@@ -158,14 +175,14 @@ public:
     void resize(size_type n) {
         if (n < size_) {
             for (size_type i = n; i < size_; i++)
-                data_[i].~value_type();
+                alloc_.destroy(data_ + i);
         }
         if (n > capacity_) {
             reserve(n);
         }
         if (n > size_) {
             for (size_type i = size_; i < n; ++i) {
-                data_[i] = value_type();
+                alloc_.construct(data_ + i);
             }
         }
         size_ = n;
@@ -187,7 +204,7 @@ public:
             else
                 reserve(2 * size_);
         }
-        data_[size_] = val;
+        alloc_.construct(data_ + size_, val);
         ++size_;
         
     }
@@ -199,7 +216,7 @@ public:
             else
                 reserve(2 * size_);
         }
-        data_[size_] = std::move(val);
+        alloc_.construct(data_ + size_, std::move(val));
         ++size_;
     }
     
