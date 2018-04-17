@@ -103,7 +103,8 @@ public:
     }
     ~Vector() {
         for (size_t i = 1; i < sz; i++) {
-            (ptr + i)->~T();
+            //(ptr + i)->~T();
+            alloc.destroy(ptr + i);
         }
         alloc.deallocate(ptr, cp);
     }
@@ -134,12 +135,14 @@ public:
     }
     void clear() {
         for (size_t i = 1; i < sz; i++) {
-            (ptr + i)->~T();
+            //(ptr + i)->~T();
+            alloc.destroy(ptr + i);
         }
         sz = 1;
     }
     void pop_back() {
-        (ptr + sz - 1)->~T();
+        //(ptr + sz - 1)->~T();
+        alloc.destroy(ptr + sz - 1);
         sz--;
     }
     void push_back(const T& arg) {
