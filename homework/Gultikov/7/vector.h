@@ -2,9 +2,8 @@
 #define VECTOR_H_INCLUDED
 #pragma once
 
-#include <iostream>
 #include <iterator>
-#include <cassert>
+#include <stdexcept>
 #include <cstring>
 #include <limits>
 
@@ -16,9 +15,25 @@ public:
     using pointer = T*;
     using size_type = size_t;
 
+    void construct(pointer ptr)
+    {
+        ptr = new(ptr) value_type();
+    }
+
+    void construct(pointer ptr, const value_type& value)
+    {
+        ptr = new(ptr) value_type(value);
+    }
+
+    void destroy(pointer ptr)
+    {
+        ptr->~value_type();
+    }
+
     pointer allocate(size_type size)
     {
-        //pointer ptr = new value_type[size];
+        if(size > max_size())
+            throw std::length_error("Not enougth memory");
         pointer ptr = (pointer) malloc(sizeof(value_type) * size);
         return ptr;
     }
@@ -38,12 +53,10 @@ template <class T>
 class Iterator
     : public std::iterator<std::random_access_iterator_tag, T>
 {
-    T* ptr_;
 public:
-    using value_type = T;
-    using size_type = size_t;
-    using pointer = T*;
-    using reference = T&;
+    using size_type = typename std::iterator<std::random_access_iterator_tag, T>::difference_type;
+    using pointer = typename std::iterator<std::random_access_iterator_tag, T>::pointer;
+    using reference = typename std::iterator<std::random_access_iterator_tag, T>::reference;
 
     explicit Iterator(pointer ptr)
         : ptr_(ptr)
@@ -77,30 +90,8 @@ public:
         return *this;
     }
 
-    Iterator& operator+=(size_type n)
-    {
-        ptr_ += n;
-        return *this;
-    }
-
-    Iterator& operator-=(size_type n)
-    {
-        ptr_ -= n;
-        return *this;
-    }
-
-    Iterator operator+(size_type n) const
-    {
-        auto other = *this;
-        return other.operator+=(n);
-    }
-
-    Iterator operator-(size_type n) const
-    {
-        auto other = *this;
-        return other.operator-=(n);
-    }
-
+private:
+    pointer ptr_;
 
 };
 
@@ -108,12 +99,10 @@ template <class T>
 class Reverse_Iterator
     : public std::iterator<std::random_access_iterator_tag, T>
 {
-    T* ptr_;
 public:
-    using value_type = T;
-    using size_type = size_t;
-    using pointer = T*;
-    using reference = T&;
+    using size_type = typename std::iterator<std::random_access_iterator_tag, T>::difference_type;
+    using pointer = typename std::iterator<std::random_access_iterator_tag, T>::pointer;
+    using reference = typename std::iterator<std::random_access_iterator_tag, T>::reference;
 
     explicit Reverse_Iterator(pointer ptr)
         : ptr_(ptr)
@@ -147,48 +136,21 @@ public:
         return *this;
     }
 
-    Reverse_Iterator& operator+=(size_type n)
-    {
-        ptr_ -= n;
-        return *this;
-    }
-
-    Reverse_Iterator& operator-=(size_type n)
-    {
-        ptr_ += n;
-        return *this;
-    }
-
-    Reverse_Iterator operator+(size_type n) const
-    {
-        auto other = *this;
-        return other.operator+=(n);
-    }
-
-    Reverse_Iterator operator-(size_type n) const
-    {
-        auto other = *this;
-        return other.operator-=(n);
-    }
+private:
+    pointer ptr_;
 };
 
-template <class T, class Alloc = Allocator<T>>
+template <class T, class Alloc = Allocator<T>, class iterator = Iterator<T>, class reverse_iterator = Reverse_Iterator<T>>
 class Vector
 {
-private:
-    Alloc alloc_;
-    size_t size_;
-    size_t cap_;
-    T* data_;
 
 public:
-    using iterator = Iterator<T>;
-    using reverse_iterator = Reverse_Iterator<T>;
-    using value_type = T;
-    using size_type = size_t;
-    using reference = T&;
+    using value_type = typename Alloc::value_type;
+    using pointer = typename Alloc::pointer;
+    using size_type = typename Alloc::size_type;
+    using reference = typename iterator::reference;
 
-    Vector(size_t initial_cap = 4):
+    Vector(size_type initial_cap = 4):
         alloc_(),
         size_(0),
         cap_(initial_cap),
@@ -246,10 +208,10 @@ public:
     {
         if(size_ >= cap_)
             reserve(2 * cap_);
-        data_[size_++] = value;
+        alloc_.construct(data_ + (size_++), value);
     }
 
-    pop_back()
+    void pop_back()
     {
         if(size_ > 0)
             resize(size_ - 1);
@@ -262,12 +224,12 @@ public:
 
         if(new_size < size_){
             for(size_type i = new_size; i < size_; i++){
-                data_[i].~value_type();
+                alloc_.destroy(data_ + i);
             }
         }
         else{
             for(size_type i = size_; i < new_size; i++){
-                data_[i] = value_type();
+                alloc_.construct(data_ + i);
             }
         }
         size_ = new_size;
@@ -275,7 +237,7 @@ public:
 
     void reserve(size_type new_cap)
     {
-        if((new_cap > cap_) && (new_cap <= alloc_.max_size())){
+        if(new_cap > cap_){
             auto new_data = alloc_.allocate(new_cap);
             std::memcpy(new_data, data_, sizeof(value_type) * size_);
             alloc_.deallocate(data_, cap_);
@@ -283,7 +245,7 @@ public:
             cap_ = new_cap;
             return;
         }
-        assert(!"Can't change capacity");
+        throw std::length_error("Can't reduce memory capacity of Vector");
     }
 
     void clear()
@@ -291,6 +253,11 @@ public:
         resize(0);
     }
 
+private:
+    Alloc alloc_;
+    size_type size_;
+    size_type cap_;
+    pointer data_;
 };
 
 
