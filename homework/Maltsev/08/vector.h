@@ -15,11 +15,11 @@ public:
         if (count > max_size()) {
             throw std::length_error("count > max_size()");
         }
-        return static_cast<pointer >(new value_type[count]);
+        return static_cast<pointer>(malloc(count * sizeof(value_type)));
     }
 
     void deallocate(pointer ptr, size_type count) {
-        delete[] ptr;
+        free(ptr);
     }
 
     size_t max_size() const noexcept {
@@ -33,7 +33,7 @@ class Iterator
     T *ptr_;
 public:
     using reference = T &;
-
+    using value_type = T;
     explicit Iterator(T *ptr)
             : ptr_(ptr) {
     }
@@ -46,7 +46,7 @@ public:
         return !(*this == other);
     }
 
-    reference operator*() const {
+    reference operator*() {
         return *ptr_;
     }
 
@@ -54,7 +54,6 @@ public:
         ++ptr_;
         return *this;
     }
-
     Iterator &operator--() {
         --ptr_;
         return *this;
@@ -131,12 +130,11 @@ public:
     void push_back(value_type &&value) {
         if (size_ == capacity_) {
             if (capacity_ == 0) {
-                reserve(1000);
+                reserve(100);
             } else {
                 reserve(2 * capacity_);
             }
         }
-        data_[size_].~T();
         data_[size_] = value;
         ++size_;
 
@@ -145,19 +143,18 @@ public:
     void push_back(const value_type &value) {
         if (size_ == capacity_) {
             if (capacity_ == 0) {
-                reserve(1000);
+                reserve(100);
             } else {
                 reserve(2 * capacity_);
             }
         }
-        data_[size_].~T();
-        data_[size_] = value;
+        data_[size_ * sizeof(value_type)] = value;
         ++size_;
     }
 
     void pop_back() {
         if (size_ != 0) {
-            data_[size_--].~T();
+            data_[--size_].~T();
         }
     }
 
@@ -165,6 +162,7 @@ public:
     void reserve(size_type new_cap) {
         if (new_cap > capacity_) {
             auto newData = alloc_.allocate(new_cap);
+//            std::copy(data_, data_ + size_ * sizeof(value_type), newData);
             for (int i = 0; i < size_; ++i) {
                 newData[i].~T();
                 newData[i] = data_[i];
@@ -186,6 +184,9 @@ public:
             };
         } else if (newSize > capacity_) {
             reserve(newSize);
+            for (int i = size_; i < newSize; ++i) {
+                data_[i] = T{};
+            };
         } else {
             for (size_type i = size_; i < newSize; ++i) {
                 data_[i] = T{};
@@ -205,13 +206,14 @@ public:
 
     void clear() noexcept {
         for (int i = 0; i < size_; ++i) {
-            data_[i].~T();
+            data_[i * sizeof(value_type)].~T();
         };
         size_ = 0;
     }
 
     ~Vector() {
         clear();
+        alloc_.deallocate(data_, capacity_);
         capacity_ = 0;
     }
 

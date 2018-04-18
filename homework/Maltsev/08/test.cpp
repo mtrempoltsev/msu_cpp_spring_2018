@@ -147,7 +147,6 @@ int main()
         checkEqual(v[0], 3);
         checkEqual(v[1], 2);
         checkEqual(v[2], 1);
-
         auto r = v.rbegin();
         checkTrue(r != v.rend());
         checkEqual(*r, 1);

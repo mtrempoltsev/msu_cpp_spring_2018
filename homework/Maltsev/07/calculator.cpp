@@ -14,25 +14,19 @@ std::string lexem[] = {
         "LEX_NUM"
 };
 class Error {};
-template <class T>
+
 class ArgumentError : public Error
 {
 private:
-    T value_;
     std::string message_;
 public:
-    ArgumentError(std::string&& message, T value = T{})
+    explicit ArgumentError(std::string&& message)
     {
         message_ = message;
-        value_ = value;
     }
     const std::string& getMessage() const
     {
         return message_;
-    }
-    const T& getValue() const
-    {
-        return value_;
     }
 };
 template  <class T>
@@ -104,7 +98,7 @@ template <class T>
 std::vector<Lex<T>> scaner(const std::string& s)
 {
     if (s.empty())
-        throw ArgumentError<int>("String is empty");
+        throw ArgumentError("String is empty");
     std::vector<Lex<T>> res;
     T digit;
     size_t j;
@@ -146,7 +140,7 @@ std::vector<Lex<T>> scaner(const std::string& s)
                         i++;
                     } else
                     {
-                        throw ArgumentError<char>("Unknown character: ", s[i]);
+                        throw ArgumentError("Unknown character: ");
                     }
                 }
                 break;
@@ -169,7 +163,7 @@ std::vector<Lex<T>> scaner(const std::string& s)
     }
     if (res.empty())
     {
-        throw ArgumentError<int>("ERROR: lexem's array is empty");
+        throw ArgumentError("ERROR: lexem's array is empty");
     }
     return res;
 }
@@ -215,7 +209,7 @@ private:
             case LEX_SLASH:
                 if (t2 == 0)
                 {
-                    throw ArgumentError<int>("Divide by zero");
+                    throw ArgumentError("Divide by zero");
                 }
                 arg.push_back(t1 / t2);
 
@@ -300,7 +294,7 @@ void Parser<T>::Number()
         arg.push_back(-a);
     } else
     {
-        throw ArgumentError<Lex<T>>("ERROR lex: ", scan_string[curr_lex]);
+        throw ArgumentError("ERROR lex: ");
     }
 }
 template <class T>
@@ -316,28 +310,14 @@ public:
 int main(int argc, char* argv[])  {
     try {
         if (argc != 2) {
-            throw ArgumentError<int>("ERROR argc != 2");
+            throw ArgumentError("ERROR argc != 2");
         }
         Calculator<int> calculator;
         std::cout << calculator.get_res(argv[1]);
     }
-    catch (const ArgumentError<int>& error)
+    catch (const ArgumentError& error)
     {
         std::cerr << "error";
-        return 1;
-    }
-    catch (const ArgumentError<char>& error)
-    {
-        std::cerr << "error";
-        return 1;
-    }
-    catch (const ArgumentError<Lex<int>>& error)
-    {
-        std::cerr << "error";
-        return 1;
-    }
-    catch (const Error& error)
-    {
         return 1;
     }
     catch (...)
