@@ -57,12 +57,19 @@ class Calc
                 if(*it >= '0' && *it <= '9')
                     flag = true;
             }
-            if(std::is_same<T, int>::value)
-                return std::stoi(std::string(start, finish));
-            if(std::is_same<T, long long>::value)
-                return std::stoll(std::string(start, finish));
+            return print(start, finish);
+        }
+
+        T print(std::string::const_iterator start, std::string::const_iterator finish)
+        {
             throw CalcError();
         }
+
+        /*template<long long>
+        long long print(std::string::const_iterator start, std::string::const_iterator finish)
+        {
+            return std::stoll(std::string(start, finish));
+        }*/
 
         std::string Clearing(const std::string& str) const
         {
@@ -97,15 +104,24 @@ class Calc
         }
 };
 
+template<>
+int Calc<int>::print(std::string::const_iterator start, std::string::const_iterator finish)
+{
+    return std::stoi(std::string(start, finish));
+}
 
-
+template<>
+long long Calc<long long>::print(std::string::const_iterator start, std::string::const_iterator finish)
+{
+    return std::stoll(std::string(start, finish));
+}
 int main(int argc, char* argv[])
 {
     if (argc != 2) {
         std::cerr << "error\n";
         return 1;
     }
-    Calc<int> c;
+    Calc<long long> c;
     try {
         std::cout << c.Calculate(argv[1]) << std::endl;
     }
