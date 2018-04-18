@@ -54,7 +54,16 @@ public:
     }
 
     // operator =
-    Vector &operator = (Vector v)
+    Vector &operator = (const Vector &v)
+    {
+        if (this != &v) {
+            Vector(v).swap_or_copy(*this);
+        }
+
+        return *this;
+    }
+
+    Vector &operator = (Vector &&v)
     {
         swap_or_copy(v);
         return *this;
