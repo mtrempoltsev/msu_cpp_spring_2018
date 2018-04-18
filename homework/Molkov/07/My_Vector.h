@@ -10,12 +10,27 @@ public:
 	using pointer = T*;
 	using size_type = size_t;
 
+	void construct(pointer ptr)
+	{
+		ptr = new(ptr) value_type();
+	}
+
+	void construct(pointer ptr, const value_type& value)
+	{
+		ptr = new(ptr) value_type(value);
+	}
+
+	void destroy(pointer ptr) 
+	{
+		ptr->~value_type();
+	}
+
 	pointer allocate(size_type count) {
-		pointer p = new T[count];
-		return p;
+		pointer ptr = (pointer)malloc(sizeof(value_type) * count);
+		return ptr;
 	}
 	void deallocate(pointer ptr, size_type count) {
-		delete[] ptr;
+		free(ptr);
 	}
 
 	size_t max_size() const noexcept {
@@ -80,7 +95,7 @@ public:
 
 
 template<class T,
-	class Alloc = std::allocator<T>>
+	class Alloc = allocator<T>>
 class Vector {
 public:
 	using size_type = size_t;
@@ -149,7 +164,7 @@ public:
 	{
 		if (capacity_ == size_)
 			reserve(capacity_ * 2);
-		data_[size_] = value;
+		alloc_.construct(data_ + size_, value);
 		size_++;
 	}
 
@@ -180,12 +195,12 @@ public:
 				reserve(newSize);
 			}
 			for (size_type i = size_; i < newSize; i++)
-				data_[i] = value_type();
+				alloc_.construct(data_ + i);
 		}
 		else if (size_ > newSize)
 		{
 			for (size_type i = newSize; i < size_; i++)
-				data_[i].~value_type();
+				alloc_.destroy(data_ + i);
 		}
 		size_ = newSize;
 	}
