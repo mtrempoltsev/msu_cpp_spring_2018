@@ -8,10 +8,16 @@
 class BigInt {
 public:
 
-    BigInt(const std::string str){
+    BigInt(const std::string str):
+            mCapacity(START_CAPACITY),
+            mNumbers(new char[START_CAPACITY]),
+            isPositive(true){
         initStr(str);
     }
-    BigInt(int64_t number = 0){
+    BigInt(int64_t number = 0):
+            mCapacity(START_CAPACITY),
+            mNumbers(new char[START_CAPACITY]),
+            isPositive(true){
         if(number == 0) {
             _init();
         }
@@ -154,7 +160,7 @@ public:
     bool operator <=(const BigInt& other) const{
         return !(*this > other);
     }
-    bool operator < (const BigInt other) const{
+    bool operator < (const BigInt& other) const{
         if(isPositive == !other.isPositive)
             return other.isPositive;
         size_t endIndexThis  = getEndIndex(mNumbers,mCapacity);
@@ -341,9 +347,9 @@ private:
     const static size_t START_CAPACITY = 4;
     const static size_t POW = 1;
     const size_t MODULE = (size_t)std::pow(10,POW); //модуль системы счислени€. ƒолжен быть кратен 10. мен€ть его не актуально дл€ типов данных char.
-    size_t mCapacity = START_CAPACITY;
-    char* mNumbers = new char[START_CAPACITY];
-    bool isPositive = true;
+    size_t mCapacity;
+    char* mNumbers;
+    bool isPositive;
     mutable std::string mStringRepresent;
     mutable bool isStringRepresentActuale = false;
 
