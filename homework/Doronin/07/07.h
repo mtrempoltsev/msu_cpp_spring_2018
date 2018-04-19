@@ -6,6 +6,24 @@ template <class T>
 class Allocator
 {
 public:
+
+    void construct(T* ptr) {
+        ptr = new (ptr) T();
+    }
+
+    void construct(T* ptr, const T& val) {
+        ptr = new (ptr) T(val);
+    }
+
+    void construct(T* ptr, T&& val) {
+        ptr = new (ptr) T(std::move(val));
+    }
+
+    void destroy(T* ptr) {
+        ptr->~T();
+    }
+
+
     T* allocate(size_t count=1024)
     {
         T* ptr = (T*) malloc(sizeof(T) * count);
@@ -101,12 +119,14 @@ public:
     {
         if(_size != _capacity)
         {
-            _data[_size++] = elem;
+            alloc_.construct(_data + _size, std::move(elem));
+            _size++;
         }
         else
         {
             this->reserve(2*_capacity);
-            _data[_size++] = elem;
+            alloc_.construct(_data + _size, std::move(elem));
+            _size++;
         }
     }
 
@@ -116,14 +136,9 @@ public:
         {
             _data[_size++] = elem;
         }
-        else if(_size!=0)
-        {
-            this->reserve(2*_capacity);
-            _data[_size++] = elem;
-        }
         else
         {
-            this->reserve(1024);
+            this->reserve(2*_capacity);
             _data[_size++] = elem;
         }
     }
@@ -205,12 +220,12 @@ public:
         if (new_size < _size)
         {
             for (size_t i = new_size; i < _size; i++)
-                _data[i].~T();
+                alloc_.destroy(_data+i);
         }
         if (new_size > _size)
         {
             for (size_t i = _size; i < new_size; i++)
-                _data[i] = T();
+                alloc_.construct(_data+i);
         }
         _size = new_size;
     }
