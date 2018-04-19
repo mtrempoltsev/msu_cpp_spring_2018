@@ -226,6 +226,22 @@ private:
 	void kill_zeroes();
 };
 
+BigInt::BigInt(BigInt&& moved)
+	: _digits(std::move(moved._digits))
+{
+
+}
+
+
+BigInt& BigInt::operator=(BigInt&& moved)
+{
+		if (this != &moved) {
+			_digits = std::move(moved._digits);
+			_sign = moved._sign;	
+		}
+		return *this;
+}
+
 BigInt::BigInt() {
 	_digits.push_back(0);
 }
@@ -244,7 +260,7 @@ BigInt::BigInt(long long a)
 }
 
 BigInt::BigInt(bool sign, const Mvector<long long>& vec):
-	_sign(sign), _digits(vec) 
+	_sign(sign), _digits(vec)
 {
 
 }
@@ -279,6 +295,8 @@ BigInt::BigInt(const BigInt & other) :
 	_sign(other._sign), _digits(other._digits)
 {
 }
+
+
 
 BigInt & BigInt::operator=(const BigInt & other)
 {
