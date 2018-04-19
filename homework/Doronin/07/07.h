@@ -134,12 +134,14 @@ public:
     {
         if(_size != _capacity)
         {
-            _data[_size++] = elem;
+            alloc_.construct(_data+_size, elem);
+            _size++;
         }
         else
         {
             this->reserve(2*_capacity);
-            _data[_size++] = elem;
+            alloc_.construct(_data+_size, elem);
+            _size++;
         }
     }
 
