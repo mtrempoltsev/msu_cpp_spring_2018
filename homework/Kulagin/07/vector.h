@@ -139,7 +139,7 @@ public:
         }
     }
 
-    // CONSTRUCTOR BEGINS
+    // BEGIN---------------------------------------------- CONSTRUCTOR ------------------------------------------------
     Vector() {
         data_ = nullptr;
 
@@ -147,8 +147,8 @@ public:
         capacity_ = 0;
     }
 
-    explicit Vector(ssize_t _size) {
-        size_ = _size;
+    explicit Vector(ssize_t size) {
+        size_ = size;
         capacity_ = size_ * 2;
 
         data_ = new T[capacity_];
@@ -162,8 +162,8 @@ public:
         (*this) = vector;
     }
 
-    explicit Vector(ssize_t _size, const T& default_value) : Vector(_size) {
-        for (ssize_t i = 0; i < _size; i++) {
+    explicit Vector(ssize_t size, const T& default_value) : Vector(size) {
+        for (ssize_t i = 0; i < size; i++) {
             data_[i] = default_value;
         }
     }
@@ -175,17 +175,16 @@ public:
             data_[i++] = (*it);
         }
     }
-    // CONSTRUCTOR ENDS
+    // END------------------------------------------------ CONSTRUCTOR ------------------------------------------------
 
-    // OPERATORS BEGINS
+    // BEGIN---------------------------------------------- OPERATORS --------------------------------------------------
     Vector& operator=(const Vector& _v) {
         if (_v.data_ != data_ || _v.size_ > size_) {
-            if (data_ != nullptr) {
-                deallocate();
-            }
+            deallocate();
 
             size_ = _v.size_;
             capacity_ = _v.capacity_;
+
             data_ = allocate(capacity_);
         }
 
@@ -197,11 +196,10 @@ public:
     }
 
     Vector& operator=(Vector&& _v) {
-        if (data_ != nullptr) {
-            deallocate();
-        }
+        deallocate();
 
         data_ = std::move(_v.data_);
+
         size_ = _v.size_;
         capacity_ = _v.capacity_;
 
@@ -215,15 +213,16 @@ public:
     T& operator[](ssize_t _pos) {
         return data_[_pos];
     }
+
     const T& operator[](ssize_t _pos) const {
         return data_[_pos];
     }
-    // OPERATORS ENDS
+    // END------------------------------------------------ OPERATORS --------------------------------------------------
 
     void destroy(T* ptr, const ssize_t i) {
         (ptr + i)->~value_type();
     }
-    // ------------------------------------------
+
     const T* data() const {
         return data_;
     }
@@ -244,17 +243,11 @@ public:
         }
     }
 
-    void resize(ssize_t _size) {
-        if (_size > 0) {
-            T* newData = allocate(_size);
+    void resize(ssize_t size) {
+        if (size > 0) {
+            T* newData = allocate(size);
 
-            if (size_ < _size) {
-                std::copy(data_, &data_[size_], newData);
-                // std::copy(data_, data_ + sizeof(T) * (size_ - 1), newData);
-            } else {
-                std::copy(data_, &data_[_size], newData);
-                // std::copy(data_, data_ + sizeof(T) * (_size - 1), newData);
-            }
+            std::copy(data_, &data_[std::min(size_, size)], newData);
 
             std::swap(data_, newData);
 
@@ -262,29 +255,24 @@ public:
                 destroy(newData, i);
             }
 
-            if (size_ < _size) {
-                for (ssize_t i = size_; i < _size; i++) {
+            if (size_ < size) {
+                for (ssize_t i = size_; i < size; i++) {
                     data_[i] = T();
                 }
             }
 
-            size_ = _size;
+            size_ = size;
         } else {
             size_ = 0;
         }
     }
 
-    void reserve(ssize_t _size) {
-        ssize_t old_size = size_;
-        resize(_size);
+    void reserve(ssize_t size) {
+        ssize_t oldsize = size_;
+        resize(size);
         capacity_ = size_;
-        size_ = old_size;
+        size_ = oldsize;
     }
-
-    // void resize(ssize_t size, const T& default_value) {
-    //     int c = capacity_;
-    //     capacity_ = c;
-    // }
 
     ssize_t size() const noexcept {
         return size_;
@@ -308,7 +296,7 @@ public:
     }
 
 
-// ITERATORS BEGINS
+    // BEGIN---------------------------------------------- ITERATORS --------------------------------------------------
     iterator begin() noexcept {
         return Iterator<T>(data_);
     }
@@ -336,21 +324,17 @@ public:
     const_reverse_iterator crend() const noexcept {
         return ReverseIterator<const T>(data_ - 1);
     }
-// ITERATORS ENDS
+    // END------------------------------------------------ ITERATORS --------------------------------------------------
 
-
-// DESTRUCTOR BEGINS
+    // BEGIN---------------------------------------------- DESTRUCTOR ------------------------------------------------
     ~Vector() {
-        if (data_ != nullptr) {
-            clear();
-            deallocate();
-        }
+        clear();
+        deallocate();
 
         size_ = 0;
         capacity_ = 0;
     }
-// DESTRUCTOR ENDS
-
+    // END------------------------------------------------ DESTRUCTOR ------------------------------------------------
 
 private:
     T* data_;
