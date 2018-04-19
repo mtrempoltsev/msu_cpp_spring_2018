@@ -239,21 +239,20 @@ public:
         if (size_ == 1) {
             clear();
         } else if (size_ > 1) {
-            destroy(data_, size_ - 1);
-            --size_;
+            destroy(data_, size_-- - 1);
         }
     }
 
     void resize(ssize_t size) {
         if (size > 0) {
-            T* newData = allocate(size);
+            T* new_data = allocate(size);
 
-            std::copy(data_, &data_[std::min(size_, size)], newData);
+            std::copy(data_, &data_[std::min(size_, size)], new_data);
 
-            std::swap(data_, newData);
+            std::swap(data_, new_data);
 
             for (ssize_t i = 0; i < size_; i++) {
-                destroy(newData, i);
+                destroy(new_data, i);
             }
 
             if (size_ < size) {
