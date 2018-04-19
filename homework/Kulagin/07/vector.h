@@ -244,32 +244,36 @@ public:
     }
 
     void resize(ssize_t size) {
-        if (size > 0) {
-            T* new_data = allocate(size);
-
-            std::copy(data_, &data_[std::min(size_, size)], new_data);
-
-            std::swap(data_, new_data);
-
-            for (ssize_t i = 0; i < size_; i++) {
-                destroy(new_data, i);
-            }
-
-            if (size_ < size) {
-                for (ssize_t i = size_; i < size; i++) {
-                    data_[i] = T();
-                }
-            }
-
-            size_ = size;
-        } else {
+        if (size == 0) {
             size_ = 0;
+
+            return;
         }
+
+        T* new_data = allocate(size);
+
+        std::copy(data_, &data_[std::min(size_, size)], new_data);
+
+        std::swap(data_, new_data);
+
+        for (ssize_t i = 0; i < size_; i++) {
+            destroy(new_data, i);
+        }
+
+        if (size_ < size) {
+            for (ssize_t i = size_; i < size; i++) {
+                data_[i] = T();
+            }
+        }
+
+        size_ = size;
     }
 
     void reserve(ssize_t size) {
         ssize_t oldsize = size_;
+
         resize(size);
+
         capacity_ = size_;
         size_ = oldsize;
     }
