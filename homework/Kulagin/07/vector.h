@@ -128,8 +128,12 @@ public:
     using reverse_iterator = ReverseIterator<T>;
     using const_reverse_iterator = ReverseIterator<const T>;
 
-    T* allocate(ssize_t size) {
+    T* allocate(const ssize_t size) {
         return static_cast<T*> (::operator new(sizeof(T) * size));
+    }
+
+    void destroy(T* ptr, const ssize_t i) {
+        (ptr + i)->~value_type();
     }
 
     void deallocate() {
@@ -162,7 +166,7 @@ public:
         (*this) = vector;
     }
 
-    explicit Vector(ssize_t size, const T& default_value) : Vector(size) {
+    explicit Vector(const ssize_t size, const T& default_value) : Vector(size) {
         for (ssize_t i = 0; i < size; i++) {
             data_[i] = default_value;
         }
@@ -210,18 +214,14 @@ public:
         return (*this);
     }
 
-    T& operator[](ssize_t _pos) {
+    T& operator[](const ssize_t _pos) {
         return data_[_pos];
     }
 
-    const T& operator[](ssize_t _pos) const {
+    const T& operator[](const ssize_t _pos) const {
         return data_[_pos];
     }
     // END------------------------------------------------ OPERATORS --------------------------------------------------
-
-    void destroy(T* ptr, const ssize_t i) {
-        (ptr + i)->~value_type();
-    }
 
     const T* data() const {
         return data_;
@@ -243,7 +243,7 @@ public:
         }
     }
 
-    void resize(ssize_t size) {
+    void resize(const ssize_t size) {
         if (size == 0) {
             size_ = 0;
 
@@ -269,7 +269,7 @@ public:
         size_ = size;
     }
 
-    void reserve(ssize_t size) {
+    void reserve(const ssize_t size) {
         ssize_t oldsize = size_;
 
         resize(size);
@@ -301,11 +301,11 @@ public:
         deallocate();
     }
 
-
     // BEGIN---------------------------------------------- ITERATORS --------------------------------------------------
     iterator begin() noexcept {
         return Iterator<T>(data_);
     }
+
     iterator end() noexcept {
         return Iterator<T>(data_ + size_);
     }
@@ -313,6 +313,7 @@ public:
     const_iterator cbegin() const noexcept {
         return Iterator<const T>(data_);
     }
+
     const_iterator cend() const noexcept {
         return Iterator<const T>(data_ + size_);
     }
@@ -320,6 +321,7 @@ public:
     reverse_iterator rbegin() noexcept {
         return ReverseIterator<T>(data_ + size_ - 1);
     }
+
     reverse_iterator rend() noexcept {
         return ReverseIterator<T>(data_ - 1);
     }
@@ -327,16 +329,17 @@ public:
     const_reverse_iterator crbegin() const noexcept {
         return ReverseIterator<const T>(data_ + size_ - 1);
     }
+
     const_reverse_iterator crend() const noexcept {
         return ReverseIterator<const T>(data_ - 1);
     }
     // END------------------------------------------------ ITERATORS --------------------------------------------------
 
-    // BEGIN---------------------------------------------- DESTRUCTOR ------------------------------------------------
+    // BEGIN---------------------------------------------- DESTRUCTOR -------------------------------------------------
     ~Vector() {
         clear();
     }
-    // END------------------------------------------------ DESTRUCTOR ------------------------------------------------
+    // END------------------------------------------------ DESTRUCTOR -------------------------------------------------
 
 private:
     T* data_;
