@@ -1,4 +1,5 @@
 #include <iterator>
+#include <memory>
 #include <limits>
 
 template <class T>
@@ -123,9 +124,7 @@ template <class T>
 typename Allocator<T>::pointer
 Allocator<T>::address(reference x) const noexcept
 {
-    return reinterpret_cast<pointer>(
-        &const_cast<char&>(reinterpret_cast<const volatile char&>(x))
-    );
+    return std::addressof(x);
 }
 
 template <class T>
