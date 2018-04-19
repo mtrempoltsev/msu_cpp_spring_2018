@@ -234,6 +234,7 @@ public:
 
         data_[size_++] = _value;
     }
+
     void pop_back() {
         if (size_ == 1) {
             clear();
@@ -293,6 +294,8 @@ public:
 
         size_ = 0;
         capacity_ = 0;
+
+        deallocate();
     }
 
 
@@ -329,10 +332,6 @@ public:
     // BEGIN---------------------------------------------- DESTRUCTOR ------------------------------------------------
     ~Vector() {
         clear();
-        deallocate();
-
-        size_ = 0;
-        capacity_ = 0;
     }
     // END------------------------------------------------ DESTRUCTOR ------------------------------------------------
 
