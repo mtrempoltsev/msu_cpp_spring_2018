@@ -121,6 +121,9 @@ public:
             is_minus = moved.is_minus;
             max_size = moved.max_size;
             moved.coef = nullptr;
+            moved.is_minus = false;
+            moved.max_size = 4;
+            moved.size = 0;
         }     
     }
     
@@ -142,6 +145,9 @@ public:
             size = moved.size;
             max_size = moved.max_size;
             moved.coef = nullptr;
+            moved.is_minus = false;
+            moved.max_size = 4;
+            moved.size = 0;
             return *this;
         }
                 
