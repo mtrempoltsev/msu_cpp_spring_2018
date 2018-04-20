@@ -117,31 +117,41 @@ private:
     T* ptr_;
 };
 
+template <class T>
+class Allocator {
 
-template<class T>
+public:
+    using value_type = T;
+    using pointer = T*;
+
+    void destroy(pointer ptr, const ssize_t i) {
+        try {
+            (ptr + i)->~value_type();
+        } catch (std::exception) {
+            std::cout << "index out of range" << std::endl;
+        }
+    }
+
+    pointer allocate(ssize_t size) {
+        return static_cast<T*> (::operator new(sizeof(T) * size));
+    }
+
+    void deallocate(pointer& ptr, ssize_t size_) {
+        if (ptr) {
+            ::operator delete(ptr);
+            ptr = nullptr;
+        }
+    }
+};
+
+template <class T, class Alloc = Allocator<T>>
 class Vector {
-
 public:
     using value_type = T;
     using iterator = Iterator<T>;
     using const_iterator = Iterator<const T>;
     using reverse_iterator = ReverseIterator<T>;
     using const_reverse_iterator = ReverseIterator<const T>;
-
-    T* allocate(const ssize_t size) {
-        return static_cast<T*> (::operator new(sizeof(T) * size));
-    }
-
-    void destroy(T* ptr, const ssize_t i) {
-        (ptr + i)->~value_type();
-    }
-
-    void deallocate() {
-        if (data_) {
-            ::operator delete(data_);
-            data_ = nullptr;
-        }
-    }
 
     // BEGIN---------------------------------------------- CONSTRUCTOR ------------------------------------------------
     Vector() {
@@ -155,7 +165,7 @@ public:
         size_ = size;
         capacity_ = size_ * 2;
 
-        data_ = new T[capacity_];
+        data_ = allocator.allocate(capacity_);
     }
 
     Vector(const Vector& vector) : Vector() {
@@ -184,32 +194,17 @@ public:
     // BEGIN---------------------------------------------- OPERATORS --------------------------------------------------
     Vector& operator=(const Vector& _v) {
         if (_v.data_ != data_ || _v.size_ > size_) {
-            deallocate();
+            allocator.deallocate(data_, size_);
 
             size_ = _v.size_;
             capacity_ = _v.capacity_;
 
-            data_ = allocate(capacity_);
+            data_ = allocator.allocate(capacity_);
         }
 
         for (ssize_t i = 0; i < size_; i++) {
             data_[i] = _v.data_[i];
         }
-
-        return (*this);
-    }
-
-    Vector& operator=(Vector&& _v) {
-        deallocate();
-
-        data_ = std::move(_v.data_);
-
-        size_ = _v.size_;
-        capacity_ = _v.capacity_;
-
-        _v.data_ = nullptr;
-        _v.size_ = 0;
-        _v.capacity_ = 0;
 
         return (*this);
     }
@@ -239,7 +234,7 @@ public:
         if (size_ == 1) {
             clear();
         } else if (size_ > 1) {
-            destroy(data_, size_-- - 1);
+            allocator.destroy(data_, size_-- - 1);
         }
     }
 
@@ -250,14 +245,14 @@ public:
             return;
         }
 
-        T* new_data = allocate(size);
+        T* new_data = allocator.allocate(size);
 
         std::copy(data_, &data_[std::min(size_, size)], new_data);
 
         std::swap(data_, new_data);
 
         for (ssize_t i = 0; i < size_; i++) {
-            destroy(new_data, i);
+            allocator.destroy(new_data, i);
         }
 
         if (size_ < size) {
@@ -292,13 +287,13 @@ public:
 
     void clear() {
         for (ssize_t i = 0; i < size_; i++) {
-            destroy(data_, i);
+            allocator.destroy(data_, i);
         }
 
         size_ = 0;
         capacity_ = 0;
 
-        deallocate();
+        allocator.deallocate(data_, size_);
     }
 
     // BEGIN---------------------------------------------- ITERATORS --------------------------------------------------
@@ -343,6 +338,7 @@ public:
 
 private:
     T* data_;
+    Alloc allocator;
 
     ssize_t size_;
     ssize_t capacity_;
