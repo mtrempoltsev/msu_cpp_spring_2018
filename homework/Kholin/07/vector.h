@@ -11,12 +11,12 @@ public:
     using size_type = uint32_t;
 
     pointer allocate(size_type count) {
-        pointer ptr = new T[count];
+        pointer ptr = static_cast<T*>(malloc(count * sizeof(count)));
         return ptr;
     }
 
     void deallocate(pointer ptr, size_type count) {
-        delete[] ptr;
+        free(ptr);
     }
 };
 
@@ -135,8 +135,17 @@ public:
         *(data_ + size_) = value;
         ++size_;
     }
+
+    void push_back(T&& value) {
+        if (size_ == length_) {
+            resize_(length_ * 2);
+        }
+        *(data_ + size_) = std::move(value);
+        ++size_;
+    }
     
     void pop_back() {
+        (data_ + (size_ - 1))->~T();
         --size_;
     }
     
@@ -149,6 +158,9 @@ public:
     }
 
     void clear() {
+        for (uint32_t i = 0; i < size_; ++i) {
+            (data_ + i)->~T();
+        }
         size_ = 0;
     }
     
@@ -175,8 +187,12 @@ public:
     void resize(uint32_t size) {
         if (length_ < size) {
             resize_(size);
-        } else if (size_ > size) {
-            memset(data_ + size, 0, sizeof(T) * (size_ - size));
+        }
+        for (uint32_t i = size_; i < size; ++i) {
+            data_[i] = T();
+        }
+        for (uint32_t i = size; i < size_; ++i) {
+            (data_ + i)->~T();
         }
         size_ = size;
     }
@@ -188,6 +204,11 @@ public:
     uint32_t capacity() {
         return length_;
     }
+
+    ~Vector() {
+        clear();
+        allocator_.deallocate(data_, length_);
+    }
 private:
     T* data_ = nullptr;
     uint32_t size_ = 0;
@@ -198,13 +219,18 @@ private:
         if (length > size_) {
             T* tempData = allocator_.allocate(length);
             std::copy(data_, data_ + size_, tempData);
+            for (T* it = data_; it != data_ + size_; ++it) {
+                it->~T();
+            }
             allocator_.deallocate(data_, length_);
-            memset(tempData + size_, 0, sizeof(T) * (length - size_));
             data_ = tempData;
             length_ = length;
         } else {
             T* tempData = allocator_.allocate(length);
-            std::copy(data_, data_ + length, tempData);
+            std::move(data_, data_ + length, tempData);
+            for (T* it = data_; it != data_ + size_; ++it) {
+                it->~T();
+            }
             allocator_.deallocate(data_, length_);
             data_ = tempData;
             length_ = length;
