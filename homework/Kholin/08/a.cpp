@@ -6,8 +6,14 @@
 #include <vector>
 
 int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        return 1;
+    }
     std::ifstream f(argv[1]);
-    
+    if (!f) {
+        return 1;
+    }
+
     std::map<std::string, uint32_t> m;
     while (f.good()) {
         std::string s;
@@ -22,14 +28,14 @@ int main(int argc, char *argv[]) {
 
     std::vector<std::pair<int, std::string> > v;
     for (auto it = m.begin(); it != m.end(); ++it) {
-        v.push_back(make_pair(it->second, it->first));
+        v.push_back(make_pair(- it->second, it->first));
     }
 
     uint32_t n = std::min(static_cast<uint32_t>(10), static_cast<uint32_t>(v.size()));
-    std::partial_sort(v.rbegin(), v.rbegin() + n, v.rend());
+    std::partial_sort(v.begin(), v.begin() + n, v.end());
 
     for (uint32_t i = 0; i < n; ++i) {
-        std::cout << v[i].first << " " << v[i].second << std::endl;
+        std::cout << - v[i].first << " " << v[i].second << std::endl;
     }
 
     return 0;
