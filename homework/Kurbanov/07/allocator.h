@@ -1,3 +1,4 @@
+#pragma once
 #include<iostream>
 #include <memory>
 #include <stdexcept>
@@ -9,6 +10,21 @@ public:
 	using value_type = T;
 	using pointer = T* ;
 	using size_type = size_t;
+
+	void construct(pointer ptr)
+	{
+		ptr = new(ptr) value_type();
+	}
+
+	void construct(pointer ptr, const value_type& value)
+	{
+		ptr = new(ptr) value_type(value);
+	}
+
+	void destroy(pointer ptr)
+	{
+		ptr->~value_type();
+	}
 
 	pointer allocate(size_type size)
 	{
@@ -28,3 +44,4 @@ public:
 		return std::numeric_limits<size_type>::max();
 	}
 };
+
