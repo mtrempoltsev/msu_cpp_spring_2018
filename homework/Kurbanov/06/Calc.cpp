@@ -139,9 +139,22 @@ class Expression
 			SkipSpaces(remainingStr);
 			isnegative = true;
 		}
+		switch (remainingStr[0])
+		{
+		case 'p':
+			result = 22. / 7.;
+			expression = remainingStr.substr(1);
+			return true;
+		case 'e':
+			result = 2.714;
+			expression = remainingStr.substr(1);
+			return true;
+		default:
+			break;
+		}
 		if (remainingStr.size() > 0 && isdigit(remainingStr[0]))
 		{
-			while (numSize < remainingStr.size() && isdigit(remainingStr[numSize]))
+			while (numSize < remainingStr.size() && isdigit(remainingStr[numSize]) || remainingStr[numSize]=='.')
 				++numSize;
 			result = atof(remainingStr.substr(0, numSize).c_str());
 			if (isnegative) {
@@ -280,12 +293,13 @@ int main(int argc, char** argv)
 	}
 	std::string str = argv[1];
 	try {
-		Expression<int> a(str);
+		Expression<double> a(str);
 		std::cout << a.show_result() << std::endl;
 	}
 	catch (const std::runtime_error) {
 		std::cout << "error";
 		return 1;
 	}
+	system("pause");
 	return 0;
 }
