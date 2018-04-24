@@ -131,6 +131,17 @@ class Expression
 	{
 		std::string remainingStr = expression;
 		SkipSpaces(remainingStr);
+		if (remainingStr[0] == '(')
+		{
+			int numSize = remainingStr.size();
+			while (remainingStr[numSize] != ')')
+				--numSize;
+			std::string str = remainingStr.substr(1, numSize - 1);
+			Expression<double> a(str);
+			result = a.show_result();
+			expression = remainingStr.substr(numSize + 1);
+			return true;
+		}
 		size_t numSize = 0;
 		bool isnegative = false;
 		if (remainingStr[0] == '-')
@@ -170,6 +181,17 @@ class Expression
 	{
 		std::string remainingStr = expression;
 		SkipSpaces(remainingStr);
+		if (remainingStr[0] == '(')
+		{
+			int numSize = remainingStr.size();
+			while (remainingStr[numSize] != ')')
+				--numSize;
+			std::string str = remainingStr.substr(1, numSize-1);
+			Expression<int> a(str);
+			result = a.show_result();
+			expression = remainingStr.substr(numSize+1);
+			return true;
+		}
 		size_t numSize = 0;
 		bool isnegative = false;
 		if (remainingStr[0] == '-')
