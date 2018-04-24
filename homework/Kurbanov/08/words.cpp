@@ -22,8 +22,8 @@ int main(int argc, const char * argv[])
 	std::vector<std::pair<std::string, std::uint32_t>> words(map.begin(),map.end());
 	std::size_t min = std::min((std::size_t)10, words.size());
 	std::partial_sort(words.rbegin(), words.rbegin()+ min, words.rend(), 
-        [](const std::pair<std::string, std::uint32_t> &first, const std::pair<std::string, std::uint32_t> &second)->bool 
-                {return first.second > second.second; });
+       		[](const std::pair<std::string, std::uint32_t> &first, const std::pair<std::string, std::uint32_t> &second)->bool 
+        		{return first.second > second.second; });
 	for (size_t it=words.size()-1; it>=words.size()-min; --it)
 		std::cout << words[it].second << " " << words[it].first << std::endl;
 	return 0;
