@@ -7,7 +7,7 @@ std::mutex m;
 std::condition_variable cv;
 
 int counter = 1000000;
-bool is_ping_time = false;
+bool is_pong_time = false;
 
 void ping();
 void pong();
@@ -30,9 +30,9 @@ void pong()
 {
     for(int i = 0; i < counter; ++i) {
         std::unique_lock<std::mutex> lk(m);
-        cv.wait(lk, []{return is_ping_time;});
+        cv.wait(lk, []{return is_pong_time;});
         std::cout << "pong" << std::endl;
-        is_ping_time = false;
+        is_pong_time = false;
         lk.unlock();
         cv.notify_one();
     }
@@ -44,12 +44,12 @@ void ping()
         {
             std::lock_guard<std::mutex> lk(m);
             std::cout << "ping" << std::endl;
-            is_ping_time = true;
+            is_pong_time = true;
         }
         cv.notify_one();
         {
             std::unique_lock<std::mutex> lk(m);
-            cv.wait(lk, []{return !is_ping_time;});
+            cv.wait(lk, []{return !is_pong_time;});
         }
     }
 }
