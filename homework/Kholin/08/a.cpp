@@ -5,6 +5,10 @@
 #include <string>
 #include <vector>
 
+bool my_cmp(const std::pair<uint32_t, std::string>& a, const std::pair<uint32_t, std::string>& b) {
+    return (a.first > b.first);
+}
+
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         return 1;
@@ -26,16 +30,16 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    std::vector<std::pair<int, std::string> > v;
+    std::vector<std::pair<uint32_t, std::string> > v;
     for (auto it = m.begin(); it != m.end(); ++it) {
-        v.push_back(make_pair(- it->second, it->first));
+        v.push_back(make_pair(it->second, it->first));
     }
 
-    uint32_t n = std::min(static_cast<uint32_t>(10), static_cast<uint32_t>(v.size()));
-    std::partial_sort(v.begin(), v.begin() + n, v.end());
+    uint32_t n = std::min(static_cast<size_t>(10), v.size());
+    std::partial_sort(v.begin(), v.begin() + n, v.end(), my_cmp);
 
     for (uint32_t i = 0; i < n; ++i) {
-        std::cout << - v[i].first << " " << v[i].second << std::endl;
+        std::cout << v[i].first << " " << v[i].second << std::endl;
     }
 
     return 0;
