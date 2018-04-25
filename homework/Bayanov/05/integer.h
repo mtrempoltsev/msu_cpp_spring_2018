@@ -186,36 +186,42 @@ public:
         delete[] digits_;
         digits_ = other.digits_;
 
-        other.digits_ = new char[1];
-        other.digits_[0] = 0;
-        other.size_ = 1;
-        other.capacity_ = 1;
+        other.digits_ = nullptr;
+        other.size_ = 0;
+        other.capacity_ = 0;
     };
 
     ~BigInt(){
-        if(digits_ != nullptr)
-            delete[] digits_;
+        delete[] digits_;
     }
 
     BigInt& operator=(const BigInt& other){
+        if(this == &other){
+            return *this;
+        }
+        delete[] digits_;
         size_ = other.size_;
         capacity_ = other.size_;
         positive_ = other.positive_;
         digits_ = new char[size_];
         std::copy(other.digits_, other.digits_ + size_, digits_);
+        return *this;
     };
 
     BigInt& operator=(BigInt&& other){
+        if(this == &other){
+            return *this;
+        }
         delete[] digits_;
         digits_ = other.digits_;
         size_ = other.size_;
         capacity_ = other.capacity_;
         positive_ = other.positive_;
 
-        other.digits_ = new char[1];
-        other.digits_[0] = 0;
-        other.size_ = 1;
-        other.capacity_ = 1;
+        other.digits_ = nullptr;
+        other.size_ = 0;
+        other.capacity_ = 0;
+        return *this;
     }
 
 

@@ -9,7 +9,7 @@ private:
 public:
     Column(int len):
         length(len){
-        elems = (int*)malloc(length*sizeof(int));
+        elems = new int[length];
         for (int t = 0; t < length; t++)
             elems[t] = 0;
     }
@@ -27,7 +27,7 @@ public:
     }
     
     ~Column(){
-        free(elems);
+        delete[] elems;
     }
 };
 
@@ -40,7 +40,7 @@ public:
     Matrix(int cn, int rn):
         cols_num(cn),
         rows_num(rn){
-        elems = (Column**)malloc(cols_num*sizeof(Column*));
+        elems = new Column*[cols_num];
         for (int t = 0; t < cols_num; t++){
             Column* newColumn = new Column(rows_num);
             elems[t] = newColumn;
@@ -92,6 +92,6 @@ public:
     ~Matrix(){
         for (int t = 0; t < cols_num; t++)
             delete elems[t];
-        free(elems);
+        delete[] elems;
     }
 };

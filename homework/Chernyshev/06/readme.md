@@ -1,5 +1,5 @@
 # Homework 06
-Write Calculator class
+Write Calculator class.
 
 ## Building and running
 To build project:

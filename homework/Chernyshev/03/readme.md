@@ -1,5 +1,5 @@
 # Homework 03
-Make UML diagram of classes for a game and implement this classes on C++
+Make UML diagram of classes for a game and implement this classes on C++.
 
 ## UML diagram
 C++ code for this diagram is in `game.cpp` file

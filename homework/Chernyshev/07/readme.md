@@ -1,5 +1,5 @@
-# Homework 04
-Write Matrix class.
+# Homework 07
+Write Vector class.
 
 ## Building and running
 To build project:
@@ -7,7 +7,7 @@ To build project:
 make
 ```
 
-To run project (here you will see output of some checks):
+To run project (here you will see output of some checks and benchmarks):
 ```
 ./check
 ```

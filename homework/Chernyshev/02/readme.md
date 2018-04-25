@@ -1,5 +1,5 @@
 # Homework 02
-Count amount of prime numbers in array when numbers are from [l, r] segment
+Count amount of prime numbers in array when numbers are from [l, r] segment.
 
 ## Building and running
 To build project:

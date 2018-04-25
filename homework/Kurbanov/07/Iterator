@@ -30,13 +30,13 @@ public:
   
 	Iterator & operator+(size_t& val)
 	{
-		ptr_ += val;
+		_ptr += val;
 		return *this;
 	}
 
 	Iterator & operator-(size_t& val)
 	{
-		ptr_ -= val;
+		_ptr -= val;
 		return *this;
 	}
   
