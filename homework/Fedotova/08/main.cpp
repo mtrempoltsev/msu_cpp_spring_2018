@@ -26,8 +26,7 @@ int main(int argc, char* argv[]) {
     f.close();
     
     std::vector<std::pair<std::string, int>> v(m.begin(), m.end());
-    auto cmp = [](const std::pair<std::string, int>& i, const std::pair<std::string, int>& j) {return (i.second < j.second);};
-    std::sort(v.rbegin(), v.rend(), cmp);
+    std::sort(v.begin(), v.end(), [](const auto& i, const auto& j) {return (i.second > j.second);});
     
     for (auto it = v.begin(); it != v.end() && it - v.begin() < 10; it++)
         std::cout << it->second << ' ' << it->first << std::endl;
