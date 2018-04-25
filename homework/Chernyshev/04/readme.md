@@ -1,5 +1,5 @@
 # Homework 04
-Write Matrix class
+Write Matrix class.
 
 ## Building and running
 To build project:

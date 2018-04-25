@@ -2,26 +2,26 @@
 #include "allocator.h"
 #include "Iterator.h"
 #include <cstring>
-
 template<class T, class Alloc = Allocator<T>, class iterator = Iterator<T>>
-	class Vector {
+	class Vector 
+	{
 	public:
 		using size_type = size_t;
 		using value_type = T;
-		using pointer = T * ;
+		using pointer = T* ;
 		using reference = T & ;
 
 	private:
 		Alloc _al;
 		size_type _cap = 64;
-		size_type size_ = 0;
+		size_type _size = 0;
 		pointer _data;
 	public:
 		explicit Vector(size_type count)
 		{
 			if (count != 0) {
 				_data = _al.allocate(count);
-				size_ = count;
+				_size = count;
 				_cap = count;
 			}
 		}
@@ -38,7 +38,7 @@ template<class T, class Alloc = Allocator<T>, class iterator = Iterator<T>>
 
 		Iterator<T> end() noexcept
 		{
-			return Iterator<T>(_data + size_);
+			return Iterator<T>(_data + _size);
 		}
 
 		std::reverse_iterator<Iterator<T>> rbegin() noexcept
@@ -58,14 +58,14 @@ template<class T, class Alloc = Allocator<T>, class iterator = Iterator<T>>
 
 		bool empty() const noexcept
 		{
-			if (size_ == 0)
+			if (_size == 0)
 				return true;
 			return false;
 		}
 
 		size_type size() const noexcept
 		{
-			return size_;
+			return _size;
 		}
 
 		size_type capacity() const noexcept
@@ -75,48 +75,48 @@ template<class T, class Alloc = Allocator<T>, class iterator = Iterator<T>>
 
 		void push_back(const value_type& value)
 		{
-			if (_cap == size_)
+			if (_cap == _size)
 				reserve(_cap * 2);
-			_data[size_] = value;
-			size_++;
+			_al.construct(_data + (_size++), value);
 		}
 
 		void pop_back()
 		{
-			resize(size_ - 1);
+			resize(_size - 1);
 		}
 
 		void reserve(size_type count)
 		{
-			if (count > _cap)
+			if (_size < count)
 			{
-				pointer newData = _al.allocate(count);
-				memcpy(newData, _data, size_ * sizeof(value_type));
+				auto newData = _al.allocate(count);
+				std::memcpy(newData, _data, sizeof(value_type) * _size);
+				_al.deallocate(_data, _cap);
 				std::swap(_data, newData);
-				_al.deallocate(newData, size_);
 				_cap = count;
+				return;
 			}
-		}
 
-		void resize(size_type newSize)
+			throw std::length_error("Can't reduce memory capacity of Vector");
+		}
+	void resize(size_type newSize)
 		{
-			if (size_ < newSize)
+		if (newSize > _cap)
+			reserve(newSize);
+		if (newSize < _size) {
+			for (size_type i = newSize; i < _size; i++) 
 			{
-				if (_cap < newSize)
-				{
-					reserve(newSize);
-				}
-				for (size_type i = size_; i < newSize; i++)
-					_data[i] = value_type();
+				_al.destroy(_data+i);
 			}
-			else if (size_ > newSize)
-			{
-				for (size_type i = newSize; i < size_; i++)
-					_data[i].~value_type();
-			}
-			size_ = newSize;
 		}
-
+		else {
+			for (size_type i = _size; i < newSize; i++) 
+			{
+				_al.construct(_data+i);
+			}
+		}
+		_size = newSize;
+		}
 		void clear() noexcept
 		{
 			resize(0);
@@ -126,4 +126,4 @@ template<class T, class Alloc = Allocator<T>, class iterator = Iterator<T>>
 		{
 			clear();
 		}
-};
+	};

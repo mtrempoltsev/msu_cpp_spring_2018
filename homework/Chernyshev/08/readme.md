@@ -1,5 +1,5 @@
 # Homework 08
-Count frequencies of words in file
+Count frequencies of words in file.
 
 ## Building and running
 To build project:

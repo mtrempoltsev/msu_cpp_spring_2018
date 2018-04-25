@@ -124,16 +124,24 @@ public:
     using value_type = T;
     using pointer = T*;
 
+    pointer allocate(ssize_t size) {
+        return static_cast<T*> (::operator new(sizeof(T) * size));
+    }
+
+    void construct(pointer ptr) {
+        ptr = new (ptr) value_type();
+    }
+
+    void construct(pointer ptr, const value_type& val) {
+        ptr = new (ptr) value_type(val);
+    }
+
     void destroy(pointer ptr, const ssize_t i) {
         try {
             (ptr + i)->~value_type();
         } catch (std::exception) {
             std::cout << "index out of range" << std::endl;
         }
-    }
-
-    pointer allocate(ssize_t size) {
-        return static_cast<T*> (::operator new(sizeof(T) * size));
     }
 
     void deallocate(pointer& ptr, ssize_t size_) {
@@ -166,13 +174,13 @@ public:
         capacity_ = size_ * 2;
 
         data_ = allocator.allocate(capacity_);
+
+        for (size_t i = 0; i < capacity_; i++) {
+            allocator.construct(data_ + i);
+        }
     }
 
     Vector(const Vector& vector) : Vector() {
-        (*this) = vector;
-    }
-
-    Vector(Vector&& vector) : Vector() {
         (*this) = vector;
     }
 
@@ -203,7 +211,7 @@ public:
         }
 
         for (ssize_t i = 0; i < size_; i++) {
-            data_[i] = _v.data_[i];
+            allocator.construct(data_ + i, _v.data_[i]);
         }
 
         return (*this);
@@ -227,7 +235,8 @@ public:
             reserve(std::max((ssize_t)8, size_) * 2);
         }
 
-        data_[size_++] = _value;
+        allocator.construct(data_ + size_, _value);
+        size_++;
     }
 
     void pop_back() {
@@ -238,39 +247,37 @@ public:
         }
     }
 
-    void resize(const ssize_t size) {
-        if (size == 0) {
-            size_ = 0;
+    void reserve(const ssize_t new_size) {
+        if (new_size > capacity_) {
+            T* new_data = allocator.allocate(new_size);
 
-            return;
-        }
-
-        T* new_data = allocator.allocate(size);
-
-        std::copy(data_, &data_[std::min(size_, size)], new_data);
-
-        std::swap(data_, new_data);
-
-        for (ssize_t i = 0; i < size_; i++) {
-            allocator.destroy(new_data, i);
-        }
-
-        if (size_ < size) {
-            for (ssize_t i = size_; i < size; i++) {
-                data_[i] = T();
+            for (ssize_t i = 0; i < size_; i++) {
+                allocator.construct(new_data + i, data_[i]);
+                allocator.destroy(data_, i);
             }
-        }
 
-        size_ = size;
+            std::swap(data_, new_data);
+
+            allocator.deallocate(new_data, size_);
+
+            capacity_ = new_size;
+        }
     }
 
-    void reserve(const ssize_t size) {
-        ssize_t oldsize = size_;
+    void resize(const ssize_t new_size) {
+        if (new_size > capacity_) {
+            reserve(new_size);
+        }
 
-        resize(size);
+        for (ssize_t i = std::min(size_, new_size); i < size_; i++) {
+            allocator.destroy(data_, i);
+        }
 
-        capacity_ = size_;
-        size_ = oldsize;
+        for (ssize_t i = std::min(size_, new_size); i < new_size; ++i) {
+            allocator.construct(data_ + i);
+        }
+
+        size_ = new_size;
     }
 
     ssize_t size() const noexcept {

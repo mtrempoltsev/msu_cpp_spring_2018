@@ -3,6 +3,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <algorithm>
 
 namespace Limits
 {
@@ -16,10 +17,15 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    std::ifstream fin(argv[1]);
+    if (!fin) {
+        std::cerr << "File can't be opened\n";
+        return 1;
+    }
+
     std::map<std::string, size_t> freq;
     std::vector<std::string> words;
 
-    std::ifstream fin(argv[1]);
     std::string s;
     while (fin >> s) {
         if (!freq[s]++) {
