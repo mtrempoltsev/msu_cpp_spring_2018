@@ -44,12 +44,12 @@ public:
     }
 
 private:
+    auto static gt(const TStringInt & i, const TStringInt & j) {
+        return (i.second > j.second);
+    }
+
     void sort() {
         v_data_ = std::vector<TStringInt>(map_data_.begin(), map_data_.end());
-
-        auto gt = [](const TStringInt & i, const TStringInt & j) {
-            return (i.second > j.second);
-        };
 
         std::sort(v_data_.begin(), v_data_.end(), gt);
     }
