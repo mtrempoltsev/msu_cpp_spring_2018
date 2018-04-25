@@ -184,10 +184,6 @@ public:
         (*this) = vector;
     }
 
-    Vector(Vector&& vector) : Vector() {
-        (*this) = vector;
-    }
-
     explicit Vector(const ssize_t size, const T& default_value) : Vector(size) {
         for (ssize_t i = 0; i < size; i++) {
             data_[i] = default_value;
