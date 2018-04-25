@@ -39,9 +39,7 @@ int main(int argc, char ** argv) {
             break;
         }
     }
-
-//    std::multimap<size_t, std::string> reverse_dict = flip_map(freq_dict);
-//    auto it = reverse_dict.rend();
+    
     std::vector<std::pair<std::string, size_t>> rev_dict;
     std::copy(freq_dict.begin(), freq_dict.end(), std::back_inserter(rev_dict));
 
