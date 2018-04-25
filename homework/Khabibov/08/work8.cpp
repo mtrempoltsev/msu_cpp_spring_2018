@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 	}
 	std::vector<std::pair<std::string, size_t>> listOfWords{frequencyDictionary.begin(), frequencyDictionary.end()};
 	std::partial_sort(listOfWords.begin(), listOfWords.begin() + options::top, listOfWords.end(),
-		[](const std::pair<std::string, size_t>& x, const std::pair<std::string, size_t>& y) { return x > y; });
+		[](const std::pair<std::string, size_t>& x, const std::pair<std::string, size_t>& y) { return x.second > y.second; });
 	for (auto it = listOfWords.begin(); it != listOfWords.begin() + options::top; it++)
 		std::cout << it->second << ' ' << it->first << std::endl;
 	return 0;
