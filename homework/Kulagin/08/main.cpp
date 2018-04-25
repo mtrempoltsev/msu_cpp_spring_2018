@@ -7,7 +7,7 @@
 class DictError: public std::runtime_error {
 
 public:
-    DictError(std::string err_msg) : std::runtime_error("Dict error: " + err_msg) {}
+    DictError(const std::string& err_msg) : std::runtime_error("Dict error: " + err_msg) {}
 };
 
 class Dict {
@@ -15,7 +15,7 @@ class Dict {
 public:
     using TStringInt = std::pair<std::string, uint64_t>;
 
-    Dict(const std::string infile) {
+    Dict(const std::string& infile) {
         std::ifstream file(infile);
 
         if (!file) {
