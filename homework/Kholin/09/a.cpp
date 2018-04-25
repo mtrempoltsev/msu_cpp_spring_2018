@@ -2,14 +2,16 @@
 #include <mutex>
 #include <iostream>
 #include <condition_variable>
+#include <atomic>
 
 const int maxN = 10000;
 
 std::mutex mutex;
 std::condition_variable ready;
-bool f = false;
+std::atomic<bool> f(false);
 
 void ping() {
+    f.store(true, std::memory_order_relaxed);
     {
         std::unique_lock<std::mutex> lock(mutex);
         f = true;
@@ -23,12 +25,12 @@ void ping() {
 }
 
 void pong() {
+    bool x;
+    do {
+        x = f.load(std::memory_order_relaxed);
+    } while (!x);
     {
         std::unique_lock<std::mutex> lock(mutex);
-        if (!f) {
-            ready.notify_one();
-            ready.wait(lock);
-        }
         for (uint32_t i = 0; i < maxN; ++i) {
             std::cout << "pong" << std::endl;
             ready.notify_one();
