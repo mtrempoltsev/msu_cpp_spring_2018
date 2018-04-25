@@ -6,7 +6,7 @@
 std::mutex m;
 std::condition_variable cv;
 
-const int MAX_ITER = 1000000;
+constexpr int MAX_ITER = 1000000;
 bool is_pong_time = false;
 
 void ping();
