@@ -47,11 +47,11 @@ private:
     void sort() {
         v_data_ = std::vector<TStringInt>(map_data_.begin(), map_data_.end());
 
-        auto lt = [](const TStringInt & i, const TStringInt & j) {
-            return (i.second < j.second);
+        auto gt = [](const TStringInt & i, const TStringInt & j) {
+            return (i.second > j.second);
         };
 
-        std::sort(v_data_.rbegin(), v_data_.rend(), lt);
+        std::sort(v_data_.begin(), v_data_.end(), gt);
     }
 
     std::map<std::string, uint64_t> map_data_;
