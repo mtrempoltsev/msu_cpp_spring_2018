@@ -1,9 +1,11 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
+#include <atomic>
 
-volatile int i = 0;
-volatile bool flaq = true;
+std::atomic<int> i(0);
+std::atomic<bool> flaq(true);
+
 std::mutex mutex;
 
 void thread1()
