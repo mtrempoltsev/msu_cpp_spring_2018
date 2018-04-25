@@ -211,7 +211,7 @@ public:
         }
 
         for (ssize_t i = 0; i < size_; i++) {
-            data_[i] = _v.data_[i];
+            allocator.construct(data_ + i, _v.data_[i]);
         }
 
         return (*this);
