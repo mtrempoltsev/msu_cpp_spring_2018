@@ -1,13 +1,14 @@
 #include <condition_variable>
 #include <iostream>
+#include <atomic>
 #include <thread>
 #include <mutex>
 
 std::mutex m;
 std::condition_variable cv;
 
-const int MAX_ITER = 1000000;
-bool is_pong_time = false;
+const int MAX_ITER = 500000;
+std::atomic<bool> is_pong_time(false);
 
 void printer(const std::string &str, bool value);
 
