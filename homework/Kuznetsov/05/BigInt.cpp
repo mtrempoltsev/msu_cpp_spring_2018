@@ -8,7 +8,7 @@
 class BigInt {
 public:
 
-    BigInt(const std::string str):
+    BigInt(const std::string& str):
             mCapacity(START_CAPACITY),
             mNumbers(new char[START_CAPACITY]),
             isPositive(true){
