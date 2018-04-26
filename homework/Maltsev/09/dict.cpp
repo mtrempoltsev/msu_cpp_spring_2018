@@ -3,7 +3,6 @@
 #include <map>
 #include <algorithm>
 
-
 class Error {
 };
 
@@ -30,9 +29,14 @@ std::multimap<B, A> flip_map(const std::map<A, B> &src) {
 }
 
 template<class Map>
-void print_map(Map &m) {
-    for (auto i = m.rbegin(); i != m.rend(); i++) {
+void print_map(Map &m, const int top_n = 10) {
+    auto i = m.rbegin();
+    auto j = top_n;
+    while ( i != m.rend() && j != 0)
+    {
         std::cout << i->first << ' ' << i->second << std::endl;
+        ++i;
+        --j;
     }
 }
 
