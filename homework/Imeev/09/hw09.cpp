@@ -6,17 +6,16 @@
 std::mutex m;
 std::condition_variable cv;
 
-constexpr int MAX_ITER = 1000000;
+const int MAX_ITER = 1000000;
 bool is_pong_time = false;
 
-void ping();
-void pong();
+void printer(const std::string &str, bool value);
 
 int main()
 {
     try {
-        std::thread t1(ping);
-        std::thread t2(pong);
+        std::thread t1(printer, "ping", false);
+        std::thread t2(printer, "pong", true);
         t1.join();
         t2.join();
     } catch(...) {
@@ -26,30 +25,14 @@ int main()
     return 0;
 }
 
-void pong()
+void printer(const std::string &str, bool value)
 {
     for(int i = 0; i < MAX_ITER; ++i) {
         std::unique_lock<std::mutex> lk(m);
-        cv.wait(lk, []{return is_pong_time;});
-        std::cout << "pong" << std::endl;
-        is_pong_time = false;
+        cv.wait(lk, [value]{return is_pong_time == value;});
+        std::cout << str << std::endl;
+        is_pong_time = !value;
         lk.unlock();
         cv.notify_one();
-    }
-}
-
-void ping()
-{
-    for(int i = 0; i < MAX_ITER; ++i) {
-        {
-            std::lock_guard<std::mutex> lk(m);
-            std::cout << "ping" << std::endl;
-            is_pong_time = true;
-        }
-        cv.notify_one();
-        {
-            std::unique_lock<std::mutex> lk(m);
-            cv.wait(lk, []{return !is_pong_time;});
-        }
     }
 }
