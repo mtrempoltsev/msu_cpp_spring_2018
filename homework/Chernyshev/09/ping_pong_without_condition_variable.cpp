@@ -1,6 +1,7 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
+#include <atomic>
 
 namespace Limits
 {
@@ -8,7 +9,7 @@ namespace Limits
 }
 
 std::mutex mutex;
-volatile int cnt_iters = 0;
+std::atomic_int cnt_iters{0};
 
 void thread_function(int parity)
 {
