@@ -1,8 +1,8 @@
-#include <unordered_map>
 #include <algorithm>
 #include <stdexcept>
 #include <iostream>
 #include <fstream>
+#include <set>
 #include <map>
 
 constexpr size_t ARGNUM = 2;
@@ -14,11 +14,11 @@ void word_counter(const std::string &fname);
 
 int main(int argc, char **argv)
 {
+    if(argc != ARGNUM) {
+        std::cerr << "error" << std::endl;
+        return 1;
+    }
     try {
-        if(argc != ARGNUM) {
-            std::cerr << "error" << std::endl;
-            return 1;
-        }
         word_counter(argv[1]);
     } catch(...) {
         std::cerr << "error" << std::endl;
@@ -33,14 +33,14 @@ void word_counter(const std::string &fname)
     if (!fin) {
         throw couldnt_open_file();
     }
-    std::unordered_map<std::string, int> counter;
+    std::map<std::string, int> counter;
     while (fin.good()) {
         std::string word;
         fin >> word;
         counter[word]++;
     }
 
-    std::map<int, std::string> res;
+    std::set<std::pair<int, std::string>> res;
     for(auto &elem : counter) {
         res.emplace(elem.second, elem.first);
     }
