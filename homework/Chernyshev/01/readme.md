@@ -1,5 +1,5 @@
 # Homework 01
-Computing sum of 2D-matrix elements in two different ways: by rows and by columns
+Computing sum of 2D-matrix elements in two different ways: by rows and by columns.
 
 ## Running tests
 This command will compile code and run programm on tests several times

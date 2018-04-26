@@ -22,6 +22,14 @@ public:
         free(ptr);
     }
 
+    void construct(pointer ptr) {
+        ptr = new(ptr) T();
+    }
+
+    void destroy(pointer ptr) {
+        ptr->~T();
+    }
+
     size_t max_size() const noexcept {
         return std::numeric_limits<size_type>::max() / sizeof(value_type);
     }
@@ -34,6 +42,7 @@ class Iterator
 public:
     using reference = T &;
     using value_type = T;
+
     explicit Iterator(T *ptr)
             : ptr_(ptr) {
     }
@@ -54,6 +63,7 @@ public:
         ++ptr_;
         return *this;
     }
+
     Iterator &operator--() {
         --ptr_;
         return *this;
@@ -148,13 +158,14 @@ public:
                 reserve(2 * capacity_);
             }
         }
-        data_[size_ * sizeof(value_type)] = value;
+        data_[size_] = value;
         ++size_;
     }
 
     void pop_back() {
         if (size_ != 0) {
-            data_[--size_].~T();
+//            data_[--size_].~T();
+            alloc_.destroy(data_ + --size_);
         }
     }
 
@@ -164,7 +175,8 @@ public:
             auto newData = alloc_.allocate(new_cap);
 //            std::copy(data_, data_ + size_ * sizeof(value_type), newData);
             for (int i = 0; i < size_; ++i) {
-                newData[i].~T();
+//                newData[i].~T();
+                alloc_.destroy(newData + i);
                 newData[i] = data_[i];
             }
             std::swap(data_, newData);
@@ -180,16 +192,19 @@ public:
     void resize(size_type newSize) {
         if (size_ > newSize) {
             for (size_type i = newSize; i < size_; ++i) {
-                data_[i].~T();
+//                data_[i].~T();
+                alloc_.destroy(data_ + i);
             };
         } else if (newSize > capacity_) {
             reserve(newSize);
             for (int i = size_; i < newSize; ++i) {
-                data_[i] = T{};
+//                data_[i] = T{};
+                alloc_.construct(data_ + i);
             };
         } else {
             for (size_type i = size_; i < newSize; ++i) {
-                data_[i] = T{};
+//                data_[i] = T{};
+                alloc_.construct(data_ + i);
             };
         }
         size_ = newSize;
@@ -206,7 +221,8 @@ public:
 
     void clear() noexcept {
         for (int i = 0; i < size_; ++i) {
-            data_[i * sizeof(value_type)].~T();
+//            data_[i].~T();
+            alloc_.destroy(data_ + i);
         };
         size_ = 0;
     }

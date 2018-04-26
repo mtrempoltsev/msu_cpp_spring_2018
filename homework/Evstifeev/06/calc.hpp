@@ -9,7 +9,7 @@
 template <typename T>
 class Calculator {
    public:
-    Calculator(const std::string _number);
+    Calculator(const std::string& _number);
 
     T expression();
     T term();
@@ -27,7 +27,7 @@ class Calculator {
 };
 
 template <typename T>
-Calculator<T>::Calculator(const std::string _number) : number{_number} {}
+Calculator<T>::Calculator(const std::string& _number) : number{_number} {}
 
 template <typename T>
 void Calculator<T>::putback(Token<T>& token) {

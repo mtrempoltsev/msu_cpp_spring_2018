@@ -1,5 +1,5 @@
 # Homework 05
-Write BigInt class
+Write BigInt class.
 
 ## Building and running
 To build project:

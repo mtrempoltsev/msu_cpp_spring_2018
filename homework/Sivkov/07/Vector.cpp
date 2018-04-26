@@ -4,22 +4,27 @@
 
 template<class T>
 class my_allocator {
-    size_t size = 0;
 public:
     using value_type = T;
     using pointer = T *;
     using size_type = size_t;
 
     pointer allocate(size_type count) {
-        size = count;
-        return static_cast<T *>(malloc(count * sizeof(T)));
+        return static_cast<pointer>(malloc(count * sizeof(value_type)));
+    }
+
+    template< class U, class... Args >
+    void construct( U* ptr, Args&&... args ){
+        new(ptr) U(std::forward<Args>(args)...);
+    }
+
+    void destruct(pointer ptr) {
+        (*ptr).~T();
     }
 
     void deallocate(pointer ptr) {
         free(ptr);
     }
-
-    size_t max_size() const noexcept { return size; }
 };
 
 template<class T, class Alloc>
@@ -29,21 +34,21 @@ template<class T>
 class Iterator : public std::iterator<std::random_access_iterator_tag, T> {
 
 public:
-    Iterator(T *p) : p(p) {}
+    Iterator(typename Iterator::pointer p) : p(p) {}
 
-    Iterator(const Iterator<T> &other) : p(other.p) {}
+    Iterator(const Iterator<typename Iterator::value_type> &other) : p(other.p) {}
 
-    Iterator &operator=(const T *const p_) {
+    Iterator &operator=(const typename Iterator::pointer p_) {
         p = p_;
         return *this;
     }
 
-    Iterator &operator=(const Iterator<T> &other) {
+    Iterator &operator=(const Iterator<typename Iterator::value_type > &other) {
         p = other.p;
         return *this;
     }
 
-    bool operator!=(const Iterator<T> &other) const {
+    bool operator!=(const Iterator<typename Iterator::value_type > &other) const {
         return p != other;
     }
 
@@ -53,11 +58,11 @@ public:
     template<class U>
     friend bool operator==(const U *first, const Iterator<U> &second);
 
-    bool operator==(const Iterator<T> &other) const {
+    bool operator==(const Iterator<typename Iterator::value_type > &other) const {
         return p == other;
     }
 
-    typename Iterator<T>::reference operator*() const {
+    typename Iterator<typename Iterator::value_type >::reference operator*() const {
         return *p;
     }
 
@@ -91,12 +96,12 @@ public:
         return Iterator(p - rhs);
     }
 
-    long int operator-(const Iterator<T> &other) {
-        return static_cast<long int>(p - other.p);
+    typename Iterator::difference_type operator-(const Iterator<typename Iterator::value_type > &other) {
+        return static_cast<typename Iterator::difference_type >(p - other.p);
     }
 
 private:
-    T *p;
+    typename Iterator::pointer p;
 };
 
 template<class U>
@@ -115,21 +120,21 @@ class ReverseIterator : public std::iterator<std::random_access_iterator_tag, T>
 
 public:
 
-    ReverseIterator(T *p) : p(p) {}
+    ReverseIterator(typename ReverseIterator::pointer p) : p(p) {}
 
-    ReverseIterator(const ReverseIterator<T> &other) : p(other.p) {}
+    ReverseIterator(const ReverseIterator<typename ReverseIterator::value_type > &other) : p(other.p) {}
 
-    ReverseIterator &operator=(const T *const p_) {
+    ReverseIterator &operator=(const typename ReverseIterator::pointer p_) {
         p = p_;
         return *this;
     }
 
-    ReverseIterator &operator=(const ReverseIterator<T> &other) {
+    ReverseIterator &operator=(const ReverseIterator<typename ReverseIterator::value_type> &other) {
         p = other.p;
         return *this;
     }
 
-    bool operator!=(const ReverseIterator<T> &other) const {
+    bool operator!=(const ReverseIterator<typename ReverseIterator::value_type > &other) const {
         return p != other;
     }
 
@@ -139,11 +144,11 @@ public:
     template<class U>
     friend bool operator==(const U *first, const ReverseIterator<U> &second);
 
-    bool operator==(const ReverseIterator<T> &other) const {
+    bool operator==(const ReverseIterator<typename ReverseIterator::value_type > &other) const {
         return p == other;
     }
 
-    typename ReverseIterator<T>::reference operator*() const {
+    typename ReverseIterator<typename ReverseIterator::value_type >::reference operator*() const {
         return *p;
     }
 
@@ -177,12 +182,12 @@ public:
         return ReverseIterator(p + rhs);
     }
 
-    long int operator-(const ReverseIterator<T> &other) {
-        return static_cast<long int>(other.p - p);
+    typename ReverseIterator::difference_type operator-(const ReverseIterator<typename ReverseIterator::value_type > &other) {
+        return static_cast<typename ReverseIterator::difference_type>(other.p - p);
     }
 
 private:
-    T *p;
+    typename ReverseIterator::pointer p;
 };
 
 template<class U>
@@ -201,34 +206,38 @@ class Vector {
 private:
     T *data_;
     size_t size_ = 0;
+    size_t capacity_ = 0;
     Alloc alloc_;
 public:
     Vector() : data_(nullptr), alloc_(Alloc()) {}
 
-    explicit Vector(size_t size, const Alloc &alloc = Alloc()) : alloc_(alloc), size_(size) {
+    explicit Vector(size_t size, const Alloc &alloc = Alloc()) : alloc_(alloc), size_(size), capacity_(size) {
         data_ = alloc_.allocate(size);
-        for (size_t i = 0; i < alloc_.max_size(); ++i) {
-            new(&data_[i]) T();
+        for (size_t i = 0; i < capacity_; ++i) {
+            alloc_.construct(&data_[i]);
         }
     }
 
-    Vector(size_t size, const T &value, const Alloc &alloc = Alloc()) : alloc_(alloc), size_(size) {
+    Vector(size_t size, const T &value, const Alloc &alloc = Alloc()) : alloc_(alloc), size_(size), capacity_(size) {
         data_ = alloc_.allocate(size);
-        for (size_t i = 0; i < alloc_.max_size(); ++i) {
-            new(&data_[i]) T(value);
+        for (size_t i = 0; i < capacity_; ++i) {
+            alloc_.construct(&data_[i], value);
         }
     }
 
     Vector(Vector<T, Alloc> &other) {
-        data_ = alloc_.allocate(other.alloc_.max_size());
+        data_ = alloc_.allocate(other.capacity_);
         size_ = other.size_;
-        for (size_t i = 0; i < other.size_; ++i) new(&data_[i]) T(other.data_[i]);
+        capacity_ = other.capacity_;
+        for (size_t i = 0; i < other.size_; ++i) alloc_.construct(&data_[i], other.data_[i]);
     }
 
     Vector(Vector<T, Alloc> &&movable) noexcept {
         data_ = movable.data_;
         size_ = movable.size_;
         movable.data_ = nullptr;
+        movable.size_ = 0;
+        movable.capacity_ = 0;
     }
 
     Iterator<T> begin() { return Iterator<T>(data_); }
@@ -239,31 +248,32 @@ public:
 
     ReverseIterator<T> rend() { return ReverseIterator<T>(data_ - 1); }
 
-    void reserve(size_t new_max_size) {
-        if (new_max_size > alloc_.max_size()) {
-            T *tmp = alloc_.allocate(new_max_size);
+    void reserve(size_t new_capacity) {
+        if (new_capacity > capacity_) {
+            T *tmp = alloc_.allocate(new_capacity);
             for (size_t i = 0; i < size_; ++i) {
-                new(&tmp[i]) T(data_[i]);
-                data_[i].~T();
+                alloc_.construct(&tmp[i], data_[i]);
+                alloc_.destruct(&data_[i]);
             }
             alloc_.deallocate(data_);
             data_ = tmp;
+            capacity_ = new_capacity;
         }
     }
 
     void resize(size_t count) {
 
-        if (count > alloc_.max_size()) {
+        if (count > capacity_) {
             this->reserve(count);
         }
 
         if (count > size_) {
             for (size_t i = size_; i < count; ++i) {
-                new(&data_[i]) T();
+                alloc_.construct(&data_[i]);
             }
         } else if (count < size_) {
             for (size_t i = count; i < size_; ++i) {
-                data_[i].~T();
+                alloc_.destruct(&data_[i]);
             }
         }
         size_ = count;
@@ -275,17 +285,17 @@ public:
             this->reserve(2);
         }
 
-        if (size_ == alloc_.max_size()) {
+        if (size_ == capacity_) {
             this->reserve(size_ * 2);
         }
-        new(&data_[size_]) T(elem);
+        alloc_.construct(&data_[size_], elem);
         size_++;
     }
 
     void pop_back() {
         if (size_ > 0) {
             size_--;
-            data_[size_].~T();
+            alloc_.destruct(&data_[size_]);
         }
     }
 
@@ -295,7 +305,7 @@ public:
 
     void clear() {
         for (size_t i = 0; i < size_; ++i) {
-            data_[i].~T();
+            alloc_.destruct(&data_[i]);
         }
         size_ = 0;
     }
@@ -305,7 +315,7 @@ public:
     }
 
     size_t capacity() const {
-        return alloc_.max_size();
+        return capacity_;
     }
 
     T &operator[](size_t index) {
@@ -318,8 +328,13 @@ public:
 
     ~Vector() {
         for (size_t i = 0; i < size_; ++i) {
-            data_[i].~T();
+            alloc_.destruct(&data_[i]);
         }
         alloc_.deallocate(data_);
     }
 };
+
+
+int main() {
+    return 0;
+}
