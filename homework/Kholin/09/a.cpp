@@ -4,7 +4,7 @@
 #include <condition_variable>
 #include <atomic>
 
-const int maxN = 10000;
+const int maxN = 500000;
 
 std::mutex mutex;
 std::condition_variable ready;
