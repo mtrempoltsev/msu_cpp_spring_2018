@@ -3,9 +3,10 @@
 #include <mutex>
 #include <string>
 
-const int N = 1e2;
+const int N = 1e6;
 
 std::mutex mutex[2];
+
 void func_t1()
 {
     for(int i = 0; i < N; ++i)
