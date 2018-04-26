@@ -5,7 +5,7 @@
 #include <atomic>
 
 
-const size_t OUT_SIZE = 1000000;
+const size_t OUT_SIZE = 500000;
 std::mutex m1, m2;
 std::condition_variable var;
 std::atomic_int counter;
@@ -23,10 +23,10 @@ void pinger() {
 
         {
             std::lock_guard<std::mutex> lk(m1);
-            std::cout << "ping" << std::endl;
+            printf("ping\n");
             counter++;
-            var.notify_one();
         }
+        var.notify_one();
     }
 }
 
@@ -44,10 +44,10 @@ void ponger() {
 
         {
             std::lock_guard<std::mutex> lk(m2);
-            std::cout << "pong" << std::endl;
+            printf("pong\n");
             counter++;
-            var.notify_one();
         }
+        var.notify_one();
     }
 }
 
