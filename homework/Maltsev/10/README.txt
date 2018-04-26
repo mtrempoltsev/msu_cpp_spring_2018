@@ -1,2 +1,3 @@
-g++ -std=c++11 -o pinpong pinpong.cpp -lpthread
+g++ -std=c++11 -o ping_pong pingpong.cpp -lpthread
+
  
