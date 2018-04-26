@@ -40,7 +40,7 @@ void word_counter(const std::string &fname)
         counter[word]++;
     }
 
-    std::map<int, std::string> res;
+    std::multimap<int, std::string> res;
     for(auto &elem : counter) {
         res.emplace(elem.second, elem.first);
     }
