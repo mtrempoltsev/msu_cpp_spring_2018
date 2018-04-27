@@ -7,16 +7,17 @@
 std::mutex m;
 std::condition_variable cv;
 
-const int MAX_ITER = 500000;
+constexpr size_t str_size = 5;
+constexpr int MAX_ITER = 500000;
 std::atomic<bool> is_pong_time(false);
 
-void printer(const std::string &str, bool value);
+void printer(bool value);
 
 int main()
 {
     try {
-        std::thread t1(printer, "ping", false);
-        std::thread t2(printer, "pong", true);
+        std::thread t1(printer, false);
+        std::thread t2(printer, true);
         t1.join();
         t2.join();
     } catch(...) {
@@ -26,12 +27,20 @@ int main()
     return 0;
 }
 
-void printer(const std::string &str, bool value)
+void printer(bool value)
 {
+    char str_ping[] = "ping\n";
+    char str_pong[] = "pong\n";
+    char *str;
+    if(value) {
+        str = str_pong;
+    } else {
+        str = str_ping;
+    }
     for(int i = 0; i < MAX_ITER; ++i) {
         std::unique_lock<std::mutex> lk(m);
         cv.wait(lk, [value]{return is_pong_time == value;});
-        printf("%s\n", str.c_str());
+        fwrite(str, sizeof(char), str_size, stdout);
         is_pong_time = !value;
         lk.unlock();
         cv.notify_one();
