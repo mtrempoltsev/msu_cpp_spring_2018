@@ -1,6 +1,6 @@
 #include <condition_variable>
-#include <iostream>
 #include <atomic>
+#include <cstdio>
 #include <thread>
 #include <mutex>
 
@@ -20,7 +20,7 @@ int main()
         t1.join();
         t2.join();
     } catch(...) {
-        std::cerr << "error" << std::endl;
+        printf("error\n");
         return 1;
     }
     return 0;
@@ -31,7 +31,7 @@ void printer(const std::string &str, bool value)
     for(int i = 0; i < MAX_ITER; ++i) {
         std::unique_lock<std::mutex> lk(m);
         cv.wait(lk, [value]{return is_pong_time == value;});
-        std::cout << str << std::endl;
+        printf("%s\n", str.c_str());
         is_pong_time = !value;
         lk.unlock();
         cv.notify_one();
