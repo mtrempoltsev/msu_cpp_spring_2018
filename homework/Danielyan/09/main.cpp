@@ -1,11 +1,10 @@
+#include <atomic>
 #include <iostream>
 #include <thread>
-#include <atomic>
-
 
 int main(int argc, char **argv) {
     std::atomic<bool> ping_time{false};
-    std::thread ping([&ping_time] () {
+    std::thread ping([&ping_time]() {
         for (size_t i = 0; i < 1000000; ++i) {
             while (!ping_time) {
             }
@@ -27,4 +26,3 @@ int main(int argc, char **argv) {
 
     return 0;
 }
-
