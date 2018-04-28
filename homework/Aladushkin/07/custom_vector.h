@@ -113,67 +113,26 @@ public:
 
 	explicit Vector()
 	{
-		data_ = alloc_.allocate(capacity_);
+		data_ = allocator_.allocate(capacity_);
 	}
 
-	Iterator<T> begin() noexcept
+	~Vector()
 	{
-		return Iterator<T>(data_);
+		clear();
+		allocator_.deallocate(data_, 0);
 	}
 
-	Iterator<T> end() noexcept
-	{
-		return Iterator<T>(data_ + size_);
-	}
+	Iterator<T> begin() noexcept {return Iterator<T>(data_);}
+	Iterator<T> end() noexcept   {return Iterator<T>(data_ + size_);}
 
-	std::reverse_iterator<Iterator<T>> rbegin() noexcept
-	{
-		return std::reverse_iterator<Iterator<T>>(end());
-	}
+	std::reverse_iterator<Iterator<T>> rbegin() noexcept {return std::reverse_iterator<Iterator<T>>(end());}
+	std::reverse_iterator<Iterator<T>> rend() noexcept   {return std::reverse_iterator<Iterator<T>>(begin());}
 
-	std::reverse_iterator<Iterator<T>> rend() noexcept
-	{
-		return std::reverse_iterator<Iterator<T>>(begin());
-	}
+	reference operator[] (size_type index)	       {return data_[index];}
+	const reference operator[](size_t index) const {return data_[index];}
 
-	reference operator[] (size_type index)
-	{
-		return data_[index];
-	}
-
-	const reference operator[](size_t index) const
-	{
-		return data_[index];
-	}
-
-	bool empty() const noexcept
-	{
-		return size_ == 0;
-	}
-
-	size_type size() const noexcept
-	{
-		return size_;
-	}
-
-	size_type capacity() const noexcept
-	{
-		return capacity_;
-	}
-
-	void push_back(const value_type& value)
-	{
-		if (capacity_ == size_)
-			reserve(capacity_ * 2 + 1);
-
-		alloc_.construct(data_ + size_, value);
-		size_++;
-	}
-
-	void pop_back()
-	{
-		resize(size_ - 1);
-	}
+	size_type size() const noexcept { return size_; }
+	size_type capacity() const noexcept { return capacity_; }
 
 	void reserve(size_type count)
 	{
@@ -194,7 +153,7 @@ public:
 
 	void resize(size_type new_size)
 	{
-		if (new_size > size_)
+		if (size_ < new_size)
 		{
 			if (capacity_ < new_size)
 			{
@@ -202,15 +161,29 @@ public:
 			}
 
 			for (size_type i = size_; i < new_size; i++)
-				alloc_.construct(data_ + i);
+				allocator_.construct(data_ + i);
 		}
-		else if (new_size < size_)
+		else if (size_ > new_size)
 		{
 			for (size_type i = new_size; i < size_; i++)
-				alloc_.destroy(data_ + i);
+				allocator_.destroy(data_ + i);
 		}
 
 		size_ = new_size;
+	}
+
+	void push_back(const value_type& value)
+	{
+		if (capacity_ == size_)
+			reserve(capacity_ * 2);
+
+		allocator_.construct(data_ + size_, value);
+		size_++;
+	}
+
+	void pop_back()
+	{
+		resize(size_ - 1);
 	}
 
 	void clear() noexcept
@@ -218,10 +191,9 @@ public:
 		resize(0);
 	}
 
-	~Vector()
+	bool empty() const noexcept 
 	{
-		clear();
-		alloc_.deallocate(data_, 0);
+		return size_ == 0;
 	}
 
 private:
