@@ -28,7 +28,7 @@ int main()
 
 void printer(bool value)
 {
-    const char* str = value ? "ping\n" : "pong\n";
+    const char* str = value ? "pong\n" : "ping\n";
     for(int i = 0; i < MAX_ITER; ++i) {
         std::unique_lock<std::mutex> lk(m);
         cv.wait(lk, [value]{return is_pong_time == value;});
