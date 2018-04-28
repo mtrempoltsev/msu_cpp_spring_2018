@@ -40,6 +40,7 @@ public:
 		while (input_f >> word)
 			dictionary[word]++;
 
+		vec_dictionary.reserve(dictionary.size());
 		for (auto it = dictionary.begin(); it != dictionary.end(); it++)
 			vec_dictionary.push_back(*it);
 	}
