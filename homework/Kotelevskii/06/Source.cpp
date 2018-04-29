@@ -4,11 +4,10 @@
 template <class T>
 class Calculator
 {
-	T divider(std::string s) const
+	T divider(std::string&& s) const
 	{
 		for (size_t i = s.length(); i >= 1; i--)
 		{
-
 			if (s[i] == '+')
 			{
 				return divider(s.substr(0, i)) + mult_div(s.substr(i + 1));
@@ -18,9 +17,9 @@ class Calculator
 				return divider(s.substr(0, i)) - mult_div(s.substr(i + 1));
 			}
 		}
-		return s[0] == '-' ? -1 * mult_div(s.substr(1)) : mult_div(s);
+		return s[0] == '-' ? -1 * mult_div(s.substr(1)) : mult_div(s.substr(0));
 	}
-	T mult_div(std::string s) const
+	T mult_div(std::string&& s) const
 	{
 		std::string helper;
 		for (size_t i = s.length(); i > 0; i--)
@@ -74,7 +73,7 @@ class Calculator
 		}
 	}
 public:
-	T calculate(std::string s) const
+	T calculate(std::string s)
 	{
 		checker(s);
 		return divider(normalization(s));
