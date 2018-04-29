@@ -7,6 +7,7 @@ namespace options
 {
 	constexpr int N = 500000;
 }
+
 class Semaphore
 {
 	std::mutex mutex_;
