@@ -2,47 +2,45 @@
 #include <thread>
 #include <mutex>
 #include <atomic>
+#include <condition_variable>
 
 std::atomic<int> i(0);
-std::atomic<bool> flaq(true);
+std::condition_variable v;
 
 std::mutex mutex;
 
+const int N = 1000000;
+
 void thread1()
 {
-    while(flaq)
+    while(i < N-1)
     {
-        std::lock_guard <std::mutex> lock(mutex);
+        std::unique_lock <std::mutex> lock(mutex);
+        if (i % 2 == 0)
         {
-            if (i % 2 == 0 && i != 1000000)
-            {
-                std::cout << "ping" << std::endl;
-                i++;
-            }
-            if(i == 1000000)
-            {
-                flaq = false;
-            }
+            std::cout << "ping" << std::endl;
+            i++;
+            v.notify_one();
         }
+        if (i != N-1)
+            v.wait(lock);
     }
+
 }
 
 void thread2()
 {
-    while(flaq)
+    while(i < N)
     {
-        std::lock_guard<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
+        if (i % 2 == 1)
         {
-            if (i % 2 == 1 && i != 1000000)
-            {
-                std::cout << "pong" << std::endl;
-                i++;
-            }
-            if(i == 1000000)
-            {
-                flaq = false;
-            }
+            std::cout << "pong" << std::endl;
+            i++;
+            v.notify_one();
         }
+        if (i != N)
+            v.wait(lock);
     }
 }
 
