@@ -1,7 +1,7 @@
 #include<iostream>
 
 namespace options
-{	
+{
 	constexpr int base = 10000;
 	constexpr int numberOfDigitsInBase = 4;
 }
@@ -93,6 +93,13 @@ public:
 		return *this;
 	}
 
+	bool isConsistent() const
+	{
+		if ((*this).bigNumber_ == nullptr)
+			return false;
+		return true;
+	}
+
 	bool operator==(const BigInt& b) const
 	{
 		if ((*this).sign_ != b.sign_)
@@ -175,6 +182,10 @@ public:
 
 	BigInt operator+(const BigInt& b) const
 	{
+		if (!(*this).isConsistent())
+			return 0;
+		if (!b.isConsistent())
+			return 0;
 		BigInt result;
 		if ((*this).sign_ * b.sign_ == -1)
 		{
@@ -221,6 +232,8 @@ public:
 
 	BigInt operator-()
 	{
+		if (!(*this).isConsistent())
+			return 0;
 		if ((size_ == 1) && (bigNumber_[0] == 0))
 			return *this;
 		(*this).sign_ *= -1;
@@ -229,6 +242,10 @@ public:
 
 	BigInt operator-(const BigInt& b) const
 	{
+		if (!(*this).isConsistent())
+			return 0;
+		if (!b.isConsistent())
+			return 0;
 		BigInt result;
 		if ((*this).sign_ * b.sign_ == -1)
 		{
@@ -286,6 +303,10 @@ public:
 
 	BigInt operator*(const BigInt& b) const
 	{
+		if (!(*this).isConsistent())
+			return 0;
+		if (!b.isConsistent())
+			return 0;
 		if ((((*this).size_ == 1) && ((*this).bigNumber_[0] == 0)) || ((b.size_ == 1) && (b.bigNumber_[0] == 0)))
 			return 0;
 		BigInt result(true, (*this).size_ * b.size_ + 1, 0);
@@ -318,6 +339,8 @@ public:
 
 	BigInt operator*(int a) const
 	{
+		if (!(*this).isConsistent())
+			return 0;
 		BigInt buf(true, 1, 0);
 		buf.bigNumber_[0] = a;
 		return (*this) * buf;
@@ -325,6 +348,10 @@ public:
 
 	BigInt operator/(const BigInt &b) const
 	{
+		if (!(*this).isConsistent())
+			return 0;
+		if (!b.isConsistent())
+			return 0;
 		BigInt result(true, (*this).size_, 0);
 		BigInt curValue(true, 1, 0);
 		for (size_t i = (*this).size_ - 1; ((i < (*this).size_) && (i >= 0)); i--)
@@ -362,64 +389,6 @@ public:
 			return 0;
 		result.sign_ = (*this).sign_ * b.sign_;
 		return result;
-	}
-
-	friend std::istream& operator>>(std::istream& in, BigInt& a)
-	{
-		char ch;
-		char* stringOfNumber = new char[1024 * 1024];
-		in >> ch;
-		size_t i = 0;
-		size_t bufNumberOfDigitsInBase = options::numberOfDigitsInBase;
-		int buf = 0;
-		if (ch == '-')
-			a.sign_ = -1;
-		else
-		{
-			a.sign_ = 1;
-			i++;
-			stringOfNumber[0] = ch;
-		}
-		in >> ch;
-		while (ch != 't')
-		{
-			stringOfNumber[i] = ch;
-			i++;
-			in >> ch;
-		}
-		size_t sizeOfBigNumber = i / options::numberOfDigitsInBase;
-		bool flag = false;
-		if (i % options::numberOfDigitsInBase != 0)
-		{
-			a.size_ = sizeOfBigNumber + 1;
-			a.bigNumber_ = new int[a.size_];
-			flag = true;
-		}
-		else
-		{
-			a.size_ = sizeOfBigNumber;
-			a.bigNumber_ = new int[a.size_];
-		}
-		for (size_t j = 0; j < sizeOfBigNumber; j++)
-		{
-			char bufString[options::numberOfDigitsInBase];
-			for (size_t k = 0; k < options::numberOfDigitsInBase; k++)
-			{
-				char nBuf = stringOfNumber[i - options::numberOfDigitsInBase * (j + 1) + k];
-				bufString[k] = nBuf;
-			}
-			a.bigNumber_[j] = atoi(bufString);
-		}
-		if (flag == true)
-		{
-			size_t buff = i % options::numberOfDigitsInBase;
-			char* bufString = new char[buff + 1];
-			for (size_t k = 0; k < buff; k++)
-				bufString[k] = stringOfNumber[k];
-			bufString[buff + 1] = '\0';
-			a.bigNumber_[a.size_ - 1] = atoi(bufString);
-		}
-		return in;
 	}
 
 	friend std::ostream& operator<<(std::ostream& out, const BigInt& a)

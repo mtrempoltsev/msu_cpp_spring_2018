@@ -5,12 +5,12 @@
 #include <cstring>
 #include <stdexcept>
 
-struct Expression 
+struct Expression
 {
 public:
-	Expression(std::string token) : token(token) {}
-	Expression(std::string token, Expression a) : token(token), args{ a } {}
-	Expression(std::string token, Expression a, Expression b) : token(token), args{ a, b } {}	
+	Expression(const std::string& token) : token(token) {}
+	Expression(const std::string& token, const Expression& a) : token(token), args{ a } {}
+	Expression(const std::string& token, const Expression& a, const Expression& b) : token(token), args{ a, b } {}
 
 	std::string token;
 	std::vector<Expression> args;
@@ -19,18 +19,15 @@ public:
 template<typename T>
 T cast(const std::string& str);
 
-template<> int cast<int>(const std::string& str)
-{
-	return std::stoi(str);
-}
+template<> int cast<int>(const std::string& str) { return std::stoi(str); }
 
 template <typename T>
-class Calculator 
+class Calculator
 {
 public:
 	explicit Calculator(const char* input) : input(input) {}
 	Expression parse();
-    T eval(const Expression& e);
+	T eval(const Expression& e);
 private:
 	std::string parse_token();
 	Expression parse_simple_expression();
@@ -40,22 +37,22 @@ private:
 };
 
 template<typename T>
-std::string Calculator<T>::parse_token() 
+std::string Calculator<T>::parse_token()
 {
-	while (std::isspace(*input)) 
+	while (std::isspace(*input))
 		++input;
 
-	if (std::isdigit(*input)) 
+	if (std::isdigit(*input))
 	{
 		std::string number;
 		while (std::isdigit(*input) || *input == '.') number.push_back(*input++);
 		return number;
 	}
 
-	static const std::string tokens[] = { "+", "-", "*", "/"};
-	for (auto& t : tokens) 
+	static const std::string tokens[] = { "+", "-", "*", "/" };
+	for (auto& t : tokens)
 	{
-		if (std::strncmp(input, t.c_str(), t.size()) == 0) 
+		if (std::strncmp(input, t.c_str(), t.size()) == 0)
 		{
 			input += t.size();
 			return t;
@@ -68,7 +65,7 @@ std::string Calculator<T>::parse_token()
 template<typename T>
 Expression Calculator<T>::parse_simple_expression() {
 	auto token = parse_token();
-	if (token.empty()) 
+	if (token.empty())
 		throw std::runtime_error("Invalid input");
 
 	if (std::isdigit(token[0]))
@@ -86,15 +83,15 @@ int get_priority(const std::string& binary_op) {
 }
 
 template<typename T>
-Expression Calculator<T>::parse_binary_expression(int min_priority) 
+Expression Calculator<T>::parse_binary_expression(int min_priority)
 {
 	auto left_expr = parse_simple_expression();
 
-	for (;;) 
+	for (;;)
 	{
 		auto op = parse_token();
 		auto priority = get_priority(op);
-		if (priority <= min_priority) 
+		if (priority <= min_priority)
 		{
 			input -= op.size();
 			return left_expr;
@@ -106,7 +103,7 @@ Expression Calculator<T>::parse_binary_expression(int min_priority)
 }
 
 template<typename T>
-Expression Calculator<T>::parse() 
+Expression Calculator<T>::parse()
 {
 	return parse_binary_expression(0);
 }
@@ -150,29 +147,20 @@ T Calculator<T>::eval(const Expression& e)
 #include <iostream>
 
 int main(int argc, char* argv[])
-{	
-	if (argc != 2)
-	{
-		std::cout << "error";
-		return 1;
-	}
+{
 	try
 	{
-		if (argc == 2)
+		if (argc != 2)
+			throw std::runtime_error("Invalid input");
+
+		else
 		{
-			try
-			{
-				Calculator<int> p(argv[1]);
-				auto result = p.eval(p.parse());
-				std::cout << result;
-			}
-			catch (std::exception & e)
-			{
-				std::cout << "error";
-				return 1;
-			}
+			Calculator<int> p(argv[1]);
+			auto result = p.eval(p.parse());
+			std::cout << result;
 		}
-	}	
+	}
+
 	catch (...)
 	{
 		std::cout << "error";
