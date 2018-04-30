@@ -1,4 +1,6 @@
-#include<iostream>
+#include <limits>
+#include <iterator>
+#include <memory>
 template <class T>
 class Allocator
 {
@@ -17,6 +19,11 @@ public:
 		ptr = new (ptr) value_type(v);
 	}
 
+	void construct(T* ptr, T&& v)
+	{
+		ptr = new (ptr) T(std::move(v));
+	}
+
 	void destroy(pointer ptr)
 	{
 		ptr->~value_type();
@@ -24,16 +31,12 @@ public:
 
 	pointer allocate(size_type count)
 	{
-		if (count > max_size())
-		{
-			throw std::length_error("count is bigger that max size");
-		}
-		pointer ptr = new T[count*size_type];
+		pointer ptr = (pointer)malloc(sizeof(value_type) * count);
 		return ptr;
 	}
 	void deallocate(pointer ptr, size_type count)
 	{
-		delete ptr;
+		free(ptr);
 	}
 	size_t max_size() const noexcept
 	{
@@ -82,30 +85,30 @@ public:
 };
 
 template <class T, class Alloc = Allocator<T>>
-class Vector {
+class Vector
+{
 public:
 	using size_type = size_t;
 	using value_type = T;
 	using pointer = T*;
 	using reference = T&;
 
-private:
-	Alloc alloc_;
-	size_type capacity_ = 0;
-	size_type size_ = 0;
-	pointer data_;
+	explicit Vector()
+	{
+		data_ = alloc_.allocate(capacity_);
+	}
 
 	explicit Vector(size_type count)
 	{
 		if (count)
 		{
 			data_ = alloc_.allocate(count);
-			size_ = count;
-			capacity_ = count;
 			for (size_type i = 0; i < count; i++)
 			{
 				alloc_.construct(data_ + i);
 			}
+			size_ = count;
+			capacity_ = count;
 		}
 	}
 	explicit Vector(size_type count, const value_type& v)
@@ -113,18 +116,13 @@ private:
 		if (count)
 		{
 			data_ = alloc_.allocate(count);
+			for (int i = 0; i < count; i++)
+			{
+				alloc_.construct(data_ + i, v);
+			}
 			size_ = count;
 			capacity_ = count;
-			for (int i = 0; i < cur_size; ++i)
-			{
-				alloc.construct(data + i, value);
-			}
 		}
-	}
-
-	explicit Vector()
-	{
-		data_ = alloc_.allocate(capacity_);
 	}
 
 	reference operator[] (size_type pos)
@@ -135,7 +133,16 @@ private:
 	void push_back(const value_type& value)
 	{
 		if (capacity_ == size_)
-			reserve(capacity_ * 2);
+		{
+			if (size_ == 0)
+			{
+				reserve(1);
+			}
+			else
+			{
+				reserve(capacity_ * 2);
+			}
+		}
 		alloc_.construct(data_ + size_, value);
 		size_++;
 	}
@@ -148,7 +155,9 @@ private:
 	bool empty() const noexcept
 	{
 		if (size_ != 0)
+		{
 			return false;
+		}
 		return true;
 	}
 
@@ -187,16 +196,20 @@ private:
 		if (size_ > newSize)
 		{
 			for (size_type i = newSize; i < size_; i++)
+			{
 				alloc_.destroy(data_ + i);
+			}
 		}
-		else if (size_ < newSize)
+		if (size_ < newSize)
 		{
 			if (capacity_ < newSize)
 			{
 				reserve(newSize);
 			}
 			for (size_type i = size_; i < newSize; i++)
+			{
 				alloc_.construct(data_ + i);
+			}
 		}
 		size_ = newSize;
 	}
@@ -223,7 +236,9 @@ private:
 		clear();
 		alloc_.deallocate(data_, 0);
 	}
+private:
+	Alloc alloc_;
+	size_type capacity_ = 0;
+	size_type size_ = 0;
+	pointer data_;
 };
-int main()
-{
-}
