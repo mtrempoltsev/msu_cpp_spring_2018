@@ -113,16 +113,13 @@ public:
 	}
 	Vector(size_type count, const value_type& v)
 	{
-		if (count)
+		data_ = alloc_.allocate(count);
+		for (int i = 0; i < count; i++)
 		{
-			data_ = alloc_.allocate(count);
-			for (int i = 0; i < count; i++)
-			{
-				alloc_.construct(data_ + i, v);
-			}
-			size_ = count;
-			capacity_ = count;
+			alloc_.construct(data_ + i, v);
 		}
+		size_ = count;
+		capacity_ = count;
 	}
 
 	reference operator[] (size_type pos)
