@@ -1,3 +1,8 @@
+#include <limits>
+#include <iterator>
+#include <memory>
+#include <algorithm>
+
 template<class T>
 class allocator
 {
@@ -6,10 +11,84 @@ public:
     using pointer = T*;
     using size_type = size_t;
 
-    pointer allocate(size_type count);
-    void deallocate(pointer ptr, size_type count);
+    pointer allocate(size_type count)
+    {
+    		pointer ptr = (pointer)malloc(sizeof(value_type) * count);
+    		return ptr;
+    }
+    void deallocate(pointer ptr, size_type count){
+        free(ptr);
+    }
 
-    size_t max_size() const noexcept;
+    size_type max_size() const noexcept{
+
+		return std::numeric_limits<size_type>::max();
+    }
+
+    void construct(pointer ptr)
+	{
+		ptr = new(ptr) value_type();
+	}
+
+	void construct(pointer ptr, const value_type& value)
+	{
+		ptr = new(ptr) value_type(value);
+	}
+
+	void destroy(pointer ptr)
+	{
+		ptr->~value_type();
+    }
+};
+
+
+template <class T>
+class Iterator : public std::iterator<std::random_access_iterator_tag, T>
+{
+	T* ptr_;
+public:
+    using reference = T&;
+    explicit Iterator(T* ptr): ptr_(ptr) {}
+
+	bool operator==(const Iterator<T>& other) const
+	{
+		return ptr_ == other.ptr_;
+	}
+
+	bool operator!=(const Iterator<T>& other) const
+	{
+		return !(*this == other);
+	}
+
+	reference operator*() const
+	{
+		return *ptr_;
+	}
+
+	Iterator& operator++()
+	{
+		++ptr_;
+		return *this;
+	}
+
+	Iterator& operator--()
+	{
+		--ptr_;
+		return *this;
+	}
+
+	Iterator& operator+(size_t& val)
+	{
+		ptr_ += val;
+		return *this;
+	}
+
+	Iterator& operator-(size_t& val)
+	{
+		ptr_ -= val;
+		return *this;
+    }
+
 };
 
 
@@ -17,60 +96,62 @@ template<class T, class Allocator = allocator<T>>
 class Vector
 {
 public:
+    using size_type = size_t;
+	using value_type = T;
+	using pointer = T*;
+    using reference = T&;
+    using iterator = Iterator<T>;
+
 	Vector();
-	Vector(int l, const T& initial);
+	Vector(size_type count);
 	Vector(const Vector<T>& other);
-	Vector(Vector<T>&& moved);
 	Vector<T>& operator=(const Vector<T>& other);
-	Vector<T>& operator=(Vector<T>&& moved);
 	~Vector();
 
-  iterator begin();
-  iterator end();
-  iterator rbegin();
-  iterator rend();
+//  begin, end, rbegin, rend
+    iterator begin() noexcept;
+    iterator end() noexcept;
+    iterator rbegin()noexcept;
+    iterator rend()noexcept;
 
-	T& operator[](size_t i);
-	const T& operator[](size_t i) const;
-	void push_back(const T& x);
-	void pop_back();
-	void push_front(const T& x);
-  void resize(size_t newSize);
-  void resize(size_t newsize, const T& defaultValue);
-  void reserve(size_type count);
-	size_t size() const;
-	size_t capacity();
-
+    T& operator[](size_type i);
+    const T& operator[](size_type i) const;
+    void push_back(const reference value);
+    void pop_back();
+    void resize(size_type newSize);
+    size_type size() const noexcept;
+    void clear() noexcept;
+    bool empty() const noexcept;
 
 private:
-  Allocator alloc;
-	std::unique_ptr<T[]> _array;
-	size_t _size;
-	size_t _capacity;
-	void resize();
+    void reserve(size_type newSize);
+    Allocator _alloc;
+	pointer _array;
+	size_type _size;
+	size_type _capacity;
 };
 
 template<class T>
 Vector<T>::Vector()
   : _capacity(4)
-  , _array(alloc.allocate(4))
+  , _array(_alloc.allocate(4))
   , _size(0)
 {
 }
 
 template<class T>
-Vector<T>::Vector(int l)
-  : _capacity(l)
-  , _array(alloc.allocate(l))
-  , _size(l)
+Vector<T>::Vector(size_type count)
+  : _capacity(count)
+  , _array(alloc.allocate(count))
+  , _size(count)
 {
-	for (int i = 0; i < l; i++)
-		_array[i] = T();
+    for (size_type i = 0; i < count; i++)
+        alloc_.construct(data_ + i);
 }
 
 template<class T>
 Vector<T>::Vector(const Vector<T> & other)
-:	_capacity(other._capacity)
+: _capacity(other._capacity)
 , _size(other._size)
 , _array(other._array)
 {
@@ -80,7 +161,10 @@ template<class T>
 Vector<T> & Vector<T>::operator=(const Vector<T> & other)
 {
 	if (this != &other) {
-		_array = std::unique_ptr<T[]>(other._array);
+		newData = alloc.allocate(other._capacity);
+        std::copy(other._array , other._array + other._size, newData);
+        std::swap(_array , newData);
+        alloc_.deallocate(newData, other._size); // нужно ли это делать или оно и так удалит правильно newData?
 		_capacity = other._capacity;
 		_size = other._size;
 	}
@@ -88,96 +172,112 @@ Vector<T> & Vector<T>::operator=(const Vector<T> & other)
 }
 
 template<class T>
-Vector<T>::Vector(Vector && moved) :
-	_capacity(moved._capacity), _size(moved._size)
-{
-	_array = moved._array;
-	moved._array = nullptr;
-}
-
-template<class T>
-Vector<T>& Vector<T>::operator=(Vector<T>&& moved)
-{
-	if (this != &moved) {
-		delete[] _array;
-		_array = moved._array;
-		_capacity = moved._capacity;
-		_size = moved._size;
-		moved._array = nullptr;
-	}
-	return *this;
-}
-
-template<class T>
 Vector<T>::~Vector()
 {
-
-	delete[] _array;
+		clear();
+		alloc_.deallocate(data_, 0);
 }
 
 template<class T>
-T& Vector<T>::operator[](size_t i)
+iterator Vector<T>::begin() noexcept
+{
+    return Iterator<T>(_data);
+}
+
+template<class T>
+iterator Vector<T>::end() noexcept
+{
+    return Iterator<T>(_data + _size);
+}
+
+template<class T>
+std::reverse_iterator<Iterator<T>> Vector<T>::rbegin() noexcept
+{
+    return std::reverse_iterator<Iterator<T>>(end());
+}
+
+template<class T>
+std::reverse_iterator<Iterator<T>> Vector<T>::rend() noexcept
+{
+    return std::reverse_iterator<Iterator<T>>(begin());
+}
+
+template<class T>
+reference Vector<T>::operator[](size_type i)
 {
 	return _array[i];
 }
 
 template<class T>
-const T& Vector<T>::operator[](size_t i) const
+const reference Vector<T>::operator[](size_type i) const
 {
 	return _array[i];
 }
 
 template<class T>
-void Vector<T>::push_back(const T& x)
-{
-	if (_size == _capacity) {
-		resize();
-	}
-	_array[_size++] = x;
+void Vector<T>::push_back (const reference x) {
+        if (_size == _capacity) {
+            if (size_ == 0)
+                reserve(1);
+            else
+                reserve(_size * 2);
+        }
+        _alloc.construct(_array + _size, x);
+        _size++;
+
 }
 
 template<class T>
-inline void Vector<T>::pop()
+void Vector<T>::pop_back()
 {
 	if (_size > 0) {
-		_size--;
+		resize(_size - 1);;
 	}
-	return;
 }
 
 template<class T>
-inline void Vector<T>::push_front(const T& x)
-{
-	if (_size == _capacity) {
-		resize();
-	}
-	if (_size > 0) {
-		for (size_t i = _size; i > 0; i--) {
-			_array[i] = _array[i - 1];
-		}
-	}
-	_size++;
-	_array[0] = x;
-}
-
-template<class T>
-size_t Vector<T>::size() const
+size_type Vector<T>::size() const noexcept
 {
 	return _size;
 }
 
 template<class T>
-size_t Vector<T>::capacity()
+void Vector<T>::reserve(size_type newSize)
 {
-	return _capacity;
+    if (newSize > _capacity)
+		{
+			pointer newData = alloc_.allocate(newSize);
+			std::copy(_array, _array + _size, newData);
+			std::swap(_array, newData);
+			alloc_.deallocate(newData, _size);
+			_capacity = newSize;
+        }
 }
 
 template<class T>
-void Vector<T>::resize()
+void Vector<T>::resize(size_type newSize)
 {
-	_capacity *= 2;
-	T* newMem = new T[_capacity];
-	std::copy(_array, _array + _size, newMem);
-	delete[] _array;
-	_array = newMem;
+    if (newSize < _size){
+        for (size_type i = newSize; i < _size; i++)
+            _alloc.destroy(_array + i);
+    }else if (newSize > _size){
+        if(newSize > _capacity){
+            reserve(newSize)
+        }
+        for (size_type i = _size; i < newSize; i++)
+            _alloc.construct(_array + i);
+    }
+    _size = newSize;
+}
+
+template<class T>
+void Vector<T>::clear() noexcept
+{
+    resize(0);
+}
+
+template<class T>
+bool Vector<T>::empty() const noexcept
+{
+    return size_ == 0;
 }
