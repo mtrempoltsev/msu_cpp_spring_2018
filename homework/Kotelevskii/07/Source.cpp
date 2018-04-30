@@ -93,12 +93,12 @@ public:
 	using pointer = T*;
 	using reference = T&;
 
-	explicit Vector()
+	Vector()
 	{
 		data_ = alloc_.allocate(capacity_);
 	}
 
-	explicit Vector(size_type count)
+	Vector(size_type count)
 	{
 		if (count)
 		{
@@ -111,7 +111,7 @@ public:
 			capacity_ = count;
 		}
 	}
-	explicit Vector(size_type count, const value_type& v)
+	Vector(size_type count, const value_type& v)
 	{
 		if (count)
 		{
