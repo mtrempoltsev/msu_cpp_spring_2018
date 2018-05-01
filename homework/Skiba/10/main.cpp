@@ -6,73 +6,49 @@
 
 const int MAXN = 1000000;
 
-std::atomic<int> a;
-std::atomic<bool> flag;
-std::mutex mutex1, mutex2;
-std::condition_variable cv;
-
-void pr1() {
-    if (!a) {
-            a++;
-            flag.store(true);
-            std::cout << "ping" << std::endl;
-            cv.notify_one();
-    }
-
-    while (true) {
-        std::unique_lock<std::mutex> lock(mutex1);
-        while (flag) {
+class Sem{
+    std::mutex mutex;
+    std::condition_variable cv;
+    int count;
+public:
+    Sem(int _count = 1): count(_count) {}
+    void add() {
+        std::unique_lock<std::mutex> lock(mutex);
+        while (count <= 0) {
             cv.wait(lock);
-            if (a >= MAXN) {
-                std::lock_guard<std::mutex> g(mutex2);
-                cv.notify_all();
-                return;
-            }
         }
+        --count;
+    }
+    void dec() {
+        std::unique_lock<std::mutex> lock(mutex);
+        ++count;
+        cv.notify_one();
+    }
+};
 
-        {
-            std::lock_guard<std::mutex> g(mutex2);
-            a++;
-            flag.store(true);
-            std::cout << "ping" << std::endl;
-            cv.notify_all();
-        }
+Sem ping(1);
+Sem pong(0);
+
+void ping_f() {
+    for (int i = 0; i < MAXN; ++i) {
+        ping.add();
+        std::cout << "ping" << std::endl;
+        pong.dec();
     }
 }
 
-void pr2() {
-    while (true) {
-        std::unique_lock<std::mutex> lock(mutex1);
-        while (!flag) {
-            cv.wait(lock);
-            if (a >= MAXN) {
-                std::lock_guard<std::mutex> g(mutex2);
-                cv.notify_all();
-                return;
-            }
-        }
-
-        {
-            if (a >= MAXN) {
-                std::lock_guard<std::mutex> g(mutex2);
-                cv.notify_all();
-                return;
-            }
-            std::lock_guard<std::mutex> g(mutex2);
-            a++;
-            flag.store(false);
-            std::cout << "pong" << std::endl;
-            cv.notify_all();
-        }
+void pong_f() {
+    for (int i = 0; i < MAXN; ++i) {
+        pong.add();
+        std::cout << "pong" << std::endl;
+        ping.dec();
     }
 }
 
 int main(int argc, char *argv[]) {
-    a.store(0);
-    flag.store(false);
-    std::thread t1(pr1);
-    std::thread t2(pr2);
-    t1.join();
-    t2.join();
+    std::thread th1(ping_f);
+    std::thread th2(pong_f);
+    th1.join();
+    th2.join();
     return 0;
 }
