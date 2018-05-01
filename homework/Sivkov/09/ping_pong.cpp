@@ -11,8 +11,8 @@ std::condition_variable var;
 std::atomic_int counter;
 
 void pinger() {
+    std::unique_lock<std::mutex> lock(m2, std::defer_lock);
     while (true) {
-        std::unique_lock<std::mutex> lock(m2, std::defer_lock);
         while (counter % 2 == 1) {
             var.wait(lock);
             if (counter >= OUT_SIZE * 2) {
@@ -32,8 +32,8 @@ void pinger() {
 
 
 void ponger() {
+    std::unique_lock<std::mutex> lock(m1, std::defer_lock);
     while (true) {
-        std::unique_lock<std::mutex> lock(m1, std::defer_lock);
         while (counter % 2 == 0) {
             var.wait(lock);
             if (counter >= OUT_SIZE * 2) {
