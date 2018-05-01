@@ -17,7 +17,6 @@ namespace params {
 int inbase(std::string word) {
     for (int i = 0; i < params::data.size(); i++) {
         if (params::data[i].word == word) { return i; }
-        else { return -1; }
     }
     return -1;
 }
