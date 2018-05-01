@@ -1,7 +1,6 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
-#include <atomic>
 #include <condition_variable>
 
 std::mutex mutex;
@@ -14,19 +13,16 @@ namespace params {
 
 void thread_function(unsigned short parity) {
     while (true) {
-        bool do_return = false;
         std::unique_lock<std::mutex> lg(mutex);
         while ((parity ^ 1) == (params::cnt & 1)) { access.wait(lg); }
         if (params::cnt >= params::MAXITERS) {
             params::cnt++;
-            do_return = true;
-            goto skipp;
+            access.notify_one();
+            return;
         }
         std::cout << (parity == 0 ? "ping" : "pong") << std::endl;
         params::cnt++;
-        skipp:
         access.notify_one();
-        if (do_return) { return; }
     }
 }
 
