@@ -96,30 +96,22 @@ private:
     size_t capacity_;
 public:
     Vector(): data_(nullptr), len(0), capacity_(0) {}
-    Vector(ssize_t size): len(size), capacity_(len * 2), data_(alloc_.allocate(capacity_)) {
-        for (size_t i = 0; i < capacity_; i++) {
+    Vector(size_t size): len(size), capacity_(len * 2), data_(alloc_.allocate(capacity_)) {
+        for (size_t i = 0; i < size; i++) {
             alloc_.construct(data_ + i);
         }
     }
     Vector(const Vector& vector): Vector() {
         (*this) = vector;
     }
-    Vector(const size_t size, const T& default_value) : Vector(size) {
-        for (size_t i = 0; i < size; i++) {
-            data_[i] = default_value;
+    Vector(const size_t size, const T& default_value) {
+        if(size) {
+            reserve(size + 1);
+            len = size;
+            for(int i = 0; i < size; ++i) {
+                alloc_.construct(data_ + i, default_value);
+            }
         }
-    }
-    Vector& operator = (const Vector& other) {
-        if (other.data_ != data_ || other.len > len) {
-            alloc_.deallocate(data_, len);
-            len = other.len;
-            capacity_ = other.capacity_;
-            data_ = alloc_.allocate(capacity_);
-        }
-        for (size_t i = 0; i < len; i++) {
-            alloc_.construct(data_ + i, other.data_[i]);
-        }
-        return (*this);
     }
     const T* data() const {
         return data_;
@@ -202,3 +194,5 @@ public:
         clear();
     }
 };
+
+
