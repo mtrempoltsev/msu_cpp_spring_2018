@@ -2,10 +2,6 @@
 #include <string>
 #include <map>
 #include <fstream>
-#include <algorithm>
-#include <vector>
-
-
 
 int main(int argc, char* argv[]) {
 	if (argc != 2)
@@ -29,10 +25,10 @@ int main(int argc, char* argv[]) {
 
 	auto elem = int_string.rbegin();
 	for (int i = 0 ; i < 10; i++) {
-	std::cout << elem->first << ' ' << elem->second << std::endl;
-    elem++;
-    if(elem==int_string.rend())
-        break;
+		std::cout << elem->first << ' ' << elem->second << std::endl;
+    	elem++;
+    	if(elem==int_string.rend())
+        	break;
 	}
 
 	return 0;
