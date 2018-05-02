@@ -2,7 +2,6 @@
 #include <iterator>
 #include <memory>
 #include <algorithm>
-#include <stdio.h>
 #include <cstring>
 
 template<class T>
@@ -234,9 +233,8 @@ void Vector<T, Allocator>::push_back(const value_type& x) {
 template<class T, class Allocator>
 void Vector<T, Allocator>::pop_back()
 {
-	if (_size > 0) {
-		resize(_size - 1);;
-	}
+	if (_size > 0)
+		resize(_size - 1);
 }
 
 template<class T, class Allocator>
@@ -248,22 +246,13 @@ size_t Vector<T, Allocator>::size() const noexcept
 template<class T, class Allocator>
 void Vector<T, Allocator>::reserve(size_type newSize)
 {
-	/*if (newSize > _capacity)
-	{
-		pointer newData = _alloc.allocate(newSize);
-		std::copy(_array, _array + _size, newData);
-		std::swap(_array, newData);
-		_alloc.deallocate(newData, _size);
-		_capacity = newSize;
-	}*/
-    if (newSize > _capacity)
-{
-    pointer newData = _alloc.allocate(newSize);
-    std::memcpy(newData, _array, _size * sizeof(value_type));
-    std::swap(_array, newData);
-    _alloc.deallocate(newData, _size);
-    _capacity = newSize;
-}
+    if (newSize > _capacity){
+        pointer newData = _alloc.allocate(newSize);
+        std::memcpy(newData, _array, _size * sizeof(value_type));
+        std::swap(_array, newData);
+        _alloc.deallocate(newData, _size);
+        _capacity = newSize;
+    }
 }
 
 template<class T, class Allocator>
@@ -294,61 +283,5 @@ bool Vector<T, Allocator>::empty() const noexcept
 {
 	return _size == 0;
 }
-
+//------------------------------==============------------------------------
 #include <iostream>
-
-
-static int Counter = 0;
-
-struct Counterable
-{
-    Counterable()
-    {
-        ++Counter;
-    }
-
-    Counterable(const Counterable&)
-    {
-        ++Counter;
-    }
-
-    Counterable& operator=(const Counterable&)
-    {
-        ++Counter;
-        return *this;
-    }
-
-    ~Counterable()
-    {
-        --Counter;
-    }
-};
-
-int main(int argc, char const *argv[]) {
-    Vector<Counterable> v;
-    v.resize(100);
-    //std::cout<<Counter<<"  v3"<<std::endl;
-
-    std::cout<<Counter<<"   - с0"<<std::endl;
-    for (int i = 0; i < 100; ++i)
-        {
-            v.push_back(Counterable());
-        }
-    std::cout<<Counter<<"   - с200"<<std::endl;
-
-    v.clear();
-    std::cout<<Counter<<"   - с+"<<std::endl;
-
-
-    int x =2;
-    //v.push_back(x);
-    std::cout<<"---"<<std::endl;
-
-    std::cout<<v.size()<<std::endl;
-    std::cout<<v.capacity()<<std::endl;
-    //v.push_back(x);
-    //v.push_back(5);
-    //std::cout<<v[v.size()-1]<<std::endl;
-    return 0;
-}
-/**/
