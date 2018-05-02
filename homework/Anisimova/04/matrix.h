@@ -17,11 +17,11 @@ private:
 		{
 			arr_len = len;
 			arr = a;
-		};
+                }
 
-		int &operator[](int i) const
+                int &operator[](int i) const
 		{
-			if(i < arr_len && i > -1)
+                        if(i < arr_len && i>-1)
 			{
 				return arr[i];
 			}
@@ -33,12 +33,12 @@ private:
 public:
 	Matrix(int x, int y)
 	{
-        cols = x;
+                cols = x;
 		rows = y;
 		matr = new int* [cols];
 		for (int i = 0; i < cols; i ++)
 			matr[i] = new int[rows];
-	};
+        }
 	~Matrix()
 	{
 		for (int i = 0; i < cols; i ++)
@@ -70,6 +70,11 @@ public:
         return matr[i][j];
     }
 
+    int& operator()(int i, int j){
+        return matr[i][j];
+    }
+
+
     bool operator == (const Matrix &matr_2) const
     {
         if (rows != matr_2.rows || cols != matr_2.cols)
@@ -90,12 +95,13 @@ public:
         return !((*this) == matr_2);
     }
 
-	void operator *= (int C)
-	{
+    Matrix& operator *= (int C)
+    {
 		for (int i = 0; i < cols; i ++)
 			for (int j = 0; j < rows; j++)
 			{
 				(*this)[i][j] *= C;
 			}
-	}
+                return *this;
+    }
 };

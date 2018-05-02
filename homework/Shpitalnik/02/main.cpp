@@ -13,19 +13,19 @@ int to_int(char* str){
 }
 
 
-int* sieve(int* arr){
+int* sieve(int* arr, int size){
     int i = 1;
-    while(i<100000){
+    while(i<=size){
         arr[i] = i;
         i++;
     }
     arr[1] = 0;
     i = 2;
     int n;
-    while(i<100000){
+    while(i<=size){
         if(arr[i] != 0){
             n = 2;
-            while(n*i<100000){
+            while(n*i<=size){
                 arr[n*i] = 0;
                 n++;
             }
@@ -53,10 +53,11 @@ int count (const int* data, const int* arr, int start, int end){
 int main(int argc, char** argv) {
     if((argc % 2) != 1 || argc == 1)
         return -1;
+    const int max_int = 100000;
     int* arr;
     int sum = 0;
-    arr = new int [100000];
-    arr = sieve(arr);
+    arr = new int [max_int+1];
+    arr = sieve(arr, max_int);
     for(int i =1; i<(argc-1); i+=2) {
         int start = to_int(argv[i]);
         int end = to_int(argv[i + 1]);
@@ -65,5 +66,6 @@ int main(int argc, char** argv) {
         else
             std::cout << '0' <<'\n';
     }
+    delete[](arr);
     return 0;
 }

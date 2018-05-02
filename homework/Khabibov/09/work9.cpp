@@ -1,39 +1,59 @@
-#include <iostream>
-#include <thread>
-#include <mutex>
-#include <condition_variable>
+#include<thread>
+#include<mutex>
+#include<iostream>
+#include<condition_variable>
 
 namespace options
 {
-	constexpr int max = 500000;
+	constexpr int N = 500000;
 }
 
-std::mutex m;
-std::condition_variable flag;
+class Semaphore
+{
+	std::mutex mutex_;
+	std::condition_variable condition_;
+	int counter_;
+public:
+	Semaphore(int initialValue = 1)
+		: counter_(initialValue)
+	{
+	}
 
-bool isPingOut = false;
+	void enter()
+	{
+		std::unique_lock<std::mutex> lock(mutex_);
+		condition_.wait(lock, [this]() { return counter_ > 0; });
+		counter_--;
+	}
+
+	void leave()
+	{
+		std::unique_lock<std::mutex> lock(mutex_);
+		counter_++;
+		condition_.notify_one();
+	}
+};
+
+Semaphore ping(1);
+Semaphore pong(0);
 
 void printPing()
 {
-	std::unique_lock<std::mutex> lock(m);
-	for (int i = 0; i < options::max; i++)
+	for (int i = 0; i < options::N; ++i)
 	{
-		std::cout << "ping" << std::endl;
-		isPingOut = true;
-		flag.notify_one();
-		flag.wait(lock);
+		ping.enter();
+		printf("ping\n");
+		pong.leave();
 	}
 }
 
 void printPong()
 {
-	std::unique_lock<std::mutex> lock(m);
-	for (int i = 0; i < options::max; i++)
+	for (int i = 0; i < options::N; ++i)
 	{
-		if (isPingOut)
-			std::cout << "pong" << std::endl;
-		flag.notify_one();
-		flag.wait(lock);
+		pong.enter();
+		printf("pong\n");
+		ping.leave();
 	}
 }
 

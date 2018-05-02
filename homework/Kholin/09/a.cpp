@@ -26,9 +26,16 @@ void ping() {
 
 void pong() {
     bool x;
-    do {
+    while (true) {
+        std::unique_lock<std::mutex> lock(mutex);
         x = f.load(std::memory_order_relaxed);
-    } while (!x);
+        if (!x) {
+            ready.notify_one();
+            ready.wait(lock);
+        } else {
+            break;
+        }
+    }
     {
         std::unique_lock<std::mutex> lock(mutex);
         for (uint32_t i = 0; i < maxN; ++i) {

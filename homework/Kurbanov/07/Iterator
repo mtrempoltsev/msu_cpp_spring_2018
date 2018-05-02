@@ -1,3 +1,4 @@
+#pragma once
 #include <iterator>
 
 template<class T>
@@ -8,6 +9,7 @@ public:
 	using size_type = typename std::iterator<std::random_access_iterator_tag, T>::difference_type;
 	using pointer = typename std::iterator<std::random_access_iterator_tag, T>::pointer;
 	using reference = typename std::iterator<std::random_access_iterator_tag, T>::reference;
+
 private: pointer _ptr;
 public:
 	explicit Iterator(pointer ptr) :
@@ -27,7 +29,8 @@ public:
 	{
 		return *_ptr;
 	}
-  
+
+
 	Iterator & operator+(size_t& val)
 	{
 		_ptr += val;
@@ -39,13 +42,11 @@ public:
 		_ptr -= val;
 		return *this;
 	}
-  
 	Iterator & operator++()
 	{
 		++_ptr;
 		return *this;
 	}
-  
 	Iterator & operator--()
 	{
 		--_ptr;
