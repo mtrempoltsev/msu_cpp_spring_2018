@@ -11,40 +11,31 @@ std::condition_variable ready;
 std::atomic<bool> f(false);
 
 void ping() {
-    f.store(true, std::memory_order_relaxed);
     {
         std::unique_lock<std::mutex> lock(mutex);
-        f = true;
         for (uint32_t i = 0; i < maxN; ++i) {
+            while(f.load(std::memory_order_relaxed)) {
+                ready.wait(lock);
+            }
+            f.store(true, std::memory_order_relaxed);
             std::cout << "ping" << std::endl;
             ready.notify_one();
-            ready.wait(lock);
         }
     }
-    ready.notify_one();
 }
 
 void pong() {
-    bool x;
-    while (true) {
-        std::unique_lock<std::mutex> lock(mutex);
-        x = f.load(std::memory_order_relaxed);
-        if (!x) {
-            ready.notify_one();
-            ready.wait(lock);
-        } else {
-            break;
-        }
-    }
     {
         std::unique_lock<std::mutex> lock(mutex);
         for (uint32_t i = 0; i < maxN; ++i) {
+            while(!f.load(std::memory_order_relaxed)) {
+                ready.wait(lock);
+            }
+            f.store(false, std::memory_order_relaxed);
             std::cout << "pong" << std::endl;
             ready.notify_one();
-            ready.wait(lock);
         }
     }
-    ready.notify_one();
 }
 
 int main() {
