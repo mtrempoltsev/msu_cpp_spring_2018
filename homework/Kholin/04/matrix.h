@@ -8,69 +8,102 @@ class Matrix {
 private:
     class Row {
     public:
-        void alloc(uint32_t columns) {
+        Row() {}
+
+        Row(uint32_t columns) {
             _columns = columns;
-            _data_ptr.reset(new int32_t[_columns]);
+            _data.reset(new int32_t[_columns]);
+        }
+        
+        Row(const Row& other) {
+            _columns = other._columns;
+            _data.reset(new int32_t[_columns]);
+            for (uint32_t i = 0; i < _columns; ++i) {
+                _data[i] = other._data[i];
+            }
+        }
+
+        void operator=(const Row& other) {
+            _columns = other._columns;
+            _data.reset(new int32_t[_columns]);
+            for (uint32_t i = 0; i < _columns; ++i) {
+                _data[i] = other._data[i];
+            }
         }
 
         const int32_t& operator[](uint32_t i) const {
-            if (0 <= i && i < _columns) {
-                return _data_ptr.get()[i];
+            if (i < _columns) {
+                return _data[i];
             } else {
                 throw std::out_of_range("");
             }
         }
 
         int32_t& operator[](uint32_t i) {
-            if (0 <= i && i < _columns) {
-                return _data_ptr.get()[i];
+            if (i < _columns) {
+                return _data.get()[i];
             } else {
                 throw std::out_of_range("");
             }
         }
 
-        bool operator!=(const Row& other) const{
+        bool operator!=(const Row& other) const {
             if (_columns != other._columns) {
                 return true;
             }
-            int32_t* data = _data_ptr.get();
-            int32_t* other_data = other._data_ptr.get();
             for (uint32_t i = 0; i < _columns; ++i) {
-                if (data[i] != other_data[i]) {
+                if (_data[i] != other._data[i]) {
                     return true;
                 }
             }
             return false;
         }
 
-        bool operator==(const Row& other) const{
+        bool operator==(const Row& other) const {
             return !((*this) != other);
         }
 
-        void operator*=(int32_t alpha) {
-            int32_t* data = _data_ptr.get();
+        Row operator*=(int32_t alpha) {
             for (uint32_t i = 0; i < _columns; ++i) {
-                data[i] *= alpha;
+                _data[i] *= alpha;
             }
+            return *this;
         }
 
     private:
         uint32_t _columns;
-        std::unique_ptr<int32_t> _data_ptr; 
+        std::unique_ptr<int32_t[]> _data; 
     };
 
     uint32_t _columns;
     uint32_t _rows;
-    std::unique_ptr<Row> _data_ptr;
+    std::unique_ptr<Row[]> _data;
 
 public:
     Matrix(uint32_t rows, uint32_t columns) {
         _rows = rows;
         _columns = columns;
-        _data_ptr.reset(new Row[_rows]);
-        Row* data = _data_ptr.get();
+        _data.reset(new Row[_rows]);
         for (uint32_t i = 0; i < _rows; ++i) {
-            data[i].alloc(_columns);
+            _data[i] = Row(_columns);
+        }
+    }
+
+    Matrix(const Matrix& other) {
+        _rows = other._rows;
+        _columns = other._columns;
+        _data.reset(new Row[_rows]);
+        for (uint32_t i = 0; i < _rows; ++i) {
+            _data[i] = other._data[i];
+        }
+    }
+
+    void operator=(const Matrix& other) {
+        _rows = _rows;
+        _columns = _columns;
+        _data.reset(new Row[_rows]);
+        for (uint32_t i = 0; i < _rows; ++i) {
+            _data[i] = other._data[i];
         }
     }
 
@@ -83,47 +116,41 @@ public:
     }
 
     const Row& operator[](uint32_t i) const {
-        if (0 <= i && i < _rows) {
-            return _data_ptr.get()[i];
+        if (i < _rows) {
+            return _data[i];
         } else {
             throw std::out_of_range("");
         }
     }
 
     Row& operator[](uint32_t i) {
-        if (0 <= i && i < _rows) {
-            return _data_ptr.get()[i];
+        if (i < _rows) {
+            return _data.get()[i];
         } else {
             throw std::out_of_range("");
         }
     }
 
-    bool operator!=(const Matrix& other) const{
+    bool operator!=(const Matrix& other) const {
         if (_rows != other._rows) {
             return true;
         }
-        Row* data = _data_ptr.get();
-        Row* other_data = other._data_ptr.get();
         for (uint32_t i = 0; i < _rows; ++i) {
-            if (data[i] != other_data[i]) {
+            if (_data[i] != other._data[i]) {
                 return true;
             }
         }
         return false;
     }
 
-    bool operator==(const Matrix& other) const{
+    bool operator==(const Matrix& other) const {
         return !((*this) != other);
     }
 
-    void operator*=(int32_t alpha) {
-        Row* data = _data_ptr.get();
+    Matrix operator*=(int32_t alpha) {
         for (uint32_t i = 0; i < _rows; ++i) {
-            data[i] *= alpha;
+            _data[i] *= alpha;
         }
-    }
-
-    ~Matrix() {
-        _data_ptr.release();
+        return Matrix(*this);
     }
 };
