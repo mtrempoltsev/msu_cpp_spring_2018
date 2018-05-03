@@ -11,7 +11,7 @@ const int N = 500000;
 
 void ping_write()
 {
-    while(count < 2 * N - 1){
+    while(count < N){
         {
             std::unique_lock<std::mutex> lock(m);
             while(count % 2 == 1)
@@ -25,7 +25,7 @@ void ping_write()
 
 void pong_write()
 {
-    while(count < 2 * N){
+    while(count < N){
         {
             std::unique_lock<std::mutex> lock(m);
             while(count % 2 == 0)
