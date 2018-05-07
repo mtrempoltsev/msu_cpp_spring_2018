@@ -13,6 +13,7 @@ bool cmp(const word &w1, const word &w2){
 }
 
 int main(int argc, char **argv) {
+    const int top = 10;
     dictionary dict;
     std::string s;
     if(argc < 2){
@@ -41,7 +42,7 @@ int main(int argc, char **argv) {
         cur++;
     }
     std::sort(vec.begin(), vec.end(), cmp);
-    for(int i =0; i<10; i++){
+    for(int i =0; i<top; i++){
         std::cout << std::get<1>(vec[i]) << ' ' << std::get<0>(vec[i]) <<'\n';
     }
     return 0;
