@@ -31,16 +31,27 @@ public:
 	}
 
 
-	Iterator & operator+(size_t& val)
+	Iterator & operator+=(size_t& val) 
 	{
 		_ptr += val;
 		return *this;
 	}
 
-	Iterator & operator-(size_t& val)
+	Iterator & operator-=(size_t& val) 
 	{
 		_ptr -= val;
 		return *this;
+	}
+	Iterator & operator+(size_t& val) const
+	{
+		auto R=*this;
+		return R.operator+=(val);
+	}
+
+	Iterator & operator-(size_t& val) const
+	{
+		auto R=*this;
+		return R.operator-=(val);
 	}
 	Iterator & operator++()
 	{
