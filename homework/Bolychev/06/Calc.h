@@ -28,12 +28,12 @@ private:
     {
         bool negative = false;
 
-        // число также может начинаться с минуса
+        
         if (str[0] == '-') {
             negative = true;
             str = str.substr(1);
         }
-        // разрешаем только цифры и точку
+        
         size_t  i;
         for (i = 0; i < str.length(); ++i) {
             if (!isdigit(str[i])) {
@@ -47,7 +47,7 @@ private:
             }
         }
 
-        if (i == 0) { // что-либо похожее на число мы не нашли
+        if (i == 0) {
             throw std::runtime_error("error");
         }
 
