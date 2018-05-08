@@ -1,55 +1,46 @@
 #pragma once
-#include <iterator>
+#include<iostream>
+#include <memory>
+#include <stdexcept>
 
-template<class T>
-class Iterator :
-	public std::iterator<std::random_access_iterator_tag, T>
+template <class T>
+class Allocator
 {
 public:
-	using size_type = typename std::iterator<std::random_access_iterator_tag, T>::difference_type;
-	using pointer = typename std::iterator<std::random_access_iterator_tag, T>::pointer;
-	using reference = typename std::iterator<std::random_access_iterator_tag, T>::reference;
+	using value_type = T;
+	using pointer = T* ;
+	using size_type = size_t;
 
-private: pointer _ptr;
-public:
-	explicit Iterator(pointer ptr) :
-		_ptr(ptr) {}
-
-	bool operator==(const Iterator<T>& other) const
+	void construct(pointer ptr)
 	{
-		return _ptr == other._ptr;
+		ptr = new(ptr) value_type();
 	}
 
-	bool operator!=(const Iterator<T>& other) const
+	void construct(pointer ptr, const value_type& value)
 	{
-		return !(_ptr == other._ptr);
+		ptr = new(ptr) value_type(value);
 	}
 
-	reference operator*() const
+	void destroy(pointer ptr)
 	{
-		return *_ptr;
+		ptr->~value_type();
 	}
 
-
-	Iterator & operator+(size_t& val)
+	pointer allocate(size_type size)
 	{
-		ptr_ += val;
-		return *this;
+		if (size > max_size())
+			throw std::length_error("Not enougth memory");
+		pointer ptr = (pointer)malloc(sizeof(value_type) * size);
+		return ptr;
 	}
 
-	Iterator & operator-(size_t& val)
+	void deallocate(pointer ptr, size_type count)
 	{
-		ptr_ -= val;
-		return *this;
+		free(ptr);
 	}
-	Iterator & operator++()
+
+	size_type max_size() const noexcept
 	{
-		++_ptr;
-		return *this;
-	}
-	Iterator & operator--()
-	{
-		--_ptr;
-		return *this;
+		return std::numeric_limits<size_type>::max();
 	}
 };

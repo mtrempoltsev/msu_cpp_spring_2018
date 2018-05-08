@@ -3,6 +3,7 @@
 #include <iostream>
 
 class division_by_zero: public std::exception {};
+class wrong_operation: public std::exception {};
 
 template <class T>
 class Calculator
@@ -25,16 +26,16 @@ private:
         T value = get_number();
         while(index < str.size() && (str[index] == '*' || str[index] == '/'))
         {
-            if(str[index] == '*')
-                value *= get_number();
+            index++;
+            if(str[index - 1] == '*')
+                value = value * get_number();
             else
             {
                 T number = get_number();
                 if(number == T(0))
                     throw division_by_zero();
-                value /= number;
+                value = value / number;
             }
-            index++;
         }
         return value;
     }
@@ -44,12 +45,14 @@ private:
         T value = get_operator();
         while(index < str.size() && (str[index] == '+' || str[index] == '-'))
         {
-            if(str[index] == '+')
-                value += get_operator();
+            index++;
+            if(str[index - 1] == '+')
+                value = value + get_operator();
             else
-                value -= get_operator();
+                value = value - get_operator();
         }
-        index++;
+        if(index < str.size())
+            throw wrong_operation();
         return value;
     }
 

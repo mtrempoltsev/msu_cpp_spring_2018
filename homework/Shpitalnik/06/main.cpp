@@ -4,13 +4,13 @@ class Error{};
 
 template<class T>
 class Calc{
-    T getVar(char *&str);
+    T getVar(const char *&str);
 public:
-    T calculate(char *str);
+    T calculate(const char *str);
 };
 
 template <class T>
-T Calc<T>::getVar(char *&str) {
+T Calc<T>::getVar(const char *&str) {
     T res = 0;
     bool is_neg = false;
     int i=0;
@@ -36,7 +36,7 @@ T Calc<T>::getVar(char *&str) {
 
 
 template <class T>
-T Calc<T>::calculate(char *str) {
+T Calc<T>::calculate(const char *str) {
     T op = getVar(str);
     T op2;
     do {
@@ -77,7 +77,7 @@ int main(int argc, char** argv) {
     try {
         std::cout << c.calculate(argv[1]);
     }
-    catch (Error){
+    catch (const Error& error){
         std::cout << "error";
         return 1;
     }

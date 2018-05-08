@@ -92,7 +92,6 @@ public:
     using reference = value_type &;
     using const_reference = const value_type &;
     using iterator = Iterator<T>;
-    using const_iterator = const iterator;
     using reverse_iterator = std::reverse_iterator<iterator>;
     using pointer =  typename Alloc::pointer;
 
@@ -113,13 +112,6 @@ public:
         for (size_type i = 0; i < used; ++i) {
             alloc_.construct(data + i, defaultValue);
         }
-    }
-
-    Vector(std::initializer_list<value_type> init)
-    {
-        data = alloc_.allocate(alloc);
-        alloc = used = init.size();
-        std::copy(init.begin(), init.end(), data);
     }
 
 
@@ -144,11 +136,6 @@ public:
         return iterator(data);
     }
 
-    const_iterator cbegin() const noexcept
-    {
-        return const_iterator(data);
-    }
-
     reverse_iterator rbegin() noexcept
     {
         return reverse_iterator(end());
@@ -159,36 +146,13 @@ public:
         return iterator(data + used);
     }
 
-    const_iterator cend() const noexcept
-    {
-        return const_iterator(data + used);
-    }
-
     reverse_iterator rend() noexcept
     {
         return reverse_iterator(begin());
     }
 
 
-    void resize(size_type new_size)
-    {
-        if (used > new_size) {
-            for (size_type i = new_size; i < used; ++i) {
-                alloc_.destroy(data + i);
-            }
-        } else {
-            if (alloc < new_size) {
-                reserve(new_size);
-            }
-
-            for (size_type i = used; i < new_size; ++i) {
-                alloc_.construct(data + i);
-            }
-        }
-        used = new_size;
-    }
-
-    void resize(size_type new_size, const value_type& defaultValue)
+    void resize(size_type new_size, const value_type& defaultValue = value_type())
     {
         if (used > new_size) {
             for (size_type i = new_size; i < used; ++i) {

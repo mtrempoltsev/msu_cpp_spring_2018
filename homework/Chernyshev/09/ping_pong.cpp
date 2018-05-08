@@ -1,6 +1,7 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
+#include <atomic>
 
 namespace Limits
 {
@@ -9,25 +10,32 @@ namespace Limits
 
 std::mutex mutex;
 std::condition_variable access;
-volatile int cnt_iters = 0;
+std::atomic_int cnt_iters{0};
 
 void thread_function(int parity)
 {
     for (;;) {
-        {
+        bool do_return = false;;
+        do {
             std::unique_lock<std::mutex> lg(mutex);
-            if (cnt_iters >= Limits::MAX_ITERS) {
-                access.notify_one();
-                break;
-            }
-
             while ((cnt_iters & 1) == (parity ^ 1)) {
                 access.wait(lg);
             }
+
+            if (cnt_iters >= Limits::MAX_ITERS) {
+                ++cnt_iters;
+                do_return = true;
+                break;
+            }
+
             std::cout << (parity == 0 ? "ping" : "pong") << std::endl;
             ++cnt_iters;
-        }
+        } while (false);
         access.notify_one();
+
+        if (do_return) {
+            return;
+        }
     }
 }
 

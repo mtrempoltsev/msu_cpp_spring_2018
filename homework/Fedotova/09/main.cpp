@@ -3,7 +3,7 @@
 #include <condition_variable>
 #include <iostream>
 
-const int N = 1000000;
+const int N = 500000;
 int i = 0;
 
 std::mutex mutex;
