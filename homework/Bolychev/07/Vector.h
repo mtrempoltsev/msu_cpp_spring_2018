@@ -18,13 +18,9 @@ public:
         return (T*) malloc(sizeof(T) * count);
     }
 
-    static void deallocate(T* ptr) {
-        free(ptr);
-    }
+    static void deallocate(T* ptr) { free(ptr); }
 
-    static size_t max_size() noexcept {
-        return std::numeric_limits<size_t>::max();
-    }
+    static size_t max_size() noexcept { return std::numeric_limits<size_t>::max(); }
 };
 
 template <class T>
