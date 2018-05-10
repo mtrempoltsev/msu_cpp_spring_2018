@@ -2,12 +2,12 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <algorithm>
 
 namespace params {
     constexpr size_t TOPN = 10;
-    std::map<std::string, size_t> result;
+    std::unordered_map<std::string, size_t> result;
 }
 
 bool compare(const std::string &a, const std::string &b) {
