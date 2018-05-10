@@ -15,7 +15,6 @@ public:
         }
         catch(const Error& error) {
             _isError = true;
-            std::cout << "error" << std::endl;
         }
     }
 
@@ -137,6 +136,7 @@ int main(int argc, char* argv[]) {
         std::cout << calc->result() << std::endl;
         return 0;
     } else {
+        std::cout << "error" << std::endl;
         return 1;
     }
 }
