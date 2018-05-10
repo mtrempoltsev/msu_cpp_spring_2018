@@ -28,7 +28,6 @@ int main(int argc, char* argv[])
 
         std::multimap<size_t, std::string> reversed_freq_dict;
         for (std::pair<std::string, int> pair : freq_dict) {
-            //std::cout << pair.first << "    " << pair.second << std::endl;
             reversed_freq_dict.insert(std::make_pair(pair.second, pair.first));
         }
 
