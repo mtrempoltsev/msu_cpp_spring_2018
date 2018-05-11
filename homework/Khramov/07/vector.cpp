@@ -77,13 +77,13 @@ public:
 		return *this;
 	}
 
-	Iterator& operator+(size_t& val)
+	Iterator operator+(const size_t val)
 	{
 		ptr_ += val;
 		return *this;
 	}
 
-	Iterator& operator-(size_t& val)
+	Iterator operator-(const size_t val)
 	{
 		ptr_ -= val;
 		return *this;
@@ -156,8 +156,9 @@ template<class T, class Allocator>
 Vector<T, Allocator>::Vector(const Vector<T, Allocator> & other)
 	: _capacity(other._capacity)
 	, _size(other._size)
-	, _array(other._array)
 {
+	_array = _alloc.allocate(other._capacity);
+	std::copy(other._array, other._array + other._size, _array);
 }
 
 template<class T, class Allocator>
