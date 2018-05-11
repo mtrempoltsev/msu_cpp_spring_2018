@@ -6,50 +6,41 @@
 
 
 const size_t OUT_SIZE = 500000;
-std::mutex m1, m2;
+std::mutex m;
 std::condition_variable var;
 std::atomic_int counter;
 
 void pinger() {
-    std::unique_lock<std::mutex> lock(m2, std::defer_lock);
     while (true) {
-        while (counter % 2 == 1) {
-            var.wait(lock);
-            if (counter >= OUT_SIZE * 2) {
-                var.notify_all();
-                return;
-            }
-        }
-
         {
-            std::lock_guard<std::mutex> lk(m1);
+            std::unique_lock<std::mutex> lock(m);
+            var.wait(lock, []() { return counter % 2 == 1;});
             printf("ping\n");
             counter++;
         }
         var.notify_one();
+        if (counter >= OUT_SIZE * 2 - 1) {
+            return;
+        }
     }
 }
 
 
 void ponger() {
-    std::unique_lock<std::mutex> lock(m1, std::defer_lock);
     while (true) {
-        while (counter % 2 == 0) {
-            var.wait(lock);
-            if (counter >= OUT_SIZE * 2) {
-                var.notify_all();
-                return;
-            }
-        }
-
         {
-            std::lock_guard<std::mutex> lk(m2);
+            std::unique_lock<std::mutex> lock(m);
+            var.wait(lock, []() { return counter % 2 == 0;});
             printf("pong\n");
             counter++;
         }
         var.notify_one();
+        if (counter >= OUT_SIZE * 2) {
+            return;
+        }
     }
 }
+
 
 int main() {
     counter = 0;
