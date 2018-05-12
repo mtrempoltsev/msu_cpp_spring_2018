@@ -3,39 +3,41 @@
 #include <thread>
 #include <mutex>
 
-const int N = 1000000;
+const int N = 999999;
 
 std::mutex mutex;
 std::condition_variable dataReady;
-
+int i = 0;
 void pingThread() {
-	for (int i = 0; i < N/2; i++) {		
+	while(i < N) {
 		std::unique_lock<std::mutex> lock(mutex);
 
-		dataReady.notify_one();	
-		std::cout << "ping\n";	
-		dataReady.wait(lock);
-
-		if (i == (N / 2 - 1)) {
-			dataReady.notify_one();
-			return;
+		//dataReady.notify_one();
+		
+		if (i % 2 == 1) {
+			dataReady.wait(lock);
 		}
+		std::cout << "ping\n";
+		i++;
+		dataReady.notify_one();
+		
 	}
+	//dataReady.notify_one();
 	
 }
 
 void pongThread() {
-	for (int i = 0; i < N; i++) {
-		if (i == (N - 1))
-			return;
+	while (i < N) {
+
 		std::unique_lock<std::mutex> lock(mutex);
+		
 		if (i % 2 == 0) {
-			std::cout << "pong\n";
-			dataReady.notify_one();
-			dataReady.wait(lock);
-			if (i == (N - 2))
-				return;
+			dataReady.wait(lock);	
 		}
+		std::cout << "pong\n";
+		i++;
+		dataReady.notify_one();
+		
 	}
 }
 
