@@ -6,34 +6,32 @@
 #include <stdlib.h>
 #include <memory>
 
-std::string trimWhitespaces(const std::string& str)
-{
-    std::unique_ptr<char[]> result(new char[1 + str.length()]);
-
-    size_t j = 0;
-    for (size_t i = 0; i <= str.length(); ++i) {
-        if (str[i] != ' ' && str[i] != '\t') {
-            result[j++] =  str[i];
-        }
-    }
-
-    return std::string(result.get());
-}
-
 template <typename T>
 class Calc
 {
 private:
+    static std::string trimWhitespaces(const std::string& str)
+    {
+        std::string result;
+
+        for (size_t i = 0; i < str.length(); ++i) {
+            if (str[i] != ' ' && str[i] != '\t') {
+                result.push_back(str[i]);
+            }
+        }
+
+        return result;
+    }
+
     T getNextNum(std::string& str)
     {
         bool negative = false;
 
-        
         if (str[0] == '-') {
             negative = true;
             str = str.substr(1);
         }
-        
+
         size_t  i;
         for (i = 0; i < str.length(); ++i) {
             if (!isdigit(str[i])) {
