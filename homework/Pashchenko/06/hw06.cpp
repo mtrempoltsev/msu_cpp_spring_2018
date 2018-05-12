@@ -16,7 +16,7 @@ private:
     T get_number()
     {
         size_t tmp_index = 0;
-        int number = std::stoi(str.data() + index, &tmp_index);
+        auto number = std::stoi(str.data() + index, &tmp_index);
         index += tmp_index;
         return number;
     }
@@ -75,6 +75,18 @@ int main(int argc, char **argv)
 
         Calculator<int> calc{};
         std::cout << calc.calc(argv[1]) << std::endl;
+    }
+
+    catch(const division_by_zero& error)
+    {
+        std::cerr << "error" << std::endl;
+        return 1;
+    }
+
+    catch(const wrong_operation& error)
+    {
+        std::cerr << "error" << std::endl;
+        return 1;
     }
 
     catch(...)
