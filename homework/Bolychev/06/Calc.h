@@ -10,19 +10,6 @@ template <typename T>
 class Calc
 {
 private:
-    static std::string trimWhitespaces(const std::string& str)
-    {
-        std::string result;
-
-        for (size_t i = 0; i < str.length(); ++i) {
-            if (str[i] != ' ' && str[i] != '\t') {
-                result.push_back(str[i]);
-            }
-        }
-
-        return result;
-    }
-
     T getNextNum(std::string& str)
     {
         bool negative = false;
@@ -92,14 +79,19 @@ private:
 public:
     T compute(const std::string& input_str)
     {
-        std::string str = trimWhitespaces(input_str);
+        // deleting whitespaces from input_str and saving result to str
+        std::string str;
+        for (size_t i = 0; i < input_str.length(); ++i) {
+            if (input_str[i] != ' ' && input_str[i] != '\t') {
+                str.push_back(input_str[i]);
+            }
+        }
 
         if (!isdigit(str.back())) {
             throw std::runtime_error("error");
         }
 
         auto currentNumber =  computeNextMultiplicationPart(str);
-
 
         while (str.length() > 0) {
             if (!(str[0] == '+' || str[0] == '-')) {
