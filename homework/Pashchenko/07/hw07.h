@@ -1,0 +1,289 @@
+#include <iostream>
+#include <limits>
+#include <stdexcept>
+#include <iterator>
+#include <algorithm>
+#include <cstring>
+
+template<class T>////////////////////////////////////////////////Allocator
+class Allocator
+{
+public:
+    using value_type = T;
+    using pointer = T*;
+    using size_type = size_t;
+    using reference = T&;
+    using const_reference = const T&;
+
+    void construct(pointer ptr)
+    {
+        ptr = new (ptr) T();/////////////
+    }
+
+    void construct(pointer ptr, const_reference val)
+    {
+        ptr = new (ptr) T(val);//////////
+    }
+
+    void construct(pointer ptr, value_type&& val)///////
+    {
+        ptr = new (ptr) T(std::move(val));
+    }
+
+    void destroy(pointer ptr)
+    {
+        ptr->~value_type();
+    }
+
+    pointer allocate(size_type count)
+    {
+        if (count > max_size())
+            throw std::length_error("Too big count");
+        return new T [count];
+    }
+
+    void deallocate(pointer ptr, size_type count)
+    {
+        delete [] ptr;
+    }
+
+    size_t max_size() const noexcept
+    {
+        return std::numeric_limits<size_type>::max();
+    }
+};
+
+template <class T>//////////////////////////////////////////////////////Iterator
+class Iterator : public std::iterator<std::random_access_iterator_tag, T>
+{
+    T* ptr_;
+public:
+    using reference = T&;
+
+    explicit Iterator(T* ptr) : ptr_(ptr) {}
+
+    bool operator==(const Iterator<T>& other) const
+    {
+        return ptr_ == other.ptr_;
+    }
+
+    bool operator!=(const Iterator<T>& other) const
+    {
+        return !(*this == other);
+    }
+
+    reference operator*() const
+    {
+        return *ptr_;
+    }
+
+    Iterator& operator++()
+    {
+        ptr_++;
+        return *this;
+    }
+
+    Iterator operator++(int)
+    {
+        Iterator temp = *this;
+        ++*this;
+        return temp;
+    }
+
+    Iterator& operator--()
+    {
+        ptr_--;
+        return *this;
+    }
+
+    Iterator operator--(int)
+    {
+        Iterator temp = *this;
+        --*this;
+        return temp;
+    }
+};
+
+template<class T, class Alloc = Allocator<T>>
+class Vector/////////////////////////////////////////Vector
+{
+    using value_type = T;
+    using allocator_type = Alloc;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using pointer = T*;
+    using const_pointer = const T*;
+    using iterator = Iterator<T>;
+    using const_iterator = const Iterator<T>;
+    using reverse_iterator = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = 	std::reverse_iterator<const_iterator>;
+    using size_type = size_t;
+
+private:
+    Alloc alloc_;
+    pointer data_ = nullptr;
+    size_type size_ = 0;
+    size_type capacity_ = 0;
+
+public:
+    explicit Vector(size_type count = 0)
+    {
+        if(count != 0)
+        {
+            data_ = alloc_.allocate(count);
+            for (size_type i = 0; i < count; i++)
+                alloc_.construct(data_ + i);
+            size_ = count;
+            capacity_ = count;
+        }
+    }
+
+    reference operator[](size_type n)
+    {
+        if (n >= size_)
+            throw std::out_of_range("Out of range");
+        return data_[n];
+    }
+
+    const_reference operator[](size_type n) const
+    {
+        if (n >= size_)
+            throw std::out_of_range("Out of range");
+        return data_[n];
+    }
+
+    void push_back(const_reference val)
+    {
+        if (size_ == capacity_)
+        {
+            if (size_ == 0)
+                reserve(1);
+            else
+                reserve(2 * size_);
+        }
+        alloc_.construct(data_ + size_, val);
+        size_++;
+    }
+
+    void reserve(size_type n)
+    {
+        if(n > capacity_)
+        {
+            pointer newData = alloc_.allocate(n);
+            for (size_type i = 0; i < size_; i++)
+            {
+                alloc_.construct(newData + i, data_[i]);
+                alloc_.destroy(data_ + i);
+            }
+            std::swap(*data_, *newData);
+            alloc_.deallocate(newData, size_);
+
+            capacity_ = n;
+        }
+    }
+
+    void resize(size_type n)
+    {
+        if (n < size_)
+        {
+            for (size_type i = n; i < size_; i++)
+                alloc_.destroy(data_ + i);
+        }
+
+        if(n > capacity_)
+            reserve(n);
+
+        if(n > size_)
+        {
+            for (size_type i = size_; i < n; i++)
+            {
+                alloc_.construct(data_ + i);
+            }
+        }
+        size_ = n;
+    }
+
+    void push_back(value_type&& rval)
+    {
+        if (size_ == capacity_) {
+            if (size_ == 0)
+                reserve(1);
+            else
+                reserve(2 * size_);
+        }
+        alloc_.construct(data_ + size_, std::move(rval));
+        size_++;
+    }
+
+    void pop_back()
+    {
+        if (size_ > 0)
+            resize(size_ - 1);
+    }
+
+    bool empty() const noexcept
+    {
+        return size_ == 0;
+    }
+
+    size_type size() const noexcept
+    {
+        return size_;
+    }
+
+    size_type capacity() const noexcept
+    {
+        return capacity_;
+    }
+
+    iterator begin() noexcept
+    {
+        return iterator(data_);
+    }
+
+    const_iterator begin() const noexcept
+    {
+        return const_iterator(data_);
+    }
+
+    iterator end() noexcept
+    {
+        return iterator(data_ + size_);
+    }
+
+    const_iterator end() const noexcept
+    {
+        return const_iterator(data_ + size_);
+    }
+
+    reverse_iterator rbegin() noexcept
+    {
+        return reverse_iterator(end());
+    }
+
+    const_reverse_iterator rbegin() const noexcept
+    {
+        return const_reverse_iterator(end());
+    }
+
+    reverse_iterator rend() noexcept
+    {
+        return reverse_iterator(begin());
+    }
+
+    const_reverse_iterator rend() const noexcept
+    {
+        return const_reverse_iterator(begin());
+    }
+
+    void clear() noexcept
+    {
+        resize(0);
+    }
+
+    ~Vector() {
+        clear();
+        alloc_.deallocate(data_, 0);
+    }
+
+};
