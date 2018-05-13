@@ -3,9 +3,8 @@
 #include <stdexcept>
 #include <iterator>
 #include <algorithm>
-#include <cstring>
 
-template<class T>////////////////////////////////////////////////Allocator
+template <class T>
 class Allocator
 {
 public:
@@ -17,17 +16,17 @@ public:
 
     void construct(pointer ptr)
     {
-        ptr = new (ptr) T();/////////////
+        ptr = new (ptr) value_type();
     }
 
     void construct(pointer ptr, const_reference val)
     {
-        ptr = new (ptr) T(val);//////////
+        ptr = new (ptr) value_type(val);
     }
 
-    void construct(pointer ptr, value_type&& val)///////
+    void construct(pointer ptr, value_type&& val)
     {
-        ptr = new (ptr) T(std::move(val));
+        ptr = new (ptr) value_type(std::move(val));
     }
 
     void destroy(pointer ptr)
@@ -39,12 +38,13 @@ public:
     {
         if (count > max_size())
             throw std::length_error("Too big count");
-        return new T [count];
+        auto ptr = (pointer) malloc(sizeof(value_type) * count);
+        return ptr;
     }
 
     void deallocate(pointer ptr, size_type count)
     {
-        delete [] ptr;
+        free(ptr);
     }
 
     size_t max_size() const noexcept
@@ -53,7 +53,7 @@ public:
     }
 };
 
-template <class T>//////////////////////////////////////////////////////Iterator
+template <class T>
 class Iterator : public std::iterator<std::random_access_iterator_tag, T>
 {
     T* ptr_;
@@ -104,8 +104,8 @@ public:
     }
 };
 
-template<class T, class Alloc = Allocator<T>>
-class Vector/////////////////////////////////////////Vector
+template <class T, class Alloc = Allocator<T>>
+class Vector
 {
     using value_type = T;
     using allocator_type = Alloc;
@@ -128,7 +128,7 @@ private:
 public:
     explicit Vector(size_type count = 0)
     {
-        if(count != 0)
+        if (count != 0)
         {
             data_ = alloc_.allocate(count);
             for (size_type i = 0; i < count; i++)
@@ -138,14 +138,14 @@ public:
         }
     }
 
-    reference operator[](size_type n)
+    reference operator[] (size_type n)
     {
         if (n >= size_)
             throw std::out_of_range("Out of range");
         return data_[n];
     }
 
-    const_reference operator[](size_type n) const
+    const_reference operator[] (size_type n) const
     {
         if (n >= size_)
             throw std::out_of_range("Out of range");
@@ -165,53 +165,16 @@ public:
         size_++;
     }
 
-    void reserve(size_type n)
+    void push_back(value_type&& val)
     {
-        if(n > capacity_)
+        if (size_ == capacity_)
         {
-            pointer newData = alloc_.allocate(n);
-            for (size_type i = 0; i < size_; i++)
-            {
-                alloc_.construct(newData + i, data_[i]);
-                alloc_.destroy(data_ + i);
-            }
-            std::swap(*data_, *newData);
-            alloc_.deallocate(newData, size_);
-
-            capacity_ = n;
-        }
-    }
-
-    void resize(size_type n)
-    {
-        if (n < size_)
-        {
-            for (size_type i = n; i < size_; i++)
-                alloc_.destroy(data_ + i);
-        }
-
-        if(n > capacity_)
-            reserve(n);
-
-        if(n > size_)
-        {
-            for (size_type i = size_; i < n; i++)
-            {
-                alloc_.construct(data_ + i);
-            }
-        }
-        size_ = n;
-    }
-
-    void push_back(value_type&& rval)
-    {
-        if (size_ == capacity_) {
             if (size_ == 0)
                 reserve(1);
             else
                 reserve(2 * size_);
         }
-        alloc_.construct(data_ + size_, std::move(rval));
+        alloc_.construct(data_ + size_, std::move(val));
         size_++;
     }
 
@@ -276,8 +239,45 @@ public:
         return const_reverse_iterator(begin());
     }
 
-    void clear() noexcept
+    void reserve(size_type n)
     {
+        if (n > capacity_)
+        {
+            pointer newData = alloc_.allocate(n);
+            for (size_type i = 0; i < size_; i++)
+            {
+                alloc_.construct(newData + i, data_[i]);
+                alloc_.destroy(data_ + i);
+            }
+            std::swap(data_, newData);
+            alloc_.deallocate(newData, size_);
+
+            capacity_ = n;
+        }
+    }
+
+    void resize(size_type n)
+    {
+        if (n < size_)
+        {
+            for (size_type i = n; i < size_; i++)
+                alloc_.destroy(data_ + i);
+        }
+
+        if(n > capacity_)
+            reserve(n);
+
+        if(n > size_)
+        {
+            for (size_type i = size_; i < n; i++)
+            {
+                alloc_.construct(data_ + i);
+            }
+        }
+        size_ = n;
+    }
+
+    void clear() noexcept {
         resize(0);
     }
 
@@ -285,5 +285,4 @@ public:
         clear();
         alloc_.deallocate(data_, 0);
     }
-
 };
