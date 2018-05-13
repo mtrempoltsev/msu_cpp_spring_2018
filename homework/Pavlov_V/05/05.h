@@ -84,6 +84,8 @@ public:
     }
     BigInt(BigInt&& val): size_(val.size_), sign(val.sign), capacity_(val.capacity_), data_(val.data_) {
         val.data_ = nullptr;
+        val.size_ = 0;
+        val.capacity_ = 0;
     }
     ~BigInt() {
         delete[] data_;
