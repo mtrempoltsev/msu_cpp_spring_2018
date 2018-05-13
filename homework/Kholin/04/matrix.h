@@ -63,7 +63,7 @@ private:
             return !((*this) != other);
         }
 
-        Row operator*=(int32_t alpha) {
+        Row& operator*=(int32_t alpha) {
             for (uint32_t i = 0; i < _columns; ++i) {
                 _data[i] *= alpha;
             }
@@ -147,10 +147,10 @@ public:
         return !((*this) != other);
     }
 
-    Matrix operator*=(int32_t alpha) {
+    Matrix& operator*=(int32_t alpha) {
         for (uint32_t i = 0; i < _rows; ++i) {
             _data[i] *= alpha;
         }
-        return Matrix(*this);
+        return *this;
     }
 };
