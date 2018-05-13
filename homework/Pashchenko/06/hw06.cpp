@@ -13,13 +13,7 @@ private:
     std::string str{};
     size_t index = 0;
 
-    T get_number()
-    {
-        size_t tmp_index = 0;
-        auto number = std::stoi(str.data() + index, &tmp_index);
-        index += tmp_index;
-        return number;
-    }
+    T get_number();
 
     T get_operator()
     {
@@ -65,6 +59,15 @@ public:
         return get_expression();
     }
 };
+
+template<>
+int Calculator<int>::get_number()
+{
+    size_t tmp_index = 0;
+    int number = std::stoi(str.data() + index, &tmp_index);
+    index += tmp_index;
+    return number;
+}
 
 int main(int argc, char **argv)
 {
