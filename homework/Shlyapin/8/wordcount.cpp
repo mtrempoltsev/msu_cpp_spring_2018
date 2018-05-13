@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     while (in >> s) {
         auto t = tree.find(s);
         if (t == tree.end()) {
-            t->second = 1;
+            t[s] = 1;
         } else {
             ++(t->second);
         }
