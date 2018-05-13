@@ -8,7 +8,7 @@ constexpr int Count = 1000000;
 
 std::mutex m[2];
 
-void thrfunc(bool f)
+void thrfunc(int f)
 {
     std::string res = f ? "pong" : "ping";
     for (int i = 0; i < Count; ++i) {
