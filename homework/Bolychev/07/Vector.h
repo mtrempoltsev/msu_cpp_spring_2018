@@ -169,7 +169,7 @@ public:
                 return;
             }
 
-            auto newData = alloc_.allocate(newSize);
+            T* newData = alloc_.allocate(newSize);
             std::memcpy(newData, data_, size_ * sizeof(T));
             std::swap(newData, data_);
             alloc_.deallocate(newData, size_);
