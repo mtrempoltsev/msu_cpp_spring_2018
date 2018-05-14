@@ -11,21 +11,13 @@ template <class T>
 class Allocator
 {
 public:
-    static T* allocate(const size_t count) {
-        if (count == 0) {
-            return nullptr;
-        }
-
-        auto memory = static_cast<T*>(operator new[] (count * sizeof(T)));
-
-        for (int i = 0; i < count; ++i) {
-            new (memory + i)T();
-        }
-
-        return memory;
+    template<class U, class... Args> static void construct(U *p, Args&&... args) {
+        new(reinterpret_cast<void *>(p)) U(std::forward<Args>(args)...);
     }
 
-    static T* allocate(const size_t count, const T& value) {
+    template<class U> static void destroy(U * p) { p->~U(); }
+
+    template<class... Args> static T* allocate(const size_t count, Args&&... args) {
         if (count == 0) {
             return nullptr;
         }
@@ -33,7 +25,7 @@ public:
         auto memory = static_cast<T*>(operator new[] (count * sizeof(T)));
 
         for (int i = 0; i < count; ++i) {
-            new (memory + i)T(value);
+            construct(memory + i, std::forward<Args>(args)...);
         }
 
         return memory;
@@ -41,13 +33,11 @@ public:
 
     static void deallocate(T* ptr, size_t count) {
         for (size_t i = 0; i < count; ++i) {
-            ptr[i].~T();
+            destroy(ptr + i);
         }
 
         operator delete[] (ptr);
     }
-
-    static void destroy(T* ptr) { ptr->~T(); }
 
     static size_t max_size() noexcept { return std::numeric_limits<size_t>::max(); }
 };
@@ -133,10 +123,7 @@ public:
     {
         if (size_ + 1 > capacity_)
         {
-            T* newData = alloc_.allocate(size_ + 1, val);
-            std::memcpy(newData, data_, size_ * sizeof(T));
-            std::swap(newData, data_);
-            alloc_.deallocate(newData, size_);
+            safe_allocation(size_ + 1, val);
             capacity_ = size_ + 1;
             size_ = capacity_;
         } else {
@@ -149,10 +136,7 @@ public:
     {
         if (size > capacity_)
         {
-            T* newData = alloc_.allocate(size);
-            std::memcpy(newData, data_, size_ * sizeof(T));
-            std::swap(newData, data_);
-            alloc_.deallocate(newData, size_);
+            safe_allocation(size);
             capacity_ = size;
         }
     }
@@ -163,16 +147,13 @@ public:
         {
             if (capacity_ >= newSize) {
                 for (size_t i = size_; i < newSize; ++i) {
-                    data_[i] = T();
+                    alloc_.construct(data_ + i);
                 }
                 size_ = newSize;
                 return;
             }
 
-            T* newData = alloc_.allocate(newSize);
-            std::memcpy(newData, data_, size_ * sizeof(T));
-            std::swap(newData, data_);
-            alloc_.deallocate(newData, size_);
+            safe_allocation(newSize);
             size_ = newSize;
             capacity_= newSize;
         } else {
@@ -187,6 +168,22 @@ public:
     void clear() { resize(0); }
 
 private:
+    void safe_allocation(const size_t size)
+    {
+        auto newData = alloc_.allocate(size);
+        std::memcpy(newData, data_, size_ * sizeof(T));
+        std::swap(newData, data_);
+        alloc_.deallocate(newData, size_);
+    }
+
+    void safe_allocation(const size_t size, const T& value)
+    {
+        auto newData = alloc_.allocate(size, value);
+        std::memcpy(newData, data_, size_ * sizeof(T));
+        std::swap(newData, data_);
+        alloc_.deallocate(newData, size_);
+    }
+
     T* data_;
     size_t size_;
     size_t capacity_;
