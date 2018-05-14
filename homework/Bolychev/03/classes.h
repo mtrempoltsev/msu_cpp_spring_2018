@@ -1,8 +1,7 @@
 #include <string>
 #include <vector>
-class Item
-{
-private:
+
+class Item{
     std::string name;
     int corruption;
 };

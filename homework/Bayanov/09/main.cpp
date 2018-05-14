@@ -1,18 +1,24 @@
 #include <iostream>
 #include <thread>
 #include <atomic>
+#include <mutex>
 
 int const MAX = int(1e6);
+
+std::mutex mtx;
 
 std::atomic<bool> global_parity{0};
 
 void print(bool parity){
     std::string word = (!parity ? "ping" : "pong");
-    for(int i = 0; i < MAX; ++i){
-        while(global_parity != parity){
+    int ind = 0;
+    while(ind < MAX){
+        std::unique_lock<std::mutex> lock(mtx);
+        if(global_parity == parity){
+            std::cout << word << "\n";
+            global_parity.store(!parity);
+            ++ind;
         }
-        std::cout << word << "\n";
-        global_parity.store(!parity);
     }
 }
 

@@ -84,10 +84,7 @@ public:
 
     Iterator& operator+= (int m)
     {
-        if (m >= 0)
-            while (m--) ++ptr_;
-        else
-            while (m++) --ptr_;
+        ptr_ += m;
         return *this;
     }
 
@@ -124,8 +121,6 @@ public:
 
     Vector(size_type size = 0)
     {
-        if(size < 0)
-            throw VectorError();
         if(size != 0)
         {
             data_ = alloc_.allocate(size);
@@ -201,7 +196,7 @@ public:
         return data_[n];
     }
 
-    const value_type operator[](size_type n) const
+    const value_type& operator[](size_type n) const
     {
         if(n >= size_)
             throw std::out_of_range("Out of range");
@@ -210,32 +205,24 @@ public:
 
     void resize(size_type newSize)
     {
-        if(newSize < 0)
-            throw VectorError();
         if(newSize > capacity_){
-            pointer newData = alloc_.allocate(newSize);
-            std::copy(data_, data_ + size_, newData);
-            std::swap(data_, newData);
-            alloc_.deallocate(newData);
-            capacity_ = newSize;
+            reserve(newSize);
         }
         for(size_type i = size_; i < newSize; ++i)
-            data_[i] = value_type();
+            alloc_.construct(data_ + i);
         for(size_type i = newSize; i < size_; ++i)
-            data_[i].~value_type();
+            alloc_.destroy(data_ + i);
         size_ = newSize;
     }
 
     void reserve(size_type n)
     {
-        if(n < 0)
-            throw VectorError();
         if(n > size_){
             pointer newData = alloc_.allocate(n);
             std::copy(data_, data_ + size_, newData);
             std::swap(data_, newData);
             for(size_type i = 0; i < size_; ++i)
-                data_[i].~value_type();
+                alloc_.destroy(data_ + i);
             alloc_.deallocate(newData);
             capacity_ = n;
         }
@@ -265,9 +252,10 @@ public:
     {
         if(size_ == capacity_)
             reserve(size_ * 2);
-        data_[size_] = val;
+        data_[size_] = std::move(val);
         ++size_;
     }
+
     void pop_back()
     {
         if(size_ > 0){

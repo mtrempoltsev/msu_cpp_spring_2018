@@ -5,20 +5,39 @@
 #include <stdlib.h>
 #include <memory>
 #include <stdexcept>
+#include <new>
 
 template <class T>
 class Allocator
 {
 public:
-    static T* allocate(const size_t count) {
+    template<class U, class... Args> static void construct(U *p, Args&&... args) {
+        new(reinterpret_cast<void *>(p)) U(std::forward<Args>(args)...);
+    }
+
+    template<class U> static void destroy(U * p) { p->~U(); }
+
+    template<class... Args> static T* allocate(const size_t count, Args&&... args) {
         if (count == 0) {
             return nullptr;
         }
 
-        return (T*) malloc(sizeof(T) * count);
+        auto memory = static_cast<T*>(operator new[] (count * sizeof(T)));
+
+        for (int i = 0; i < count; ++i) {
+            construct(memory + i, std::forward<Args>(args)...);
+        }
+
+        return memory;
     }
 
-    static void deallocate(T* ptr) { free(ptr); }
+    static void deallocate(T* ptr, size_t count) {
+        for (size_t i = 0; i < count; ++i) {
+            destroy(ptr + i);
+        }
+
+        operator delete[] (ptr);
+    }
 
     static size_t max_size() noexcept { return std::numeric_limits<size_t>::max(); }
 };
@@ -68,7 +87,7 @@ public:
 
     Vector(const size_t capacity = 0) : capacity_(capacity), data_(alloc_.allocate(capacity)), size_(0) {}
 
-    ~Vector() { clear(); alloc_.deallocate(data_); }
+    ~Vector() { clear(); alloc_.deallocate(data_, size_); }
 
     iterator begin() noexcept { return iterator(data_); }
     iterator end() noexcept { return iterator(data_ + size_); }
@@ -102,26 +121,22 @@ public:
 
     void push_back (const T& val)
     {
-        reserve(size_ + 1);
-        data_[size_] = val;
-        ++size_;
-    }
-
-    void push_back (T&& val)
-    {
-        reserve(size_ + 1);
-        data_[size_] = val;
-        ++size_;
+        if (size_ + 1 > capacity_)
+        {
+            safe_allocation(size_ + 1, val);
+            capacity_ = size_ + 1;
+            size_ = capacity_;
+        } else {
+            data_[size_] = val;
+            ++size_;
+        }
     }
 
     void reserve(const size_t size)
     {
         if (size > capacity_)
         {
-            T* newData = alloc_.allocate(size);
-            std::memcpy(newData, data_, size_ * sizeof(T));
-            std::swap(newData, data_);
-            alloc_.deallocate(newData);
+            safe_allocation(size);
             capacity_ = size;
         }
     }
@@ -132,24 +147,18 @@ public:
         {
             if (capacity_ >= newSize) {
                 for (size_t i = size_; i < newSize; ++i) {
-                    data_[i] = T();
+                    alloc_.construct(data_ + i);
                 }
                 size_ = newSize;
                 return;
             }
 
-            auto newData = alloc_.allocate(newSize);
-            for (int i = 0; i < newSize; ++i) {
-                newData[i] = T();
-            }
-            std::memcpy(newData, data_, size_ * sizeof(T));
-            std::swap(newData, data_);
-            alloc_.deallocate(newData);
+            safe_allocation(newSize);
             size_ = newSize;
             capacity_= newSize;
         } else {
             for (size_t i = newSize; i < size_; ++i) {
-                data_[i].~T();
+                alloc_.destroy(data_ + i);
             }
 
             size_ = newSize;
@@ -159,6 +168,22 @@ public:
     void clear() { resize(0); }
 
 private:
+    void safe_allocation(const size_t size)
+    {
+        auto newData = alloc_.allocate(size);
+        std::memcpy(newData, data_, size_ * sizeof(T));
+        std::swap(newData, data_);
+        alloc_.deallocate(newData, size_);
+    }
+
+    void safe_allocation(const size_t size, const T& value)
+    {
+        auto newData = alloc_.allocate(size, value);
+        std::memcpy(newData, data_, size_ * sizeof(T));
+        std::swap(newData, data_);
+        alloc_.deallocate(newData, size_);
+    }
+
     T* data_;
     size_t size_;
     size_t capacity_;

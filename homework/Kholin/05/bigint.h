@@ -42,7 +42,8 @@ public:
         sign = other.sign;
         length = other.length;
         dataSize = other.dataSize;
-        data.reset(static_cast<int8_t*>(calloc(dataSize, sizeof(int8_t))));
+        data.reset(new int8_t[dataSize]);
+        memset(data.get(), 0, sizeof(int8_t) * dataSize);
         memcpy(data.get(), other.data.get(), length);
     }
 
@@ -65,7 +66,8 @@ public:
         sign = other.sign;
         length = other.length;
         dataSize = other.dataSize;
-        data.reset(static_cast<int8_t*>(calloc(dataSize, sizeof(int8_t))));
+        data.reset(new int8_t[dataSize]);
+        memset(data.get(), 0, sizeof(int8_t) * dataSize);
         memcpy(data.get(), other.data.get(), length);
         return *this;
     }
@@ -242,13 +244,15 @@ public:
         b.sign = 1;
         b.length = length;
         b.dataSize = dataSize;
-        b.data.reset(static_cast<int8_t*>(calloc(length, sizeof(int8_t))));
+        b.data.reset(new int8_t[length]);
+        memset(b.data.get(), 0, sizeof(int8_t) * length);
         memcpy(b.data.get() + length - other.length, other.data.get(), other.length);
         
         c.sign = sign * other.sign;
         c.length = length - other.length + 1;
         c.dataSize = c.length;
-        c.data.reset(static_cast<int8_t*>(calloc(c.length, sizeof(int8_t))));
+        c.data.reset(new int8_t[c.length]);
+        memset(c.data.get(), 0, sizeof(int8_t) * c.length);
         
         for (uint32_t i = 0; i < c.length; ++i) {
             while (a >= b) {
@@ -283,7 +287,8 @@ private:
     std::unique_ptr<int8_t[]> data;
     
     void resize(uint32_t newSize) {
-        int8_t* newData = (int8_t*) calloc(newSize, sizeof(int8_t));
+        int8_t* newData = new int8_t[newSize];
+        memset(newData, 0, sizeof(int8_t) * newSize);
         if (data != nullptr) {
             memcpy(newData, data.get(), std::min(length, newSize));
         }

@@ -13,13 +13,7 @@ private:
     std::string str{};
     size_t index = 0;
 
-    T get_number()
-    {
-        size_t tmp_index = 0;
-        int number = std::stoi(str.data() + index, &tmp_index);
-        index += tmp_index;
-        return number;
-    }
+    T get_number();
 
     T get_operator()
     {
@@ -66,6 +60,15 @@ public:
     }
 };
 
+template<>
+int Calculator<int>::get_number()
+{
+    size_t tmp_index = 0;
+    int number = std::stoi(str.data() + index, &tmp_index);
+    index += tmp_index;
+    return number;
+}
+
 int main(int argc, char **argv)
 {
     try
@@ -75,6 +78,18 @@ int main(int argc, char **argv)
 
         Calculator<int> calc{};
         std::cout << calc.calc(argv[1]) << std::endl;
+    }
+
+    catch(const division_by_zero& error)
+    {
+        std::cerr << "error" << std::endl;
+        return 1;
+    }
+
+    catch(const wrong_operation& error)
+    {
+        std::cerr << "error" << std::endl;
+        return 1;
     }
 
     catch(...)

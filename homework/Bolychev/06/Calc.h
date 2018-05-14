@@ -6,20 +6,6 @@
 #include <stdlib.h>
 #include <memory>
 
-std::string trimWhitespaces(const std::string& str)
-{
-    std::unique_ptr<char[]> result(new char[1 + str.length()]);
-
-    size_t j = 0;
-    for (size_t i = 0; i <= str.length(); ++i) {
-        if (str[i] != ' ' && str[i] != '\t') {
-            result[j++] =  str[i];
-        }
-    }
-
-    return std::string(result.get());
-}
-
 template <typename T>
 class Calc
 {
@@ -28,12 +14,11 @@ private:
     {
         bool negative = false;
 
-        
         if (str[0] == '-') {
             negative = true;
             str = str.substr(1);
         }
-        
+
         size_t  i;
         for (i = 0; i < str.length(); ++i) {
             if (!isdigit(str[i])) {
@@ -94,14 +79,19 @@ private:
 public:
     T compute(const std::string& input_str)
     {
-        std::string str = trimWhitespaces(input_str);
+        // deleting whitespaces from input_str and saving result to str
+        std::string str;
+        for (size_t i = 0; i < input_str.length(); ++i) {
+            if (input_str[i] != ' ' && input_str[i] != '\t') {
+                str.push_back(input_str[i]);
+            }
+        }
 
         if (!isdigit(str.back())) {
             throw std::runtime_error("error");
         }
 
         auto currentNumber =  computeNextMultiplicationPart(str);
-
 
         while (str.length() > 0) {
             if (!(str[0] == '+' || str[0] == '-')) {
