@@ -69,7 +69,6 @@ BigInt::BigInt(long long i): size(2), num_size(0), data(std::make_unique<char[]>
 
 BigInt::BigInt(BigInt &&moved) noexcept :num_size(moved.num_size), size(moved.size),
                                is_neg(moved.is_neg)  {
-    //data.reset(moved.data.release());
     data = std::move(moved.data);
 
 }
@@ -79,7 +78,6 @@ BigInt& BigInt::operator=(BigInt &&moved) noexcept {
     if (this != &moved){
         num_size = moved.num_size;
         size = moved.size;
-        //data.reset(moved.data.release());
         data = std::move(moved.data);
         is_neg = moved.is_neg;
 
