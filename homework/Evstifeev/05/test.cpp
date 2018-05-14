@@ -79,6 +79,7 @@ int main()
     checkTrue(BigInt(50) < x);
     checkTrue(BigInt(-500) < x);
     checkTrue(BigInt(-500) < BigInt(-200));
+
     checkTrue(!(x > x));
     checkTrue(BigInt(200) > x);
     checkTrue(x > BigInt(50));
@@ -135,6 +136,19 @@ int main()
             check(i, j);
         }
     }
+
+    const BigInt big1 = std::numeric_limits<int64_t>::max();
+    checkEqual(big1, "9223372036854775807");
+
+    const BigInt big2 = big1 * big1;
+    std::cout << "9223372036854775807 * 9223372036854775807\n";
+    checkEqual(big2, "85070591730234615847396907784232501249");
+
+    const BigInt big3 = big2 * big2;
+    std::cout << "85070591730234615847396907784232501249 * 85070591730234615847396907784232501249\n";
+    checkEqual(big3, "7237005577332262210834635695349653859421902880380109739573089701262786560001");
+
+    std::cout << "done\n";
 
     return 0;
 }

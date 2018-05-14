@@ -23,7 +23,7 @@ class IntVector {
     IntVector(const IntVector& v) {
         capacity = v.capacity;
         _size = v._size;
-        data = new int[capacity];
+        data = new int[_size];
         std::copy(v.begin(), v.end(), data);
     }
 
