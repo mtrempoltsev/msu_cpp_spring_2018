@@ -7,10 +7,12 @@ const size_t ITERS = 1000000;
 std::mutex m;
 std::condition_variable conditionVariable;
 volatile int count = 0;
+volatile bool ping_start_flag = false;
 
 
 void ping(){
     std::unique_lock<std::mutex> lock(m);
+    ping_start_flag = true;
     while(count <= ITERS) {
 
         //while(count % 2 == 1)
@@ -24,6 +26,10 @@ void ping(){
 }
 void pong(){
     std::unique_lock<std::mutex> lock(m);
+
+    while(!ping_start_flag)
+        conditionVariable.wait(lock);
+
     while(count <= ITERS) {
 
         //while (count % 2 == 0)
@@ -33,9 +39,7 @@ void pong(){
         ++count;
     }
     conditionVariable.notify_one();
-
-
-}
+} 
 
 int main() {
     std::thread thread(ping);
