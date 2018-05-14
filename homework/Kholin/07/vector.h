@@ -20,7 +20,7 @@ public:
     }
 
     void construct(pointer p) {
-        *p = T();
+        new (p) T();
     }
 
     void destroy (pointer p) {
@@ -121,7 +121,6 @@ private:
 template<typename T, typename Allocator = allocator<T> >
 class Vector {
 public:
-
     Vector() {
         reserve(1);
         size_ = 0;
@@ -132,7 +131,20 @@ public:
         size_ = n;
     }
 
+    Vector(const Vector<T>& Other) {
+        reserve(Other.capacity());
+        for (uint32_t i = 0; i < Other.size(); ++i) {
+            *(data_ + i) = Other[i];
+        }
+        size_ = Other.size();
+        length_ = Other.capacity();
+    }
+
     T& operator[](const uint32_t i) {
+        return *(data_ + i);
+    }
+
+    T& operator[](const uint32_t i) const {
         return *(data_ + i);
     }
     
@@ -157,11 +169,11 @@ public:
         --size_;
     }
     
-    bool empty() {
+    bool empty() const {
         return (size_ == 0);
     }
     
-    uint32_t size() {
+    uint32_t size() const {
         return size_;
     }
 
@@ -172,22 +184,22 @@ public:
         size_ = 0;
     }
     
-    iterator<T> begin() {
+    iterator<T> begin() const {
         iterator<T> it(data_);
         return it;
     }
     
-    iterator<T> end() {
+    iterator<T> end() const {
         iterator<T> it(data_ + (size_));
         return it;
     }
     
-    reverse_iterator<T> rbegin() {
+    reverse_iterator<T> rbegin() const {
         reverse_iterator<T> it(data_ + (size_ - 1));
         return it;
     }
     
-    reverse_iterator<T> rend() {
+    reverse_iterator<T> rend() const {
         reverse_iterator<T> it(data_ - 1);
         return it;
     }
@@ -208,7 +220,7 @@ public:
     void reserve(uint32_t length) {
         if (length > size_) {
             T* tempData = allocator_.allocate(length);
-            std::copy(data_, data_ + size_, tempData);
+            std::move(data_, data_ + size_, tempData);
             for (T* it = data_; it != data_ + size_; ++it) {
                 allocator_.destroy(it);
             }
@@ -227,7 +239,7 @@ public:
         }
     }
     
-    uint32_t capacity() {
+    uint32_t capacity() const {
         return length_;
     }
 
