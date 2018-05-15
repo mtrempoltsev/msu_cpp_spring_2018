@@ -4,33 +4,33 @@
 #include <memory>
 #include <vector>
 
-void parse(char* argv, std::shared_ptr<std::vector<std::string>>& tokens){
+void parse(char* input, std::shared_ptr<std::vector<std::string>>& tokens){
     bool pmin = false;
     
-    std::string input;
+    std::string inputstr;
     
     int t = 0;
-    while (argv[t] != 0){    
-        if(!isspace(argv[t]))
-            input.append(1, argv[t]);
+    while (input[t] != 0){    
+        if(!isspace(input[t]))
+            inputstr.append(1, input[t]);
         
         t++;
     }
     
     int total = 0;
-    for (int i = 0; i < input.size(); i++){
-        if ((input[i]== '-') && ((i == 0) || (input[i - 1] == '+') || (input[i - 1] == '-') || (input[i - 1] == '*') || (input[i - 1] == '/')) && std::isdigit(input[i + 1])){ //unary minus
+    for (int i = 0; i < inputstr.size(); i++){
+        if ((inputstr[i]== '-') && ((i == 0) || (inputstr[i - 1] == '+') || (inputstr[i - 1] == '-') || (inputstr[i - 1] == '*') || (inputstr[i - 1] == '/')) && std::isdigit(inputstr[i + 1])){
             pmin = true;
-            tokens.get()->push_back(std::string(1, input[i]));
+            tokens.get()->push_back(std::string(1, inputstr[i]));
             total++;
             continue;
         }
         
-        if (std::isdigit(input[i]) && (pmin || ((i > 0) && std::isdigit(input[i - 1]))))
-            (tokens.get())->operator[](total-1).append(1, input[i]);
+        if (std::isdigit(inputstr[i]) && (pmin || ((i > 0) && std::isdigit(inputstr[i - 1]))))
+            (tokens.get())->operator[](total-1).append(1, inputstr[i]);
         
         else{
-            tokens.get()->push_back(std::string(1, input[i]));
+            tokens.get()->push_back(std::string(1, inputstr[i]));
             total++;
         }
         
@@ -41,7 +41,7 @@ void parse(char* argv, std::shared_ptr<std::vector<std::string>>& tokens){
 template<class T>
 class Calc{
 private:
-    T expression(std::vector<std::string> *tokens, std::pair<int, int> bounds){//, int sToken, int eToken){
+    T expression(std::vector<std::string> *tokens, std::pair<int, int> bounds){
         for (int i = bounds.second - 1; i >= bounds.first; i--){
             if ((tokens->at(i)).compare("+") == 0){
                 if ((i == bounds.first) || (i == bounds.second - 1)){
@@ -68,7 +68,7 @@ private:
         return 0;
     }
 
-    T term(std::vector<std::string> *tokens, std::pair<int, int> bounds){//, int sToken, int eToken) {
+    T term(std::vector<std::string> *tokens, std::pair<int, int> bounds){
         int trig;
     
         for (int i = bounds.first; i < bounds.second; i++){
@@ -105,7 +105,7 @@ private:
         return 0;
     }
 
-    T number(std::vector<std::string> *tokens, std::pair<int, int> bounds){//int sToken, int eToken) {
+    T number(std::vector<std::string> *tokens, std::pair<int, int> bounds){
         if (bounds.second - bounds.first != 1){
             std::cout << "error" << std::endl;
             exit(1);
