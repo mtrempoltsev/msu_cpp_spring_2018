@@ -18,14 +18,14 @@ private:
     public:
         Rows(int *arrptr, int lenght) : len(lenght)
         {
-            int *abc = arrptr;
+            //int *abc = arrptr;
 
-            arr = new int [lenght];
-            for(int i = 0; i < lenght; i++)
-                arr[i] = *abc + i;
+            arr = new int [len];
+            for(int i = 0; i < len; i++)
+                arr[i] = *arrptr + i;
         }
 
-        int operator[](int j)
+        int& operator[](const int j)
         {
             if (0 <= j && j < len){
                 return arr[j];
@@ -33,6 +33,11 @@ private:
             else
                 throw std::out_of_range("");
 
+        }
+
+        ~Rows()
+        {
+            delete [] arr;
         }
 
     private:
@@ -97,7 +102,7 @@ public:
                      array[i][j] *= number;
          }
 
-         Rows operator [](int i){
+         Rows operator [](const int i){
 
              if (0 <= i && i < rows){
                  Rows c(array[i], columns);
