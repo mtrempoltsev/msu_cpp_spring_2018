@@ -6,6 +6,7 @@
 #include <memory>
 #include <stdexcept>
 #include <new>
+#include <sched.h>
 
 template <class T>
 class Allocator
@@ -22,13 +23,7 @@ public:
             return nullptr;
         }
 
-        auto memory = static_cast<T*>(operator new[] (count * sizeof(T)));
-
-        for (int i = 0; i < count; ++i) {
-            construct(memory + i, std::forward<Args>(args)...);
-        }
-
-        return memory;
+        return  static_cast<T*>(operator new[] (count * sizeof(T)));
     }
 
     static void deallocate(T* ptr, size_t count) {
@@ -36,6 +31,10 @@ public:
             destroy(ptr + i);
         }
 
+        operator delete[] (ptr);
+    }
+
+    static void deallocate(T* ptr) {
         operator delete[] (ptr);
     }
 
@@ -121,15 +120,13 @@ public:
 
     void push_back (const T& val)
     {
-        if (size_ + 1 > capacity_)
-        {
-            safe_allocation(size_ + 1, val);
-            capacity_ = size_ + 1;
-            size_ = capacity_;
-        } else {
-            data_[size_] = val;
-            ++size_;
+        if (size_ + 1 > capacity_) {
+            safe_allocation(size_ * 2 + 1);
+            capacity_ = size_ * 2 + 1;
         }
+
+        alloc_.construct(data_+ size_, val);
+        ++size_;
     }
 
     void reserve(const size_t size)
@@ -145,17 +142,15 @@ public:
     {
         if (size_ < newSize)
         {
-            if (capacity_ >= newSize) {
-                for (size_t i = size_; i < newSize; ++i) {
-                    alloc_.construct(data_ + i);
-                }
-                size_ = newSize;
-                return;
+            if (capacity_ < newSize) {
+                safe_allocation(newSize);
+                capacity_= newSize;
             }
 
-            safe_allocation(newSize);
+            for (size_t i = size_; i < newSize; ++i) {
+                alloc_.construct(data_ + i);
+            }
             size_ = newSize;
-            capacity_= newSize;
         } else {
             for (size_t i = newSize; i < size_; ++i) {
                 alloc_.destroy(data_ + i);
@@ -171,17 +166,9 @@ private:
     void safe_allocation(const size_t size)
     {
         auto newData = alloc_.allocate(size);
-        std::memcpy(newData, data_, size_ * sizeof(T));
+        memcpy(newData, data_, size_ * sizeof(T));
         std::swap(newData, data_);
-        alloc_.deallocate(newData, size_);
-    }
-
-    void safe_allocation(const size_t size, const T& value)
-    {
-        auto newData = alloc_.allocate(size, value);
-        std::memcpy(newData, data_, size_ * sizeof(T));
-        std::swap(newData, data_);
-        alloc_.deallocate(newData, size_);
+        alloc_.deallocate(newData);
     }
 
     T* data_;

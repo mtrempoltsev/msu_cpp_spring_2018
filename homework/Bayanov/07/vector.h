@@ -155,6 +155,21 @@ public:
         ::operator delete(ptr);
     }
 
+    void construct(T *ptr){
+        ptr = new(ptr)T();
+    }
+
+    void construct(T* ptr, const T& value){
+        ptr = new(ptr)T(value);
+    }
+
+    void construct(T* ptr, T&& value){
+        ptr = new(ptr)T(std::move(value));
+    }
+
+    void destroy(T* ptr){
+        ptr -> ~T();
+    }
 };
 
 template<class T, class Alloc=Allocator<T>>
@@ -168,11 +183,12 @@ public:
     Vector(): size_(0),
               capacity_(0),
               storage_(nullptr){};
+
     Vector(size_t size, const T& value = T()): size_(size),
                                         capacity_(size),
                                         storage_(alloc_.allocate(capacity_)){
         for(size_t it = 0; it < size; ++it){
-            storage_[it] = new T(value);
+            alloc_.construct(storage_ + it, value);
         }
     }
 
@@ -180,23 +196,22 @@ public:
                                capacity_(oth.size_),
                                storage_(alloc_.allocate(capacity_)){
         for(size_t it = 0; it < size_; ++it){
-            storage_[it] = oth.storage_[it];
+            alloc_.construct(storage_ + it, oth.storage_[it]);
         }
     }
+
     Vector(Vector&& oth): size_(oth.size_),
-                          capacity_(oth.capacity_){
-        for(size_t it = 0; it < size_; ++it){
-            (storage_ + it) -> ~T();
-        }
-        alloc_.deallocate(storage_);
-        storage_ = oth.storage_;
+                          capacity_(oth.capacity_),
+                          storage_(oth.storage_){
         oth.storage_ = nullptr;
+        oth.size_ = 0;
+        oth.capacity_ = 0;
     }
 
 
     ~Vector(){
         for(size_t it = 0; it < size_; ++it){
-            (storage_ + it) -> ~T();
+            alloc_.destroy(storage_ + it);
         }
         alloc_.deallocate(storage_);
     }
@@ -215,8 +230,8 @@ public:
             T* ptr = alloc_.allocate(new_capacity);
 
             for(size_t it = 0; it < size_; ++it) {
-                ptr[it] = storage_[it];
-                storage_[it].~T();
+                alloc_.construct(ptr + it, storage_[it]);
+                alloc_.destroy(storage_ + it);
             }
 
             alloc_.deallocate(storage_);
@@ -224,7 +239,7 @@ public:
             capacity_ = new_capacity;
             storage_ = ptr;
         }
-        storage_[size_] = obj;
+        alloc_.construct(storage_ + size_, obj);
         ++size_;
     }
 
@@ -234,8 +249,8 @@ public:
             T* ptr = alloc_.allocate(new_capacity);
 
             for(size_t it = 0; it < size_; ++it) {
-                ptr[it] = storage_[it];
-                storage_[it].~T();
+                alloc_.construct(ptr + it, storage_[it]);
+                alloc_.destroy(storage_ + it);
             }
 
             alloc_.deallocate(storage_);
@@ -243,14 +258,14 @@ public:
             capacity_ = new_capacity;
             storage_ = ptr;
         }
-        storage_[size_] = obj;
+        alloc_.construct(storage_ + size_, std::move(obj));
         ++size_;
     }
 
     void pop_back(){
         if(size_){
             --size_;
-            storage_[size_].~T();
+            alloc_.destroy(storage_ + size_);
         }
     }
 
@@ -268,7 +283,7 @@ public:
 
     void clear(){
         for(size_t it = 0; it < size_; ++it){
-            (storage_ + it) -> ~T();
+            alloc_.destroy(storage_ + it);
         }
         size_ = 0;
     }
@@ -276,7 +291,7 @@ public:
     void resize(size_t new_size, const T& value = T()){
         if(new_size <= size_){
             for(size_t it = new_size; it < size_; ++it){
-                (storage_ + it) -> ~T();
+                alloc_.destroy(storage_ + it);
             }
             size_ = new_size;
         }else{
@@ -285,8 +300,8 @@ public:
                 T* ptr = alloc_.allocate(new_capacity);
 
                 for(size_t it = 0; it < size_; ++it) {
-                    ptr[it] = storage_[it];
-                    storage_[it].~T();
+                    alloc_.construct(ptr + it, storage_[it]);
+                    alloc_.destroy(storage_ + it);
                 }
 
                 alloc_.deallocate(storage_);
@@ -295,7 +310,7 @@ public:
                 storage_ = ptr;
             }
             for(size_t it = size_; it < new_size; ++it)
-                storage_[it] = value;
+                alloc_.construct(storage_ + it, value);
             size_ = new_size;
         }
     }
@@ -305,8 +320,8 @@ public:
             T* ptr = alloc_.allocate(new_capacity);
 
             for(size_t it = 0; it < size_; ++it) {
-                ptr[it] = storage_[it];
-                storage_[it].~T();
+                alloc_.construct(ptr + it, storage_[it]);
+                alloc_.destroy(storage_ + it);
             }
 
             alloc_.deallocate(storage_);

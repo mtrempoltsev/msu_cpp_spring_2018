@@ -92,17 +92,15 @@ class BigInt {
     BigInt operator*(const BigInt& rhs) const {
         bool tmp_sign = sign * rhs.sign;
         if (sign == negative && rhs.sign == negative) tmp_sign = positive;
-        IntVector left = number;
-        IntVector right = rhs.number;
-        const int l_size = left.size();
-        const int r_size = right.size();
+        const int l_size = number.size();
+        const int r_size = rhs.number.size();
         IntVector tmp_num(l_size + r_size);
         int k = 0;
         int t = 0;
         for (size_t j = 0; j < r_size; j++) {
             k = 0;
             for (size_t i = 0; i < l_size; i++) {
-                t = left[i] * right[j] + tmp_num[i + j] + k;
+                t = number[i] * rhs.number[j] + tmp_num[i + j] + k;
                 tmp_num[i + j] = t % base;
                 k = floor(t / base);
             }
