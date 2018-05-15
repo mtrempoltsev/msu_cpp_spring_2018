@@ -16,18 +16,17 @@ private:
     class Rows
     {
     public:
-        Rows(int *arrptr, int lenght) : len(lenght)
+        Rows(int *arrptr, int lenght) : len(lenght), arr(arrptr)
         {
             //int *abc = arrptr;
 
-            arr = new int [len];
-            for(int i = 0; i < len; i++)
-                arr[i] = *arrptr + i;
+
         }
 
         int& operator[](const int j)
         {
-            if (0 <= j && j < len){
+            if (0 <= j && j < len)
+            {
                 return arr[j];
             }
             else
@@ -105,8 +104,8 @@ public:
          Rows operator [](const int i){
 
              if (0 <= i && i < rows){
-                 Rows c(array[i], columns);
-                 return c;
+                 return Rows(array[i], columns);
+
              }
              else
                  throw std::out_of_range("");
