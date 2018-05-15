@@ -1,4 +1,3 @@
-
 //
 // Created by polina997 on 3/16/18.
 //
@@ -8,6 +7,11 @@ using namespace std;
 
 class Matrix
 {
+private:
+
+    const int columns;
+    const int rows;
+    int** array;
 
     class Rows
     {
@@ -103,14 +107,6 @@ public:
                  throw std::out_of_range("");
 
          }
-
-
-private:
-
-    const int columns;
-    const int rows;
-    int** array;
-
 
 };
 
