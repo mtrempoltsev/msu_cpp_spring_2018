@@ -11,14 +11,14 @@ class BigInt
     int sign_;
     int* bigNumber_;
     size_t size;
-    BigInt(bool q, size_t size, int a = 0) : sign_(1), size(size_)
+    BigInt(bool q, size_t size, int a = 0) : sign(1), size(size_)
     {
         bigNumber_ = new int[size];
         for (size_t i = 0; i < size; i++)
             bigNumber_[i] = 0;
     }
 public:
-    BigInt() : sign_(1), bigNumber_((int*)malloc(sizeof(int))), size(1)
+    BigInt() : sign_(1), bigNumber_(new int[]), size(1)
     {
         bigNumber_[0] = 0;
     }
