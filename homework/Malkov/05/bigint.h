@@ -13,7 +13,7 @@ class BigInt
     size_t size;
     BigInt(bool q, size_t size, int a = 0) : sign_(1), size(size_)
     {
-        bigNumber_ = (int*)malloc(size_ * sizeof(int));
+        bigNumber_ = new int[size];
         for (size_t i = 0; i < size; i++)
             bigNumber_[i] = 0;
     }
