@@ -8,6 +8,7 @@ template <class T>
 class Iterator : public std::iterator<std::random_access_iterator_tag, T>
 {
 public:
+	using size_type = size_t;
 	using pointer = T*;
 	using reference = T&;
 
@@ -31,9 +32,21 @@ public:
 		return *this;
 	}
 
+	Iterator operator+=(size_type n)
+	{
+		p_ += n;
+		return *this;
+	}
+
 	Iterator operator--()
 	{
 		--p_;
+		return *this;
+	}
+
+	Iterator operator-=(size_type n)
+	{
+		p_ -= n;
 		return *this;
 	}
 
