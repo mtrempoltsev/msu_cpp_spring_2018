@@ -5,6 +5,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <memory>
+#include <sstream>
 
 template <typename T>
 class Calc
@@ -20,11 +21,13 @@ private:
         }
 
         size_t  i;
+        size_t pnt_cnt = 0;
         for (i = 0; i < str.length(); ++i) {
             if (!isdigit(str[i])) {
-                if (str[i] == '+' || str[i] == '-' ||
-                    str[i] == '*' || str[i] == '/')
-                {
+                if  (str[i] == '.' && pnt_cnt++ == 0) {
+                    continue;
+                } else if (str[i] == '+' || str[i] == '-' ||
+                           str[i] == '*' || str[i] == '/') {
                     break;
                 } else {
                     throw std::runtime_error("error");
@@ -36,7 +39,11 @@ private:
             throw std::runtime_error("error");
         }
 
-        T number(atoi(str.substr(0, i).c_str()));
+        std::stringstream ss;
+        ss << str.substr(0, i);
+        T number;
+        ss >> number;
+
         if (negative) {
             number = -number;
         }
@@ -87,7 +94,7 @@ public:
             }
         }
 
-        if (!isdigit(str.back())) {
+        if (!isdigit(str.back()) && str.back() != '.') {
             throw std::runtime_error("error");
         }
 
