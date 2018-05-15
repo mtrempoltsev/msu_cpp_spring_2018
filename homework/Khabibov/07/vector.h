@@ -150,7 +150,6 @@ public:
 	{
 		if (length_ == 0)
 		{
-			length_ = 0;
 			return;
 		}
 		else
