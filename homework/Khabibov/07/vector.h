@@ -13,30 +13,7 @@ public:
 	using pointer = T * ;
 	using size_type = size_t;
 
-	explicit Allocator()
-	{
-	};
-
-	~Allocator()
-	{
-	};
-
-	explicit Allocator(Allocator const&)
-	{
-	};
-
-	pointer address(reference r)
-	{
-		return &r;
-	};
-
-	const_pointer address(const_reference r)
-	{
-		return &r;
-	};
-
-	pointer allocate(size_type cnt,
-		typename std::allocator<void>::const_pointer = 0)
+	pointer allocate(size_type cnt)
 	{
 		return reinterpret_cast<pointer>(::operator new(cnt * sizeof(value_type)));
 	};
@@ -102,16 +79,18 @@ public:
 		return *this;
 	};
 
-	Iterator operator+(size_t i)
+	Iterator operator+(size_t i) const
 	{
-		ptr_ += i;
-		return *this;
+		Iterator result;
+		result.ptr_ = ptr_ + i;
+		return result;
 	};
 
-	Iterator operator-(size_t i)
+	Iterator operator-(size_t i) const
 	{
-		--ptr_ -= i;
-		return *this;
+		Iterator result;
+		result.ptr_ = ptr_ - i;
+		return result;
 	};
 };
 
@@ -135,7 +114,7 @@ public:
 		, length_(length)
 		, data_(alloc_.allocate(length * 2))
 	{
-		for (size_t i = 0; i < size_; i++)
+		for (size_t i = 0; i < length_; i++)
 			alloc_.construct(data_ + i);
 	};
 
@@ -169,10 +148,9 @@ public:
 
 	void pop_back()
 	{
-		if ((length_ == 1) || (length_ == 0))
+		if (length_ == 0)
 		{
-			length_ = 0;
-			alloc_.destroy(data_);
+			return;
 		}
 		else
 		{
@@ -243,7 +221,7 @@ public:
 		return std::reverse_iterator<Iterator<const T>>(begin());
 	};
 
-	void resize(const size_t newSize)
+	void resize(const size_t& newSize)
 	{
 		if (newSize < length_)
 			for (size_t i = newSize; i < length_; i++)
@@ -259,7 +237,39 @@ public:
 		length_ = newSize;
 	};
 
-	void reserve(const size_t newSize)
+	void reserve(const size_t& newSize)
+	{
+		if (newSize > size_)
+		{
+			T* newData = alloc_.allocate(newSize);
+			for (size_t i = 0; i < length_; i++)
+			{
+				alloc_.construct(newData + i, data_[i]);
+				alloc_.destroy(data_ + i);
+			}
+			std::swap(data_, newData);
+			alloc_.deallocate(newData, size_);
+			size_ = newSize;
+		}
+	};
+
+	void resize(size_t&& newSize)
+	{
+		if (newSize < length_)
+			for (size_t i = newSize; i < length_; i++)
+				alloc_.destroy(data_ + i);
+		else
+		{
+			if (newSize > length_)
+				if (newSize > size_)
+					reserve(newSize);
+			for (size_t i = length_; i < newSize; i++)
+				alloc_.construct(data_ + i);
+		}
+		length_ = newSize;
+	};
+
+	void reserve(size_t&& newSize)
 	{
 		if (newSize > size_)
 		{
