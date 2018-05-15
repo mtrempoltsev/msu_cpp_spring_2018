@@ -58,13 +58,11 @@ public:
         return *this;
     }
 
-    Iterator& operator+(size_t step){
-        pointer += step;
-        return *this;
+    Iterator operator+(size_t step){
+        return Iterator(pointer + step);
     }
-    Iterator& operator-(size_t step){
-        pointer -= step;
-        return *this;
+    Iterator operator-(size_t step){
+        return Iterator(pointer - step);
     }
 };
 
@@ -95,13 +93,11 @@ public:
         return *this;
     }
 
-    ReverseIterator& operator+(size_t step){
-        pointer -= step;
-        return *this;
+    ReverseIterator operator+(size_t step){
+        return ReverseIterator(pointer - step);
     }
-    ReverseIterator& operator-(size_t step){
-        pointer += step;
-        return *this;
+    ReverseIterator operator-(size_t step){
+        return ReverseIterator(pointer + step);
     }
 };
 
@@ -174,15 +170,15 @@ public:
         size_ = new_size;
     }
 
-    void resize(size_type new_size, T init){
+    void resize(size_type new_size, T& init){
         if (size_ < new_size)
             reserve(new_size);
         if(new_size > size_)
             for(size_type i = size_; i < new_size; i++)
-                allocator_.construct(data_ + i);
+                allocator_.construct(data_ + i, init);
         else if(new_size < size_){
             for(size_type i = new_size; i < size_; i++)
-                allocator_.destroy(data_ + i, init);
+                allocator_.destroy(data_ + i);
         }
         size_ = new_size;
     }
@@ -191,12 +187,15 @@ public:
     }
 
     void push_back(const T& element){
-        push_back(std::move(element));
+        if(size_ == capacity_)
+            reserve(capacity_*2);
+        data_[size_] = element;
+        ++size_;
     }
     void push_back(T&& element){
         if(size_ == capacity_)
             reserve(capacity_*2);
-        data_[size_] = element;
+        data_[size_] = std::move(element);
         ++size_;
     }
     void pop_back(){
