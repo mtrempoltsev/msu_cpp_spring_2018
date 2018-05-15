@@ -50,7 +50,7 @@ int main()
     }
     catch(...)
     {
-        std::cerr << "error" << std::endl;
+        std::cerr << "an error has occured" << std::endl;
         return 1;
     }
 
