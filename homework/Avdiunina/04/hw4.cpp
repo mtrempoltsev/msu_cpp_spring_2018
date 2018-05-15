@@ -1,4 +1,3 @@
-
 //
 // Created by polina997 on 3/16/18.
 //
@@ -8,27 +7,36 @@ using namespace std;
 
 class Matrix
 {
+private:
+
+    const int columns;
+    const int rows;
+    int** array;
 
     class Rows
     {
     public:
-        Rows(int *arrptr, int lenght) : len(lenght)
+        Rows(int *arrptr, int lenght) : len(lenght), arr(arrptr)
         {
-            int *abc = arrptr;
+            //int *abc = arrptr;
 
-            arr = new int [lenght];
-            for(int i = 0; i < lenght; i++)
-                arr[i] = *abc + i;
+
         }
 
-        int operator[](int j)
+        int& operator[](const int j)
         {
-            if (0 <= j && j < len){
+            if (0 <= j && j < len)
+            {
                 return arr[j];
             }
             else
                 throw std::out_of_range("");
 
+        }
+
+        ~Rows()
+        {
+            delete [] arr;
         }
 
     private:
@@ -93,24 +101,16 @@ public:
                      array[i][j] *= number;
          }
 
-         Rows operator [](int i){
+         Rows operator [](const int i){
 
              if (0 <= i && i < rows){
-                 Rows c(array[i], columns);
-                 return c;
+                 return Rows(array[i], columns);
+
              }
              else
                  throw std::out_of_range("");
 
          }
-
-
-private:
-
-    const int columns;
-    const int rows;
-    int** array;
-
 
 };
 

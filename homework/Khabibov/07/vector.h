@@ -33,6 +33,11 @@ public:
 		p = new(p) value_type(t);
 	};
 
+	void construct(pointer p, value_type&& t)
+	{
+		p = new(p) value_type(std::move(t));
+	};
+
 	void destroy(pointer p)
 	{
 		p->~value_type();
@@ -81,16 +86,12 @@ public:
 
 	Iterator operator+(size_t i) const
 	{
-		Iterator result;
-		result.ptr_ = ptr_ + i;
-		return result;
+		return (ptr_ + i);
 	};
 
 	Iterator operator-(size_t i) const
 	{
-		Iterator result;
-		result.ptr_ = ptr_ - i;
-		return result;
+		return (ptr_ - i);
 	};
 };
 
@@ -142,7 +143,7 @@ public:
 	{
 		if (size_ == length_)
 			reserve(size_ * 2);
-		alloc_.construct(data_ + length_, value);
+		alloc_.construct(data_ + length_, std::move(value));
 		length_++;
 	};
 
@@ -150,7 +151,7 @@ public:
 	{
 		if (length_ == 0)
 		{
-			return;
+			throw std::exception();
 		}
 		else
 		{
@@ -228,8 +229,7 @@ public:
 				alloc_.destroy(data_ + i);
 		else
 		{
-			if (newSize > length_)
-				if (newSize > size_)
+			if (newSize > size_)
 					reserve(newSize);
 			for (size_t i = length_; i < newSize; i++)
 				alloc_.construct(data_ + i);
@@ -238,38 +238,6 @@ public:
 	};
 
 	void reserve(const size_t& newSize)
-	{
-		if (newSize > size_)
-		{
-			T* newData = alloc_.allocate(newSize);
-			for (size_t i = 0; i < length_; i++)
-			{
-				alloc_.construct(newData + i, data_[i]);
-				alloc_.destroy(data_ + i);
-			}
-			std::swap(data_, newData);
-			alloc_.deallocate(newData, size_);
-			size_ = newSize;
-		}
-	};
-
-	void resize(size_t&& newSize)
-	{
-		if (newSize < length_)
-			for (size_t i = newSize; i < length_; i++)
-				alloc_.destroy(data_ + i);
-		else
-		{
-			if (newSize > length_)
-				if (newSize > size_)
-					reserve(newSize);
-			for (size_t i = length_; i < newSize; i++)
-				alloc_.construct(data_ + i);
-		}
-		length_ = newSize;
-	};
-
-	void reserve(size_t&& newSize)
 	{
 		if (newSize > size_)
 		{

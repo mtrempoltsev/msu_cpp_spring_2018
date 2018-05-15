@@ -44,7 +44,7 @@ public:
 
 
 template <class T>
-class Iterator : public std::iterator<std::forward_iterator_tag, T>
+class Iterator : public std::iterator<std::random_access_iterator_tag, T>
 {
 private:
     T *ptr_;
