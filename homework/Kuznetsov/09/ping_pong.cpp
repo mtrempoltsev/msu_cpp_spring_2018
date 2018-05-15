@@ -6,35 +6,33 @@
 const size_t ITERS = 1000000;
 std::mutex m;
 std::condition_variable conditionVariable;
-volatile int count = 0;
+int count = 0;
 
 
 void ping(){
     std::unique_lock<std::mutex> lock(m);
     while(count <= ITERS) {
 
-        //while(count % 2 == 1)
-        conditionVariable.notify_one();
-        conditionVariable.wait(lock);
+        while (count % 2 == 1)
+            conditionVariable.wait(lock);
 
         std::cout << "ping" << std::endl;
         ++count;
+        conditionVariable.notify_one();
     }
-    conditionVariable.notify_one();
 }
 void pong(){
     std::unique_lock<std::mutex> lock(m);
+
     while(count <= ITERS) {
 
-        //while (count % 2 == 0)
-        conditionVariable.notify_one();
-        conditionVariable.wait(lock);
+        while (count % 2 == 0)
+            conditionVariable.wait(lock);
+
         std::cout << "pong" << std::endl;
         ++count;
+        conditionVariable.notify_one();
     }
-    conditionVariable.notify_one();
-
-
 }
 
 int main() {

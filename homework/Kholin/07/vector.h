@@ -18,6 +18,14 @@ public:
     void deallocate(pointer ptr, size_type count) {
         free(ptr);
     }
+
+    void construct(pointer p) {
+        new (p) T();
+    }
+
+    void destroy (pointer p) {
+        p->~T();
+    }
 };
 
 template<typename T>
@@ -52,12 +60,12 @@ public:
         return *this;
     }
 
-    iterator& operator+(uint32_t i) {
+    iterator operator+(uint32_t i) {
         ptr_ += i;
         return *this;
     }
 
-    iterator& operator-(uint32_t i) {
+    iterator operator-(uint32_t i) {
         --ptr_ -= i;
         return *this;
     }
@@ -97,12 +105,12 @@ public:
         return *this;
     }
 
-    reverse_iterator& operator+(uint32_t i) {
+    reverse_iterator operator+(uint32_t i) {
         ptr_ -= i;
         return *this;
     }
 
-    reverse_iterator& operator-(uint32_t i) {
+    reverse_iterator operator-(uint32_t i) {
         ptr_ += i;
         return *this;
     }
@@ -113,24 +121,36 @@ private:
 template<typename T, typename Allocator = allocator<T> >
 class Vector {
 public:
-
     Vector() {
-        resize_(1);
+        reserve(1);
         size_ = 0;
     }
 
     Vector(const uint32_t n) {
-        resize_(n);
+        reserve(n);
         size_ = n;
+    }
+
+    Vector(const Vector<T>& Other) {
+        reserve(Other.capacity());
+        for (uint32_t i = 0; i < Other.size(); ++i) {
+            *(data_ + i) = Other[i];
+        }
+        size_ = Other.size();
+        length_ = Other.capacity();
     }
 
     T& operator[](const uint32_t i) {
         return *(data_ + i);
     }
+
+    T& operator[](const uint32_t i) const {
+        return *(data_ + i);
+    }
     
     void push_back(const T& value) {
         if (size_ == length_) {
-            resize_(length_ * 2);
+            reserve(length_ * 2);
         }
         *(data_ + size_) = value;
         ++size_;
@@ -138,70 +158,88 @@ public:
 
     void push_back(T&& value) {
         if (size_ == length_) {
-            resize_(length_ * 2);
+            reserve(length_ * 2);
         }
         *(data_ + size_) = std::move(value);
         ++size_;
     }
     
     void pop_back() {
-        (data_ + (size_ - 1))->~T();
+        allocator_.destroy(data_ + (size_ - 1));
         --size_;
     }
     
-    bool empty() {
+    bool empty() const {
         return (size_ == 0);
     }
     
-    uint32_t size() {
+    uint32_t size() const {
         return size_;
     }
 
     void clear() {
         for (uint32_t i = 0; i < size_; ++i) {
-            (data_ + i)->~T();
+            allocator_.destroy(data_ + i);
         }
         size_ = 0;
     }
     
-    iterator<T> begin() {
+    iterator<T> begin() const {
         iterator<T> it(data_);
         return it;
     }
     
-    iterator<T> end() {
+    iterator<T> end() const {
         iterator<T> it(data_ + (size_));
         return it;
     }
     
-    reverse_iterator<T> rbegin() {
+    reverse_iterator<T> rbegin() const {
         reverse_iterator<T> it(data_ + (size_ - 1));
         return it;
     }
     
-    reverse_iterator<T> rend() {
+    reverse_iterator<T> rend() const {
         reverse_iterator<T> it(data_ - 1);
         return it;
     }
     
     void resize(uint32_t size) {
         if (length_ < size) {
-            resize_(size);
+            reserve(size);
         }
         for (uint32_t i = size_; i < size; ++i) {
-            data_[i] = T();
+            allocator_.construct(data_ + i);
         }
         for (uint32_t i = size; i < size_; ++i) {
-            (data_ + i)->~T();
+            allocator_.destroy(data_ + i);
         }
         size_ = size;
     }
 
-    void reserve(uint32_t size) {
-        resize_(size);
+    void reserve(uint32_t length) {
+        if (length > size_) {
+            T* tempData = allocator_.allocate(length);
+            std::move(data_, data_ + size_, tempData);
+            for (T* it = data_; it != data_ + size_; ++it) {
+                allocator_.destroy(it);
+            }
+            allocator_.deallocate(data_, length_);
+            data_ = tempData;
+            length_ = length;
+        } else {
+            T* tempData = allocator_.allocate(length);
+            std::move(data_, data_ + length, tempData);
+            for (T* it = data_; it != data_ + size_; ++it) {
+                allocator_.destroy(it);
+            }
+            allocator_.deallocate(data_, length_);
+            data_ = tempData;
+            length_ = length;
+        }
     }
     
-    uint32_t capacity() {
+    uint32_t capacity() const {
         return length_;
     }
 
@@ -214,26 +252,4 @@ private:
     uint32_t size_ = 0;
     uint32_t length_ = 0;
     Allocator allocator_;
-
-    void resize_(size_t length) {
-        if (length > size_) {
-            T* tempData = allocator_.allocate(length);
-            std::copy(data_, data_ + size_, tempData);
-            for (T* it = data_; it != data_ + size_; ++it) {
-                it->~T();
-            }
-            allocator_.deallocate(data_, length_);
-            data_ = tempData;
-            length_ = length;
-        } else {
-            T* tempData = allocator_.allocate(length);
-            std::move(data_, data_ + length, tempData);
-            for (T* it = data_; it != data_ + size_; ++it) {
-                it->~T();
-            }
-            allocator_.deallocate(data_, length_);
-            data_ = tempData;
-            length_ = length;
-        }
-    }
 };

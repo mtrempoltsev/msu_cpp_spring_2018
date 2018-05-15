@@ -21,7 +21,7 @@ public:
     size_t max_size() const noexcept;
 
     template<typename ... Ts>
-    void construct(T * ptr, Ts ... args);
+    void construct(T * ptr, Ts&& ... args);
 
     void destroy(T * ptr);
 };
@@ -49,11 +49,11 @@ public:
 
     Iterator& operator++();
 
-    const Iterator operator++(int);
+    Iterator operator++(int);
 
     Iterator& operator--();
 
-    const Iterator operator--(int);
+    Iterator operator--(int);
 
     Iterator& operator+=(ssize_t n);
 
@@ -136,7 +136,7 @@ size_t Allocator<T>::max_size() const noexcept {
 
 template<class T>
 template<typename ... Ts>
-void Allocator<T>::construct(T *ptr, Ts ... args) {
+void Allocator<T>::construct(T *ptr, Ts&& ... args) {
     new (ptr) T(std::forward<Ts>(args) ...);
 }
 
@@ -182,14 +182,14 @@ Iterator<T> & Iterator<T>::operator--() {
 }
 
 template<typename T>
-const Iterator<T> Iterator<T>::operator++(int) {
+Iterator<T> Iterator<T>::operator++(int) {
     auto old = *this;
     ++ptr_;
     return old;
 }
 
 template<typename T>
-const Iterator<T> Iterator<T>::operator--(int) {
+Iterator<T> Iterator<T>::operator--(int) {
     auto old = *this;
     --ptr_;
     return old;
