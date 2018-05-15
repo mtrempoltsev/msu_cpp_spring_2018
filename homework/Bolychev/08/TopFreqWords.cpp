@@ -8,6 +8,7 @@ int main(int argc, char* argv[])
     try {
         if (argc != 2) {
             std::cerr << "Wrong input" << std::endl;
+            return 1;
         }
 
         std::ifstream file(argv[1]);
