@@ -21,14 +21,10 @@ class Expression
 {
 	T value_;
 	Operation op_;
-	Expression<T>* left_;
-	Expression<T>* right_;
+	std::unique_ptr<Expression<T>> left_;
+	std::unique_ptr<Expression<T>> right_;
 public:
 	Expression<T>() : value_(0), op_(Operation::val), left_(nullptr), right_(nullptr)
-	{
-	};
-
-	Expression<T>(const Expression& a) : value_(a.value_), op_(a.op_), left_(a.left_), right_(a.right_)
 	{
 	};
 
@@ -56,13 +52,13 @@ public:
 		return this->value_;
 	}
 
-	void createExpression(const std::string& stringOfExpression)
+	static std::unique_ptr<Expression<T>> createExpression(const std::string& stringOfExpression)
 	{
 		std::string remainingStr = stringOfExpression;
-		this->parseSumOrSubstract(remainingStr);
+		return std::move(parseSumOrSubstract(remainingStr));
 	}
 
-	bool parseInt(std::string& expressionInString, T& result)
+	static bool parseInt(std::string& expressionInString, T& result)
 	{
 		std::string remainingStr = expressionInString;
 		size_t numSize = 0;
@@ -78,14 +74,7 @@ public:
 			{
 				numSize++;
 			}
-			try
-			{
-				result = std::stoi(remainingStr.substr(flag, numSize));
-			}
-			catch (...)
-			{
-				throw Error();
-			}
+			result = std::stoi(remainingStr.substr(flag, numSize));
 			if (flag)
 				result = -result;
 			expressionInString = remainingStr.substr(numSize);
@@ -94,7 +83,7 @@ public:
 		return false;
 	}
 
-	bool parseOperator(std::string& expressionInString, Operation& op)
+	static bool parseOperator(std::string& expressionInString, Operation& op)
 	{
 		std::string remainingStr = expressionInString;
 
@@ -132,25 +121,17 @@ public:
 		return succeed;
 	}
 
-	void parseAtom(std::string& expressionInString)
+	static std::unique_ptr<Expression<T>> parseAtom(std::string& expressionInString)
 	{
-		Expression<T>* expr = new(Expression<T>);
+		std::unique_ptr<Expression<T>> expr = std::make_unique<Expression<T>>();
 		if (!parseInt(expressionInString, expr->value_))
 			throw Error();
-		*this = *expr;
+		return std::move(expr);
 	}
 
-	void parseSumOrSubstract(std::string& expressionInString)
+	static std::unique_ptr<Expression<T>> parseSumOrSubstract(std::string& expressionInString)
 	{
-		Expression<T>* left = new(Expression<T>);
-		try
-		{
-			left->parseMultiplyOrDivide(expressionInString);
-		}
-		catch (const Error& error)
-		{
-			throw Error();
-		}
+		std::unique_ptr<Expression<T>> left = parseMultiplyOrDivide(expressionInString);
 		while (!expressionInString.empty())
 		{
 			Operation op = Operation::val;
@@ -159,35 +140,24 @@ public:
 				throw Error();
 			if (op != Operation::sum && op != Operation::substract)
 			{
-				*this = *left;
-				return;
+				return std::move(left);
 			}
 			expressionInString = remainingStr;
 
-			Expression<T>* right = new(Expression<T>);
-			try
-			{
-				right->parseMultiplyOrDivide(expressionInString);
-			}
-			catch (const Error& error)
-			{
-				throw Error();
-			}
+			std::unique_ptr<Expression<T>> right = parseMultiplyOrDivide(expressionInString);
 
-			Expression<T>* expr = new (Expression<T>);
-			expr->left_ = left;
-			expr->right_ = right;
+			std::unique_ptr<Expression<T>> expr = std::make_unique<Expression<T>>();
+			expr->left_ = std::move(left);
+			expr->right_ = std::move(right);
 			expr->op_ = op;
-			left = expr;
+			left = std::move(expr);
 		}
-		*this = *left;
-		return;
+		return std::move(left);
 	}
 
-	void parseMultiplyOrDivide(std::string& expressionInString)
+	static std::unique_ptr<Expression<T>> parseMultiplyOrDivide(std::string& expressionInString)
 	{
-		Expression<T>* left = new(Expression<T>);
-		left->parseAtom(expressionInString);
+		std::unique_ptr<Expression<T>> left = parseAtom(expressionInString);
 		while (!expressionInString.empty())
 		{
 			Operation op = Operation::val;
@@ -196,31 +166,21 @@ public:
 				throw Error();
 			if (op != Operation::multiply && op != Operation::divide)
 			{
-				*this = *left;
-				return;
+				return std::move(left);
 			}
 			expressionInString = remainingStr;
 
-			Expression<T>* right = new(Expression<T>);
-			try
-			{
-				right->parseAtom(expressionInString);
-				if (op == Operation::divide && right->value_ == 0)
-					throw Error();
-			}
-			catch (const Error& error)
-			{
+			std::unique_ptr<Expression<T>> right = parseAtom(expressionInString);
+			if (op == Operation::divide && right->value_ == 0)
 				throw Error();
-			}
 
-			Expression<T>* expr = new (Expression<T>);
-			expr->left_ = left;
-			expr->right_ = right;
+			std::unique_ptr<Expression<T>> expr = std::make_unique<Expression<T>>();
+			expr->left_ = std::move(left);
+			expr->right_ = std::move(right);
 			expr->op_ = op;
-			left = expr;
+			left = std::move(expr);
 		}
-		*this = *left;
-		return;
+		return std::move(left);
 	}
 };
 
@@ -230,17 +190,17 @@ class Calculator
 	std::string str_;
 	std::unique_ptr<Expression<T>> expr_;
 public:
-	Calculator() : str_("0"), expr_(std::make_unique<Expression<T>>())
+	Calculator() : str_("0")
 	{
 	};
 
-	Calculator(std::string& s) : str_(s), expr_(std::make_unique<Expression<T>>())
+	Calculator(std::string& s) : str_(s)
 	{
 	};
 
 	T calculate()
 	{
-		expr_->createExpression(str_);
+		expr_ = std::move(Expression<T>::createExpression(str_));
 		T result = expr_->calculateExpression();
 		return result;
 	};
@@ -248,11 +208,11 @@ public:
 
 int main(int argc, char* argv[])
 {
-	if (argc != 2)
-	{
-		std::cerr << "error" << std::endl;
-		return 1;
-	}
+		if (argc != 2)
+		{
+			std::cerr << "error" << std::endl;
+			return 1;
+		}
 	try
 	{
 		std::string expressionInString(argv[1]);
