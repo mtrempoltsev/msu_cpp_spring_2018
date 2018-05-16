@@ -315,7 +315,7 @@ public:
 	{ 
 		if (size_ == capacity_) 
 			reserve(capacity_ * 2); 
-		alloc_.construct(size_, el);
+		alloc_.construct(buffer + size_, el);
 		size_++; 
 	} 
 
@@ -323,7 +323,7 @@ public:
 	{ 
 		if (size_ == capacity_) 
 			reserve(capacity_ * 2); 
-		buffer[size_] = std::move(el); 
+		alloc_.construct(buffer + size_, std::move(el));
 		size_++; 
 	} 
 
