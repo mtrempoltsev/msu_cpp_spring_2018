@@ -53,14 +53,7 @@ public:
         --ptr_;
         return  *this;
     }
-    Iterator& operator+(size_t step){
-        ptr_+= step;
-        return *this;
-    }
-    Iterator& operator-(size_t step){
-        ptr_ -= step;
-        return *this;
-    }
+   
 };
 
 template<typename T>
@@ -87,14 +80,7 @@ public:
         ++ptr_;
         return  *this;
     }
-    ReverseIterator& operator+(size_t step){
-        ptr_-= step;
-        return *this;
-    }
-    ReverseIterator& operator-(size_t step){
-        ptr_ += step;
-        return *this;
-    }
+  
 };
 
 
