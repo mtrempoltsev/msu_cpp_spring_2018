@@ -27,6 +27,10 @@ public:
         new (p) T(x);
     }
 
+    void construct(pointer p, T&& x) {
+        new (p) T(std::move(x));
+    }
+
     void destroy (pointer p) {
         p->~T();
     }
@@ -164,7 +168,7 @@ public:
         if (size_ == length_) {
             reserve(length_ * 2);
         }
-        allocator_.construct(data_ + size_, value);
+        allocator_.construct(data_ + size_, std::move(value));
         ++size_;
     }
     
@@ -233,9 +237,12 @@ public:
             length_ = length;
         } else {
             T* tempData = allocator_.allocate(length);
-            for (uint32_t i = 0; i < length; ++i) {
+            for (uint32_t i = 0; i < size_; ++i) {
                 allocator_.construct(tempData + i, *(data_ + i));
                 allocator_.destroy(data_ + i);
+            }
+            for (T* it = data_; it != data_ + size_; ++it) {
+                allocator_.destroy(it);
             }
             allocator_.deallocate(data_, length_);
             data_ = tempData;
