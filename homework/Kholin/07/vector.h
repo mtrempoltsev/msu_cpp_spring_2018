@@ -241,9 +241,6 @@ public:
                 allocator_.construct(tempData + i, *(data_ + i));
                 allocator_.destroy(data_ + i);
             }
-            for (T* it = data_; it != data_ + size_; ++it) {
-                allocator_.destroy(it);
-            }
             allocator_.deallocate(data_, length_);
             data_ = tempData;
             length_ = length;
