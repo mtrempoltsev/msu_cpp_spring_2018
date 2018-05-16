@@ -166,9 +166,9 @@ Vector<T, Allocator> & Vector<T, Allocator>::operator=(const Vector<T, Allocator
 {
 	if (this != &other) {
 		pointer newData = _alloc.allocate(other._capacity);
-		std::copy(other._array, other._array + other._size, newData);
-		std::swap(_array, newData);
-		_alloc.deallocate(newData, other._size); // нужно ли это делать или оно и так удалит правильно newData?
+		std::memcpy(newData, other._array, other._size * sizeof(value_type));
+        std::swap(_array, newData);
+		_alloc.deallocate(newData, other._size);
 		_capacity = other._capacity;
 		_size = other._size;
 	}
@@ -284,5 +284,3 @@ bool Vector<T, Allocator>::empty() const noexcept
 {
 	return _size == 0;
 }
-//------------------------------==============------------------------------
-#include <iostream>
