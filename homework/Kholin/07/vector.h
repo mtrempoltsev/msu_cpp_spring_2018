@@ -23,6 +23,10 @@ public:
         new (p) T();
     }
 
+    void construct(pointer p, const T& x) {
+        new (p) T(x);
+    }
+
     void destroy (pointer p) {
         p->~T();
     }
@@ -134,7 +138,7 @@ public:
     Vector(const Vector<T>& Other) {
         reserve(Other.capacity());
         for (uint32_t i = 0; i < Other.size(); ++i) {
-            *(data_ + i) = std::move(Other[i]);
+            allocator_.construct(data_ + i, Other[i]);
         }
         size_ = Other.size();
         length_ = Other.capacity();
@@ -152,7 +156,7 @@ public:
         if (size_ == length_) {
             reserve(length_ * 2);
         }
-        *(data_ + size_) = std::move(value);
+        allocator_.construct(data_ + size_, value);
         ++size_;
     }
 
