@@ -134,8 +134,7 @@ public:
     Vector(const Vector<T>& Other) {
         reserve(Other.capacity());
         for (uint32_t i = 0; i < Other.size(); ++i) {
-            allocator_.construct(data_ + i);
-            *(data_ + i) = Other[i];
+            *(data_ + i) = std::move(Other[i]);
         }
         size_ = Other.size();
         length_ = Other.capacity();
@@ -153,8 +152,7 @@ public:
         if (size_ == length_) {
             reserve(length_ * 2);
         }
-        allocator_.construct(data_ + size_);
-        *(data_ + size_) = value;
+        *(data_ + size_) = std::move(value);
         ++size_;
     }
 
