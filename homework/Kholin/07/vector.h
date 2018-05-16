@@ -134,6 +134,7 @@ public:
     Vector(const Vector<T>& Other) {
         reserve(Other.capacity());
         for (uint32_t i = 0; i < Other.size(); ++i) {
+            allocator_.construct(data_ + i);
             *(data_ + i) = Other[i];
         }
         size_ = Other.size();
@@ -144,7 +145,7 @@ public:
         return *(data_ + i);
     }
 
-    T& operator[](const uint32_t i) const {
+    const T& operator[](const uint32_t i) const {
         return *(data_ + i);
     }
     
@@ -152,6 +153,7 @@ public:
         if (size_ == length_) {
             reserve(length_ * 2);
         }
+        allocator_.construct(data_ + size_);
         *(data_ + size_) = value;
         ++size_;
     }
