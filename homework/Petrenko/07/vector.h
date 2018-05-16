@@ -8,6 +8,7 @@
 #include <iterator>
 #include <memory>
 #include <limits>
+#include <utility>
 
 template <class T>
 class Allocator
@@ -18,6 +19,11 @@ public:
     void deallocate(T * ptr, size_t count);
 
     size_t max_size() const noexcept;
+
+    template<typename ... Ts>
+    void construct(T * ptr, Ts&& ... args);
+
+    void destroy(T * ptr);
 };
 
 template <class T>
@@ -43,11 +49,11 @@ public:
 
     Iterator& operator++();
 
-    const Iterator operator++(int);
+    Iterator operator++(int);
 
     Iterator& operator--();
 
-    const Iterator operator--(int);
+    Iterator operator--(int);
 
     Iterator& operator+=(ssize_t n);
 
@@ -68,7 +74,7 @@ private:
     size_t size_;
     T * buf_;
 
-    void realloc(size_t new_size);
+    void realloc(size_t new_cap);
 public:
     using iterator = Iterator<T>;
     using reverse_iterator = std::reverse_iterator<iterator>;
@@ -83,7 +89,7 @@ public:
 
     T& operator[](size_t n);
 
-    void push_back(T & value);
+    void push_back(const T & value);
 
     void push_back(T && value);
 
@@ -105,7 +111,7 @@ public:
 
     reverse_iterator rend() noexcept;
 
-    void reserve(size_t new_size);
+    void reserve(size_t new_cap);
 
     void resize(size_t count);
 
@@ -128,6 +134,16 @@ size_t Allocator<T>::max_size() const noexcept {
     return std::numeric_limits<size_t>::max() / sizeof(T);
 }
 
+template<class T>
+template<typename ... Ts>
+void Allocator<T>::construct(T *ptr, Ts&& ... args) {
+    new (ptr) T(std::forward<Ts>(args) ...);
+}
+
+template<class T>
+void Allocator<T>::destroy(T *ptr) {
+    ptr->~T();
+}
 
 template<typename T>
 Iterator<T>::Iterator(T * ptr) : ptr_(ptr) {
@@ -166,14 +182,14 @@ Iterator<T> & Iterator<T>::operator--() {
 }
 
 template<typename T>
-const Iterator<T> Iterator<T>::operator++(int) {
+Iterator<T> Iterator<T>::operator++(int) {
     auto old = *this;
     ++ptr_;
     return old;
 }
 
 template<typename T>
-const Iterator<T> Iterator<T>::operator--(int) {
+Iterator<T> Iterator<T>::operator--(int) {
     auto old = *this;
     --ptr_;
     return old;
@@ -227,13 +243,15 @@ Vector<T, Alloc>::Vector(size_t init_size, const T &def, const Alloc &allocator)
           cap_(init_size),
           size_(init_size),
           buf_(alloc_.allocate(cap_)) {
-    new (buf_) T(def);
+    for(size_t j = 0; j < size_; ++j) {
+        alloc_.construct(buf_ + j, def);
+    }
 }
 
 template<class T, class Alloc>
 Vector<T, Alloc>::~Vector() {
     for(size_t j = 0; j < size_; ++j) {
-        buf_[j].~T();
+        alloc_.destroy(buf_ + j);
     }
     alloc_.deallocate(buf_, cap_);
 }
@@ -241,9 +259,11 @@ Vector<T, Alloc>::~Vector() {
 template<class T, class Alloc>
 void Vector<T, Alloc>::realloc(size_t new_cap) {
     T* new_buf = alloc_.allocate(new_cap);
-    std::copy(buf_, buf_ + std::min(size_, new_cap), new_buf);
+    for(size_t j = 0; j < std::min(size_, new_cap); ++j) {
+        alloc_.construct(new_buf + j, buf_[j]);
+    }
     for(size_t j = 0; j < size_; ++j) {
-        buf_[j].~T();
+        alloc_.destroy(buf_ + j);
     }
     alloc_.deallocate(buf_, cap_);
     buf_ = new_buf;
@@ -257,11 +277,11 @@ T &Vector<T, Alloc>::operator[](size_t n) {
 }
 
 template<class T, class Alloc>
-void Vector<T, Alloc>::push_back(T &value) {
+void Vector<T, Alloc>::push_back(const T &value) {
     if(size_ == cap_) {
         realloc(2 * cap_);
     }
-    buf_[size_++] = value;
+    alloc_.construct(buf_ + size_++, value);
 }
 
 template<class T, class Alloc>
@@ -269,13 +289,14 @@ void Vector<T, Alloc>::push_back(T &&value) {
     if(size_ == cap_) {
         realloc(2 * cap_);
     }
-    new (buf_ + size_++) T(std::move(value));
+    alloc_.construct(buf_ + size_++, std::forward<T>(value));
 }
 
 template<class T, class Alloc>
 void Vector<T, Alloc>::pop_back() {
     if(size_ > 0) {
-        buf_[--size_].~T();
+        --size_;
+        alloc_.destroy(buf_ + size_);
     }
 }
 
@@ -297,7 +318,7 @@ size_t Vector<T, Alloc>::capacity() const noexcept {
 template<class T, class Alloc>
 void Vector<T, Alloc>::clear() noexcept {
     for(size_t i = 0; i < size_; ++i) {
-        buf_[i].~T();
+        alloc_.destroy(buf_ + i);
     }
     size_ = 0;
 }
@@ -332,13 +353,15 @@ template<class T, class Alloc>
 void Vector<T, Alloc>::resize(size_t count) {
     if(count < size_) {
         for(size_t j = count; j < size_; ++j) {
-            buf_[j].~T();
+            alloc_.destroy(buf_ + j);
         }
     } else if(count > size_) {
         if(count > cap_) {
             realloc(std::max(2 * cap_, count));
         }
-        new (buf_ + size_) T[count - size_]();
+        for(size_t j = size_; j < count; ++j) {
+            alloc_.construct(buf_ + j);
+        }
     }
     size_ = count;
 }
@@ -347,14 +370,14 @@ template<class T, class Alloc>
 void Vector<T, Alloc>::resize(size_t count, const T &value) {
     if(count < size_) {
         for(size_t j = count; j < size_; ++j) {
-            buf_[j].~T();
+            alloc_.destroy(buf_ + j);
         }
     } else if(count > size_) {
         if(count > cap_) {
             realloc(std::max(2 * cap_, count));
         }
         for(size_t j = size_; j < count; ++j) {
-            new(buf_ + j) T(value);
+            alloc_.construct(buf_ + j, value);
         }
     }
     size_ = count;

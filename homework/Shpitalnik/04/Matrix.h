@@ -1,21 +1,23 @@
+#include <memory>
+
 class Col{
     int rows;
-    double *data;
+    std::unique_ptr<double[]> data;
 public:
-    Col(int r);
+    Col(int r = 1);
     Col(const Col& c);
     double &operator[](int index);
     const double &operator[](int index) const;
-    bool operator== (const Col &h) const;
+    bool operator!= (const Col &c) const;
+    Col& operator=(const Col& c);
     Col &operator*= (double x);
-    ~Col();
 
 };
 
 
 class Matrix{
     int rows, cols;
-    Col **data;
+    std::unique_ptr<Col[]> data;
 public:
     Matrix(int c, int r);
     Matrix(const Matrix& m);
@@ -26,16 +28,12 @@ public:
     bool operator== (const Matrix &m) const;
     bool operator!= (const Matrix &m) const;
     Matrix &operator*= (double x);
-    ~Matrix();
 };
 
 
-Col::Col(int r): rows(r) {
-    data = new double[r];
-}
+Col::Col(int r): rows(r), data(std::make_unique<double[]>(rows)) {}
 
-Col::Col(const Col &c): rows(c.rows) {
-    data = new double[rows];
+Col::Col(const Col &c): rows(c.rows), data(std::make_unique<double[]>(rows)) {
     for (int i =0; i<rows; i++)
         data[i] = c.data[i];
 }
@@ -59,28 +57,31 @@ Col &Col::operator*=(double x) {
     return *this;
 }
 
-bool Col::operator==(const Col &h) const{
+bool Col::operator!=(const Col &c) const{
     for (int i=0; i<rows; i++)
-        if (this->data[i] != h.data[i])
-            return false;
-    return true;
-}
-
-Col::~Col() {
-    delete[] data;
+        if (this->data[i] != c.data[i])
+            return true;
+    return false;
 }
 
 
-Matrix::Matrix(int c, int r): rows(r), cols(c){
-    data = new Col* [cols];
+Col& Col::operator=(const Col &c) {
+    rows = c.rows;
+    data = std::make_unique<double[]>(rows);
+    for(int i = 0;i<rows;i++)
+        data[i] = c.data[i];
+    return *this;
+}
+
+
+
+Matrix::Matrix(int c, int r): rows(r), cols(c), data(std::make_unique<Col[]>(c)){
     for(int i=0; i<cols; i++)
-        data[i] = new Col(rows);
+        data[i] = Col(rows);
 }
 
-Matrix::Matrix(const Matrix &m): rows(m.rows), cols(m.cols) {
-    data = new Col* [cols];
+Matrix::Matrix(const Matrix &m): rows(m.rows), cols(m.cols), data(std::make_unique<Col[]>(cols)) {
     for(int i=0; i<cols; i++) {
-        data[i] = new Col(rows);
         data[i] = m.data[i];
     }
 }
@@ -88,20 +89,20 @@ Matrix::Matrix(const Matrix &m): rows(m.rows), cols(m.cols) {
 Col& Matrix::operator[](int index) {
     if (index >= cols)
         throw std::out_of_range("");
-    return *(data[index]);
+    return data[index];
 
 }
 
 const Col& Matrix::operator[](int index) const {
     if (index >= cols)
         throw std::out_of_range("");
-    return *(data[index]);
+    return  data[index];
 
 }
 
 Matrix &Matrix::operator*=(double x) {
     for (int i=0;i<cols;i++)
-        *(data[i]) *= x;
+        data[i] *= x;
     return *this;
 }
 
@@ -126,8 +127,3 @@ bool Matrix::operator!=(const Matrix &m) const {
     return !(*this == m);
 }
 
-Matrix::~Matrix() {
-    for(int i=0; i<cols; i++)
-        delete data[i];
-    delete[] data;
-}

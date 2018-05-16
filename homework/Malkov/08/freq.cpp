@@ -2,41 +2,30 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include <algorithm>
-
-struct dict {
-    std::string word;
-    size_t count;
-};
 
 namespace params {
     constexpr size_t TOPN = 10;
-    std::vector<dict> data;
+    std::unordered_map<std::string, size_t> result;
 }
 
-int inbase(std::string word) {
-    for (int i = 0; i < params::data.size(); i++) {
-        if (params::data[i].word == word) { return i; }
-    }
-    return -1;
+bool compare(const std::string &a, const std::string &b) {
+    return (params::result[a] > params::result[b]); 
 }
-
-bool compare(const dict &a, const dict &b) { return (a.count > b.count); }
 
 int main(int argc, char *argv[]) {
+    if (argc != 2) { return 1; }
     std::ifstream fin(argv[1]);
+    if (!fin) { return 1; }
+    std::vector<std::string> words;
     std::string s;
     while (fin >> s) {
-        dict temp;
-        if (inbase(s) == -1) {
-            temp.word = std::move(s);
-            temp.count = 1;
-            params::data.push_back(temp);
-        } else { params::data[inbase(s)].count++; }
+        if (!params::result[s]++) { words.push_back(std::move(s));}
     }
-    sort(params::data.begin(), params::data.end(), compare);
-    std::ofstream fout("output.txt", std::ios_base::app);
-    for (int i = 0; i < params::data.size() && i < params::TOPN; ++i) {
-        fout << params::data[i].word << ' ' << params::data[i].count << std::endl;
+    sort(words.begin(), words.end(), compare);
+    for (int i = 0; i < words.size() && i < params::TOPN; ++i) {
+        std::cout << params::result[words[i]] << ' ' << words[i] << std::endl;
     }
+    return 0;
 }

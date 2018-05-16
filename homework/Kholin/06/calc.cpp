@@ -8,28 +8,11 @@ class Error {
 template <typename T>
 class Calculator {
 public:
-    Calculator(const std::string& input) {
+    T Calculate(const std::string& input) {
         std::string inputWithoutSpaces = deleteSpaces(input);
-        try {
-            _result = solve(inputWithoutSpaces, 0, inputWithoutSpaces.length(), 1);
-        }
-        catch(const Error& error) {
-            _isError = true;
-            std::cout << "error" << std::endl;
-        }
-    }
-
-    bool isError() {
-        return _isError;
-    }
-    
-    T result() {
-        return _result;
+        return solve(inputWithoutSpaces, 0, inputWithoutSpaces.length(), 1);
     }
 private:
-    bool _isError = false;
-    T _result;
-
     std::string deleteSpaces(const std::string& input) {
         std::string answer = "";
         for (uint32_t i = 0; i < input.length(); ++i) {
@@ -50,38 +33,18 @@ private:
                     throw Error();
                 }
                 if (i == begin) {
-                    try {
-                        return solve(input, i + 1, end, minus);
-                    }
-                    catch(const Error& error) {
-                        throw error;
-                    }
+                    return solve(input, i + 1, end, minus);
                 }
-                try {
-                    return minus * solve(input, begin, i, 1) + solve(input, i + 1, end, 1);
-                }
-                catch(const Error& error) {
-                    throw error;
-                }
+                return minus * solve(input, begin, i, 1) + solve(input, i + 1, end, 1);
             }
             if (input[i] == '-') {
                 if (i + 1 == end) {
                     throw Error();
                 }
                 if (i == begin) {
-                    try {
-                        return solve(input, i + 1, end, -minus);
-                    }
-                    catch(const Error& error) {
-                        throw error;
-                    }
+                    return solve(input, i + 1, end, -minus);
                 }
-                try {
-                    return minus * solve(input, begin, i, 1) + solve(input, i + 1, end, -1);
-                }
-                catch(const Error& error) {
-                    throw error;
-                }
+                return minus * solve(input, begin, i, 1) + solve(input, i + 1, end, -1);
             }
         }
         for (uint32_t i = begin; i < end; ++i) {
@@ -89,25 +52,15 @@ private:
                 if (i + 1 == end) {
                     throw Error();
                 }
-                try {
-                    return minus * (solve(input, begin, i, 1) * solve(input, i + 1, end, 1));
-                }
-                catch(const Error& error) {
-                    throw error;
-                }
+                return minus * (solve(input, begin, i, 1) * solve(input, i + 1, end, 1));
             }
             if (input[i] == '/') {
                 if (i + 1 == end) {
                     throw Error();
                 }
                 T x, y;
-                try {
-                    x = solve(input, begin, i, 1);
-                    y = solve(input, i + 1, end, 1);
-                }
-                catch(const Error& error) {
-                    throw error;
-                }
+                x = solve(input, begin, i, 1);
+                y = solve(input, i + 1, end, 1);
                 if (y != 0) {
                     return minus * x / y;
                 } else {
@@ -132,11 +85,13 @@ int main(int argc, char* argv[]) {
         std::cout << "error" << std::endl;
         return 1;
     }
-    auto calc = new Calculator<int>(std::string(argv[1]));
-    if (!calc->isError()) {
-        std::cout << calc->result() << std::endl;
-        return 0;
-    } else {
+    auto calc = new Calculator<int>();
+    try {
+        std::cout << calc->Calculate(std::string(argv[1])) << std::endl;
+    }
+    catch(const Error& error) {
+        std::cout << "error" << std::endl;
         return 1;
     }
+    return 0;
 }

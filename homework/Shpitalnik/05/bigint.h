@@ -1,29 +1,32 @@
 #include <iostream>
+#include <memory>
 
 class BigInt{
 
     int size;
     int num_size;
-    char* data = nullptr;
+    std::unique_ptr<char[]> data = nullptr;
     bool is_neg = false;
     void extend();
     void shift(int i=1);
-    void is_null();
+    bool is_null();
+    friend BigInt minus(const BigInt* a, const BigInt* b, const char op);
+    friend BigInt plus(const BigInt* a, const BigInt* b);
     bool is_ge_pos(const BigInt& other) const;
     bool is_le_pos(const BigInt& other) const;
 public:
     BigInt(long long i = 0);
     BigInt(const BigInt& copy);
-    BigInt (BigInt&& moved);
+    BigInt (BigInt&& moved) noexcept;
     BigInt& operator= (const BigInt& copy);
-    BigInt& operator= (BigInt&& moved);
+    BigInt& operator= (BigInt&& moved) noexcept;
     bool operator== (const BigInt& other) const;
     bool operator!= (const BigInt& other) const;
     bool operator<= (const BigInt& other) const;
     bool operator>= (const BigInt& other) const;
     bool operator< (const BigInt& other) const;
     bool operator> (const BigInt& other) const;
-    BigInt operator- ();
+    BigInt operator- () const;
     BigInt operator/ (const BigInt& other) const;
     BigInt operator/= (const BigInt& other);
     BigInt operator* (const BigInt& other) const;
@@ -32,18 +35,18 @@ public:
     BigInt operator+= (const BigInt& other);
     BigInt operator- (const BigInt& other) const;
     BigInt operator-= (const BigInt& other);
-    ~BigInt();
 
     friend std::ostream& operator <<(std::ostream& os, const BigInt& obj);
 };
 
 void BigInt::extend() {
-    size*= 2;
-    data = (char*) realloc(data, size);
+    auto newData = std::make_unique<char[]>(size*2);
+    std::copy(data.get(), data.get() + size, newData.get());
+    data.swap(newData);
+    size = size*2;
 }
 
-BigInt::BigInt(long long i): size(8), num_size(0) {
-    data = new char[size];
+BigInt::BigInt(long long i): size(2), num_size(0), data(std::make_unique<char[]>(2)) {
     long long tmp = i;
     if (tmp < 0){
         is_neg = true;
@@ -64,26 +67,23 @@ BigInt::BigInt(long long i): size(8), num_size(0) {
         }
 
 
-BigInt::BigInt(BigInt &&moved): num_size(moved.num_size), size(moved.size), data(moved.data), is_neg(moved.is_neg){
-    moved.data = nullptr;
-}
+BigInt::BigInt(BigInt &&moved) noexcept :num_size(moved.num_size), size(moved.size),
+                               is_neg(moved.is_neg), data(std::move(moved.data))  {}
 
 
-BigInt& BigInt::operator=(BigInt &&moved) {
+BigInt& BigInt::operator=(BigInt &&moved) noexcept {
     if (this != &moved){
-        if (data!= nullptr)
-            delete[] data;
         num_size = moved.num_size;
         size = moved.size;
-        data = moved.data;
-        moved.data = nullptr;
+        data = std::move(moved.data);
         is_neg = moved.is_neg;
+
     }
     return *this;
 }
 
-BigInt::BigInt(const BigInt &copy):size(copy.size), is_neg(copy.is_neg), num_size(copy.num_size) {
-    data = new char[size];
+BigInt::BigInt(const BigInt &copy):size(copy.size), is_neg(copy.is_neg),
+                                   num_size(copy.num_size), data(std::make_unique<char[]>(copy.size)) {
     for (int i = num_size-1; i>-1; i--)
         data[i] = copy.data[i];
 }
@@ -104,29 +104,31 @@ void BigInt::shift(int i) {
 }
 
 
-void BigInt::is_null() {
+bool BigInt::is_null() {
     int i= num_size-1;
     while( (i>0) && (data[i]== 0))
         i--;
     num_size = i+1;
-    if(num_size == 1 && data[0] == 0)
+    if(num_size == 1 && data[0] == 0) {
         is_neg = false;
+        return true;
+    }
 }
 
 
-BigInt BigInt::operator-() {
-    if (num_size!=1 && data[0] != 0)
-        is_neg = !is_neg;
-    return *this;
+BigInt BigInt::operator-() const {
+    BigInt tmp = *this;
+    if ((tmp.num_size!=1)  || (tmp.data[0] != 0))
+        tmp.is_neg = !tmp.is_neg;
+    return tmp;
 }
 
 
 BigInt& BigInt::operator=(const BigInt &copy) {
-    delete[] data;
     size = copy.size;
     is_neg = copy.is_neg;
     num_size = copy.num_size;
-    data = new char[size];
+    data = std::make_unique<char[]>(size);
     for (int i = num_size-1; i>-1; i--)
         data[i] = copy.data[i];
     return *this;
@@ -144,6 +146,7 @@ bool BigInt::operator==(const BigInt &other) const {
 bool BigInt::operator!=(const BigInt &other) const {
     return ! (*this == other);
 }
+
 
 bool BigInt::is_ge_pos(const BigInt &other) const {
     if (num_size == other.num_size) {
@@ -210,89 +213,86 @@ std::ostream& operator<<(std::ostream &os, const BigInt &obj) {
 
 
 BigInt BigInt::operator-(const BigInt &other) const {
-    BigInt tmp_int = *this;
-    return tmp_int -= other;
+    if(is_neg != other.is_neg)
+        return plus(this, &other);
+    else
+        return minus(this, &other, '-');
 }
 
 
 BigInt BigInt::operator-=(const BigInt &other) {
-    if ((!is_neg) && (!other.is_neg)) {
-        if (*this >= other){
-            char sub1 = 0;
-            int tmp;
-            for(int j = 0; j<num_size; j++){
-                int sub2 = other.num_size<=j ? 0 : other.data[j];
-                tmp = data[j] - sub1 - sub2;
-                sub1 = 0;
-                if (tmp<0){
-                    tmp += 10;
-                    sub1 = 1;
-                }
-                data[j] = tmp;
-            }
-        } else {
-            BigInt tmp_int = other;
-            *this = (tmp_int -= *this);
-            is_neg = true;
-        }
-    } else if ((is_neg) && (other.is_neg)){
-        BigInt tmp_int = other;
-        is_neg = false;
-        tmp_int.is_neg = false;
-        *this -= tmp_int;
-        is_neg =  !is_neg;
-    } else {
-        BigInt tmp_int = other;
-        tmp_int.is_neg = not tmp_int.is_neg;
-        *this += tmp_int;
-    }
-    is_null();
+    *this = (*this - other);
     return *this;
 }
 
+BigInt plus(const BigInt* a, const BigInt* b) {
+    BigInt res;
+    res.is_neg = a->is_neg;
+    int max_num_size = std::max(a->num_size, b->num_size);
+    while (max_num_size+1 >= res.size)
+        res.extend();
+    char add1 = 0;
+    for(int j=0; j<max_num_size; j++){
+        int add2 = b->num_size<=j ? 0 : b->data[j];
+        int add3 = a->num_size<=j ? 0 : a->data[j];
+        res.data[j] = add1 + add2 + add3;
+        add1 = 0;
+        if (res.data[j] > 9){
+            res.data[j] -= 10;
+            add1 = 1;
+        }
+    }
+    res.num_size = max_num_size;
+    if (add1) {
+        res.num_size++;
+        res.data[res.num_size - 1] = 1;
+    }
+    res.is_null();
+    return res;
+}
+
+BigInt minus(const BigInt* a, const BigInt* b, const char op) {
+    bool not_swaped = true;
+    if(a->is_le_pos(*b)) {
+        std::swap(a, b);
+        not_swaped = false;
+    }
+    bool is_neg = (op == '+' && a->is_neg)||
+            (op=='-' && ((not_swaped && a->is_neg) || not(a->is_neg ||  not_swaped)));
+    BigInt res(*a);
+    res.is_neg = is_neg;
+    char sub1 = 0;
+    int tmp;
+    for(int j = 0; j<res.num_size; j++){
+        int sub2 = b->num_size <= j ? 0 : b->data[j];
+        tmp = res.data[j] - sub1 - sub2;
+        sub1 = 0;
+        if (tmp<0){
+            tmp += 10;
+            sub1 = 1;
+        }
+        res.data[j] = tmp;
+    }
+    res.is_null();
+    return res;
+}
 
 BigInt BigInt::operator+(const BigInt &other) const {
-    BigInt tmp_int = *this;
-    return tmp_int += other;
+    if(is_neg == other.is_neg)
+        return plus (this, &other);
+    else
+        return minus (this, &other, '+');
 }
 
 
 BigInt BigInt::operator+=(const BigInt &other) {
-    if (is_neg == other.is_neg){
-        int new_num_size = std::max(num_size, other.num_size);
-        while (new_num_size+1 >= size){
-            extend();
-        }
-        char add1 = 0;
-        for(int j=0; j<new_num_size; j++){
-            int add2 = other.num_size<=j ? 0 : other.data[j];
-            int add3 = num_size<=j ? 0: data[j];
-            data[j] = add1 + add2 + add3;
-            add1 = 0;
-            if (data[j] > 9){
-                data[j] -= 10;
-                add1 = 1;
-                 }
-            }
-        num_size = new_num_size;
-        if (add1){
-            num_size++;
-            data[num_size-1] = 1;
-        }
-    } else {
-        BigInt tmp_int = other;
-        tmp_int.is_neg = not tmp_int.is_neg;
-        *this -= tmp_int;
-
-    }
-    is_null();
+    *this = (*this + other);
     return *this;
 }
 
 
 BigInt BigInt::operator*(const BigInt &other) const {
-    BigInt tmp_int = *this;
-    return tmp_int *= other;
+    return BigInt(*this) *= other;
 }
 
 
@@ -332,8 +332,7 @@ BigInt BigInt::operator*=(const BigInt &other) {
 
 
 BigInt BigInt::operator/ (const BigInt &other) const {
-    BigInt tmp_int = *this;
-    return tmp_int /= other;
+    return BigInt(*this) /= other;
 }
 
 
@@ -359,11 +358,5 @@ BigInt BigInt::operator/=(const BigInt &other) {
     *this = res;
     is_null();
     return *this;
-}
-
-
-BigInt::~BigInt() {
-    if (data!= nullptr)
-        delete[] data;
 }
 

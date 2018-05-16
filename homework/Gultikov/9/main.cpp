@@ -1,27 +1,39 @@
 #include <iostream>
 #include <thread>
-#include <atomic>
+#include <mutex>
+#include <condition_variable>
 
-const int num = 500000;
-std::atomic<bool> is_ready(false);
+std::mutex m;
+std::condition_variable ready;
+
+int count = 0;
+const int N = 500000;
 
 void ping_write()
 {
-    for(int i = 0; i<num; i++)
-    {
-        while(is_ready);
-        std::cout<<"ping\n";
-        is_ready = true;
+    while(count < N){
+        {
+            std::unique_lock<std::mutex> lock(m);
+            while(count % 2 == 1)
+                ready.wait(lock);
+        }
+        std::cout<<"ping"<<std::endl;
+        ++count;
+        ready.notify_one();
     }
 }
 
 void pong_write()
 {
-    for(int i = 0; i<num; i++)
-    {
-        while(!is_ready);
-        std::cout<<"pong\n";
-        is_ready = false;
+    while(count < N){
+        {
+            std::unique_lock<std::mutex> lock(m);
+            while(count % 2 == 0)
+                ready.wait(lock);
+        }
+        std::cout<<"pong"<<std::endl;
+        ++count;
+        ready.notify_one();
     }
 }
 

@@ -1,3 +1,5 @@
+#include <functional>
+
 class Matrix
 {
     class Row
@@ -6,17 +8,28 @@ class Matrix
         int len = 0;
     public:
         Row() {}
-        Row(int m) : len(m), els(new int[m]) {}
-        Row(Row& x) : len(x.len)
+        Row(int m) : len(m), els(new int[m]{}) {}
+        Row(const Row& x) : len(x.len)
         {
             els = new int[len];
             for (int i = 0; i < len; ++i) {
                 els[i] = x.els[i];
             }
         }
-        Row operator= (Row&& x) {
+        Row(Row&& x) : len(x.len)
+        {
             std::swap(els, x.els);
+        }
+        Row operator= (Row&& x) {
+            //std::swap(els, x.els);
+            delete[] els;
+            els = x.els;
+            x.els = nullptr;
             len = x.len;
+            return *this;
+        }
+        Row operator= (const Row& x) {
+            *this = Row(x);
             return *this;
         }
         int operator[] (int i) const
@@ -33,11 +46,12 @@ class Matrix
             }
             return els[i];
         }
-        void operator*= (int x)
+        Row& operator*= (int x)
         {
             for (int i = 0; i < len; ++i) {
                 els[i] *= x;
             }
+            return *this;
         }
         bool operator== (const Row& x) const
         {
@@ -54,9 +68,7 @@ class Matrix
         }
         ~Row()
         {
-            if (els) {
-                delete[] els;
-            }
+            delete[] els;
         }
     };
     int nrows = 0, ncols = 0;
@@ -111,8 +123,6 @@ public:
     }
     ~Matrix()
     {
-        if (rs) {
-            delete[] rs;
-        }
+        delete[] rs;
     }
 };
