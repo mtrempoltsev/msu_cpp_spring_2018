@@ -164,7 +164,7 @@ public:
         if (size_ == length_) {
             reserve(length_ * 2);
         }
-        *(data_ + size_) = std::move(value);
+        allocator_.construct(data_ + size_, value);
         ++size_;
     }
     
@@ -224,18 +224,18 @@ public:
     void reserve(uint32_t length) {
         if (length > size_) {
             T* tempData = allocator_.allocate(length);
-            std::move(data_, data_ + size_, tempData);
-            for (T* it = data_; it != data_ + size_; ++it) {
-                allocator_.destroy(it);
+            for (uint32_t i = 0; i < size_; ++i) {
+                allocator_.construct(tempData + i, *(data_ + i));
+                allocator_.destroy(data_ + i);
             }
             allocator_.deallocate(data_, length_);
             data_ = tempData;
             length_ = length;
         } else {
             T* tempData = allocator_.allocate(length);
-            std::move(data_, data_ + length, tempData);
-            for (T* it = data_; it != data_ + size_; ++it) {
-                allocator_.destroy(it);
+            for (uint32_t i = 0; i < length; ++i) {
+                allocator_.construct(tempData + i, *(data_ + i));
+                allocator_.destroy(data_ + i);
             }
             allocator_.deallocate(data_, length_);
             data_ = tempData;
