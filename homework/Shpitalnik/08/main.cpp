@@ -28,8 +28,9 @@ int main(int argc, char **argv) {
     while (file.good())
     {
         file >> s;
-        if(dict.find(s) != dict.end())
-            dict[s]++;
+        auto pos = dict.find(s);
+        if(pos != dict.end())
+            pos->second++;
         else
             dict[s] = 1;
     }
