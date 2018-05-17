@@ -119,9 +119,9 @@ public:
 	void pop_back();
 	void resize(size_type newSize);
 	size_type size() const noexcept;
-    size_type capacity(){
-        return _capacity;
-    }
+	size_type capacity(){
+		return _capacity;
+	}
 	void clear() noexcept;
 	bool empty() const noexcept;
     void reserve(size_type newSize);
@@ -167,7 +167,7 @@ Vector<T, Allocator> & Vector<T, Allocator>::operator=(const Vector<T, Allocator
 	if (this != &other) {
 		pointer newData = _alloc.allocate(other._capacity);
 		std::memcpy(newData, other._array, other._size * sizeof(value_type));
-        std::swap(_array, newData);
+		std::swap(_array, newData);
 		_alloc.deallocate(newData, other._size);
 		_capacity = other._capacity;
 		_size = other._size;
