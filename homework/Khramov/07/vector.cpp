@@ -158,7 +158,7 @@ Vector<T, Allocator>::Vector(const Vector<T, Allocator> & other)
 	, _size(other._size)
 {
 	_array = _alloc.allocate(other._capacity);
-	std::copy(other._array, other._array + other._size, _array);
+	std::memcpy(_array, other._array, other._size * sizeof(value_type));
 }
 
 template<class T, class Allocator>
