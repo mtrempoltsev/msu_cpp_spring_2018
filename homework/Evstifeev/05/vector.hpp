@@ -4,6 +4,7 @@
 // very simple vector implementation
 class IntVector {
    public:
+     using myint = int;
     // default
     IntVector() : data{new int[10]()}, capacity(10), _size(0) {}
 
@@ -23,27 +24,37 @@ class IntVector {
     IntVector(const IntVector& v) {
         capacity = v.capacity;
         _size = v._size;
-        data = new int[_size];
+        data = new int[v._size];
         std::copy(v.begin(), v.end(), data);
     }
 
     // move const
     IntVector(IntVector&& moved) {
         capacity = moved.capacity;
-        data = moved.data;
         _size = moved._size;
-        moved.data = nullptr;
+        data = nullptr;
+        std::swap(data, moved.data);
+        moved.clear();
     }
 
     // move assigment
     IntVector& operator=(IntVector&& moved) {
         if (this == &moved) return *this;
         delete[] data;
-        data = moved.data;
         capacity = moved.capacity;
         _size = moved._size;
-        moved.data = nullptr;
+        std::swap(data, moved.data);
+        moved.clear();
         return *this;
+    }
+
+    void clear()
+    {
+      for (size_t i = 0; i < _size; i++) {
+        data[i].~myint();
+      }
+      capacity = 0;
+      _size = 0;
     }
 
     IntVector& operator=(const IntVector& v) {
@@ -56,7 +67,7 @@ class IntVector {
     }
 
     void resize() {
-        int* tmp = new int[mult * _size];
+        int* tmp = new int[1 + mult * _size];
         std::copy(data, data + _size, tmp);
         delete[] data;
         data = tmp;
