@@ -4,10 +4,12 @@
 
 template <class T>
 class Iterator : public std::iterator<std::random_access_iterator_tag, T>{
+using p_type = T*;
+
 private:    
-    T* ptr;
+    p_type ptr;
 public:
-    Iterator(T* pointer):
+    Iterator(p_type pointer):
                         ptr(pointer){}
 
     bool operator==(const Iterator<T> &other) const{
@@ -30,6 +32,52 @@ public:
     Iterator& operator--(){
         ptr--;
         return *this;
+    }
+    
+    Iterator& operator+=(long int n){
+        ptr += n;
+        return *this;
+    }
+    
+    Iterator operator+(long int n) const{
+        return Iterator<T>(ptr + n);
+    }
+    
+    Iterator& operator-=(long int n){
+        ptr -= n;
+        return *this;
+    }
+    
+    Iterator operator-(long int n) const{
+        return Iterator<T>(ptr - n);
+    }
+    
+    long int operator-(const Iterator<T> &other) const{
+        return ptr - other.ptr;
+    }
+    
+    T& operator[](long int n) const{
+        return *(ptr + n);
+    }
+    
+    bool operator<(const Iterator<T> &other) const{
+        if (*this == other)
+            return false;
+        return (*this - other < 0);
+    }
+    
+    bool operator>(const Iterator<T> &other) const{
+        if (*this == other)
+            return false;
+        return (*this - other > 0);
+    }
+    
+    bool operator<=(const Iterator<T> &other) const{
+        return !(*this > other);
+    }
+    
+    bool operator>=(const Iterator<T> &other) const{
+        return !(*this < other);
     }
 };
 
@@ -77,7 +125,7 @@ private:
     T* data = nullptr;
 public:
     using iterator = Iterator<T>;
-    using const_iterator = const Iterator<T>;
+    using const_iterator = Iterator<const T>;
     using type = T;
 
     Vector(long int initsize = 0){
@@ -96,10 +144,14 @@ public:
     void reserve(long int nsize){
         if (nsize > capct){
             T* newData = all.allocate(nsize);
-            std::copy(data, data + sz, newData);
-            std::swap(data, newData);
-            all.deallocate(newData);
-            capct = nsize;
+            if (newData && data){
+                std::copy(data, data + sz, newData);
+                std::swap(data, newData);
+                all.deallocate(newData);
+                capct = nsize;
+            }
+            else
+                throw std::bad_alloc();
         }
     }
     
