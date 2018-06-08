@@ -4,8 +4,35 @@
 #include <memory>
 #include <vector>
 
-void parse(char* input, std::shared_ptr<std::vector<std::string>>& tokens){
+class calcException{
+public:
+    int code;
+    std::string msg;
+    
+    calcException(int errcode, std::string errmsg):
+                                                code(errcode),
+                                                msg(errmsg){
+    }
+};
+
+class parseException{
+public:
+    int code;
+    std::string msg;
+    
+    parseException(int errcode, std::string errmsg):
+                                                code(errcode),
+                                                msg(errmsg){
+    }
+};
+
+void parse(int argc, char** argv, std::shared_ptr<std::vector<std::string>>& tokens){
     bool pmin = false;
+    
+    if (argc != 2)
+        throw parseException(1, "error");
+    
+    char* input = argv[1];
     
     std::string inputstr;
     
@@ -41,22 +68,18 @@ void parse(char* input, std::shared_ptr<std::vector<std::string>>& tokens){
 template<class T>
 class Calc{
 private:
-    T expression(std::vector<std::string> *tokens, std::pair<int, int> bounds){
+    T expression(std::vector<std::string>& tokens, std::pair<int, int> bounds){
         for (int i = bounds.second - 1; i >= bounds.first; i--){
-            if ((tokens->at(i)).compare("+") == 0){
-                if ((i == bounds.first) || (i == bounds.second - 1)){
-                    std::cout << "error" << std::endl;
-                    exit(1);
-                }
+            if ((tokens[i]).compare("+") == 0){
+                if ((i == bounds.first) || (i == bounds.second - 1))
+                    throw calcException(1, "error");
                 
                 return expression(tokens, std::make_pair(bounds.first, i)) + expression(tokens, std::make_pair(i + 1, bounds.second));
             }
             
-            if ((tokens->at(i)).compare("-") == 0){
-                if ((i == bounds.first) || (i == bounds.second - 1)){
-                    std::cout << "error" << std::endl;
-                    exit(1);
-                }
+            if ((tokens[i]).compare("-") == 0){
+                if ((i == bounds.first) || (i == bounds.second - 1))
+                    throw calcException(1, "error");
                 
                 return expression(tokens, std::make_pair(bounds.first, i)) - expression(tokens, std::make_pair(i + 1, bounds.second));
             }
@@ -68,31 +91,25 @@ private:
         return 0;
     }
 
-    T term(std::vector<std::string> *tokens, std::pair<int, int> bounds){
+    T term(std::vector<std::string>& tokens, std::pair<int, int> bounds){
         int trig;
     
         for (int i = bounds.first; i < bounds.second; i++){
-            if ((tokens->at(i)).compare("*") == 0){
-                if ((i == bounds.first) || (i == bounds.second - 1)){
-                    std::cout << "error" << std::endl;
-                    exit(1);
-                }
+            if ((tokens[i]).compare("*") == 0){
+                if ((i == bounds.first) || (i == bounds.second - 1))
+                    throw calcException(1, "error");
                 
                 return term(tokens, std::make_pair(bounds.first, i))*term(tokens, std::make_pair(i + 1, bounds.second));
             }
             
-            if ((tokens->at(i)).compare("/") == 0){
-                if ((i == bounds.first) || (i == bounds.second - 1)){
-                    std::cout << "error" << std::endl;
-                    exit(1);
-                }
+            if ((tokens[i]).compare("/") == 0){
+                if ((i == bounds.first) || (i == bounds.second - 1))
+                    throw calcException(1, "error");
                 
                 trig = term(tokens, std::make_pair(i + 1, bounds.second));
                 
-                if (trig == 0){
-                    std::cout << "error" << std::endl;
-                    exit(1);
-                }
+                if (trig == 0)
+                    throw calcException(1, "error");
                 
                 return term(tokens, std::make_pair(bounds.first, i))/trig;
             }
@@ -105,18 +122,14 @@ private:
         return 0;
     }
 
-    T number(std::vector<std::string> *tokens, std::pair<int, int> bounds){
-        if (bounds.second - bounds.first != 1){
-            std::cout << "error" << std::endl;
-            exit(1);
-        }
+    T number(std::vector<std::string>& tokens, std::pair<int, int> bounds){
+        if (bounds.second - bounds.first != 1)
+            throw calcException(1, "error");
         
-        if (!isNumber(tokens->at(bounds.first))){
-            std::cout << "error" << std::endl;
-            exit(1);
-        }
+        if (!isNumber(tokens[bounds.first]))
+            throw calcException(1, "error");
         
-        return std::stoi(tokens->at(bounds.first));
+        return std::stoi(tokens[bounds.first]);
     }
 
     bool isNumber(std::string s){
@@ -130,9 +143,10 @@ private:
         
         return ((iterator == s.end()) && !s.empty());
     }
+
 public:
-    int proceed(std::vector<std::string> *tokens){
-        int length = tokens->size();
+    int proceed(std::vector<std::string>& tokens){
+        int length = tokens.size();
         return expression(tokens, std::make_pair(0, length));
     }
 };
@@ -141,15 +155,19 @@ int main(int argc, char* argv[]){
     Calc<int> calculator;
     std::shared_ptr<std::vector<std::string>> tokens(new std::vector<std::string>());
     
-    if(argc != 2){
-        std::cout << "error" << std::endl;
-        return 1;
+    try{
+        parse(argc, argv, tokens);
+        int result = calculator.proceed(*tokens.get());
+        std::cout << result;
     }
-
-    parse(argv[1], tokens);
-    
-    int result = calculator.proceed(tokens.get());
-    std::cout << result;
+    catch(const parseException& e){
+        std::cout << e.msg << std::endl;
+        return e.code;
+    }
+    catch(const calcException& e){
+        std::cout << e.msg << std::endl;
+        return e.code;
+    }
     
     return 0;
 }

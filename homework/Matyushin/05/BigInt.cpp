@@ -156,6 +156,8 @@ public:
         grs = other.grs;
         
         other.grs = nullptr;
+        other.pos = 0;
+        other.len = 0;
         
         return *this;
     }
