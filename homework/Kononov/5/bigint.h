@@ -5,6 +5,69 @@ class BigInt{
 		char * _data;
 		bool _minus;
 		int _size;
+
+		static int max(int a, int b){
+			if (a > b)
+				return a;
+			else
+				return b;
+		};
+
+		static int min(int a, int b){
+			if (a < b)
+				return a;
+			else
+				return b;
+		};
+
+		BigInt shift(int val) const{
+			// Добавление k нулей в "конец" числа
+			char * data = new char[val + _size];
+			for (int i = 0; i < val; i++)
+				data[i] = 0;
+
+			std::copy(_data, _data + _size, data + val);
+
+			return BigInt(data, val + _size, _minus);
+		};
+
+		BigInt reverse(){
+			// Перевернуть число
+			for (int i = 0; i < _size / 2; i++)
+				std::swap(_data[i], _data[_size - i - 1]);
+		};
+
+		BigInt digit_mul(int n) const{
+			// Уножение числа на n
+			int size = _size + 1;
+			char * mul_data = new char[size];
+
+			for (int i = 0; i < size; i++)
+				mul_data[i] = 0;
+
+			div_t d_res;
+			int prev = 0;
+			for (int j = 0, tmp =0; j < _size; j++){
+				tmp = _data[j] * n + prev;
+				if (tmp > 9){
+					d_res = div(tmp, 10);
+					mul_data[j] = d_res.rem;
+					prev = d_res.quot;
+				}
+				else{
+					mul_data[j] = tmp;
+					prev = 0;
+				};
+			};
+
+			if (prev)
+				mul_data[size - 1] = prev;
+			else
+				size--;
+
+			return BigInt(mul_data, size, 0);
+		};
+
 	public:
 
 	BigInt():_size(1),_minus(0), _data(new char[1]){
@@ -49,6 +112,7 @@ class BigInt{
 	BigInt(BigInt && copied):_size(copied._size), _minus(copied._minus), _data(copied._data){
 		// Конструктор перемещения
 		copied._data = nullptr;
+		copied._size = 0;
 	};
 
 	BigInt(const BigInt & copied):_size(copied._size), _minus(copied._minus){
@@ -102,24 +166,12 @@ class BigInt{
 		// Перемещаем данные
 
 		other._data = nullptr;
+		other._size = 0;
 		// Чистим указатель перемещённого объекта
 		
 		return *this;
 	};
 
-	int max(int a, int b) const{
-		if (a > b)
-			return a;
-		else
-			return b;
-	};
-
-	int min(int a, int b) const{
-		if (a < b)
-			return a;
-		else
-			return b;
-	};
 
 	BigInt operator-(const BigInt & other) const{
 		bool minus = false;
@@ -307,23 +359,6 @@ class BigInt{
 		return BigInt(sum_data, sum_size, minus);
 	};
 
-	BigInt shift(int val) const{
-		// Добавление k нулей в "конец" числа
-		char * data = new char[val + _size];
-		for (int i = 0; i < val; i++)
-			data[i] = 0;
-
-		std::copy(_data, _data + _size, data + val);
-
-		return BigInt(data, val + _size, _minus);
-	};
-
-	BigInt reverse(){
-		// Перевернуть число
-		for (int i = 0; i < _size / 2; i++)
-			std::swap(_data[i], _data[_size - i - 1]);
-	};
-
 	BigInt operator/(const BigInt & other) const{
 		BigInt arg1(*this);
 		arg1._minus = false;
@@ -425,37 +460,6 @@ class BigInt{
 			std::swap(quotient._data[i], quotient._data[quotient._size - i - 1]);
 		
 		return quotient;
-	};
-
-	BigInt digit_mul(int n) const{
-		// Уножение числа на n
-		int size = _size + 1;
-		char * mul_data = new char[size];
-
-		for (int i = 0; i < size; i++)
-			mul_data[i] = 0;
-
-		div_t d_res;
-		int prev = 0;
-		for (int j = 0, tmp =0; j < _size; j++){
-			tmp = _data[j] * n + prev;
-			if (tmp > 9){
-				d_res = div(tmp, 10);
-				mul_data[j] = d_res.rem;
-				prev = d_res.quot;
-			}
-			else{
-				mul_data[j] = tmp;
-				prev = 0;
-			};
-		};
-
-		if (prev)
-			mul_data[size - 1] = prev;
-		else
-			size--;
-
-		return BigInt(mul_data, size, 0);
 	};
 
 	BigInt operator*(const BigInt & other) const{
