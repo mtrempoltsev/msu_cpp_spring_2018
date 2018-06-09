@@ -16,3 +16,11 @@
 1 дерево
 1 лес
 ```
+
+Test output:
+./test
+./test bad_file_name
+./test book.txt
+bencmarking
+0.848053216934 sec
+my time: 0.626339912415 sec
