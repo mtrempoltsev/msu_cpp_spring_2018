@@ -16,7 +16,7 @@ private:
     class Rows
     {
     public:
-        Rows(int *arrptr, int lenght) : len(lenght), arr(arrptr)
+        Rows(int *arrstr, int length) : len(length), arr(arrstr)
         {
             //int *abc = arrptr;
 
