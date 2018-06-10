@@ -256,6 +256,8 @@ public:
 		_data = _alloc.allocate(other._capacity);
 		for (int i = 0; i < other._size; i++)
 			_alloc.construct(_data + i, *(other._data + i));
+		
+		return *this;
 	};
 
 	reference operator[](size_type pos)
