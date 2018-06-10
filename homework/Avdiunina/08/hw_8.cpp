@@ -1,4 +1,7 @@
-
+//
+// Created by polina997.
+//
+//
 #include <fstream>
 #include <iostream>
 #include <algorithm>
