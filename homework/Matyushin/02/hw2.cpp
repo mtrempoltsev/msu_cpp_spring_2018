@@ -1,12 +1,12 @@
 #include "numbers.dat"
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
+#include <memory>
 
 #define MILLER_RABIN_ITER 5
-#define BINARY_LEN 20
-#define PRIME_LIMIT 100001 //with zero counted
 
-int toBin(int n, bool* bins, int bins_len){
+int toBin(int n, std::unique_ptr<bool[]>& bins, int bins_len){
     int t = n;
     int i = 0;
     while ((t > 0) && (i < bins_len)){
@@ -21,15 +21,18 @@ int toBin(int n, bool* bins, int bins_len){
             
         i++;
     }
+    
     return i;
 }
 
 bool MillerRabin(int p){
-    bool binary[BINARY_LEN];
+    int binary_len = (int)log2(p) + 1;
+    
+    auto binary = std::make_unique<bool[]>(binary_len);
     
     for (int i = 0; i < MILLER_RABIN_ITER; i++){
         long int a = rand() % (p - 1) + 1;
-        int l = toBin(p - 1, binary, BINARY_LEN);
+        int l = toBin(p - 1, binary, binary_len);
         long int d = 1;
         for (int j = l - 1; j >= 0; j--){
             long int x = d;
@@ -45,7 +48,7 @@ bool MillerRabin(int p){
     return true;
 }
 
-void generatePrimes(int* arr, int arr_len){    
+void generatePrimes(std::unique_ptr<int[]>& arr, int arr_len){    
     arr[0] = 0;
     arr[1] = 0;
     arr[2] = 1;
@@ -54,7 +57,9 @@ void generatePrimes(int* arr, int arr_len){
 }
 
 int main(int argc, char** argv){
-    int primes[PRIME_LIMIT];
+    const int PRIME_LIMIT = 100001; //with zero counted
+    
+    auto primes = std::make_unique<int[]>(PRIME_LIMIT);
     
     if ((argc == 1) || (argc % 2 == 0))
         return -1;
