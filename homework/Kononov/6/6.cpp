@@ -37,9 +37,9 @@ private:
 
 			if (*it >= '0' && *it <= '9')
 				previous_operator = false;
-		}
+		};
 		return result;
-	}
+	};
 
 	str_it find_last_mult_or_div(str_it start, str_it stop) const
 	{
@@ -49,13 +49,10 @@ private:
 		// Инициализация позиции последнего умножения или деления невалидным занчением
 
 		for (auto it = start; it != stop; it++)
-		{
 			if (*it == '*' || *it == '/')
 				result = it;
-		}
-
 		return result;
-	}
+	};
 
 	str_it find_first_unary_minus(str_it start, str_it stop) const
 	{
@@ -63,16 +60,13 @@ private:
 		// Ищет первый минус, поскольку это подразумевает контекст использования
 		// функции
 
-		for (auto it = start; it != stop; it++) {
+		for (auto it = start; it != stop; it++)
 			if (*it == '-')
 				return it;
-		}
 		return stop;
-	}
+	};
 
-	T calculate_part(str_it start,
-					 str_it stop, 
-					 bool check_zero = false) const
+	T calculate_part(str_it start, str_it stop, bool check_zero = false) const
 	{
 		T result;
 
@@ -84,22 +78,22 @@ private:
 				return calculate_part(start, it) + calculate_part(it + 1, stop);
 			if (*it == '-')
 				return calculate_part(start, it) - calculate_part(it + 1, stop);
-		}
+		};
 
 		// Поиск и рекурсивное вычисление множителей в выражении
 		it = find_last_mult_or_div(start, stop);
-		if (it != stop) {
+		if (it != stop)
+		{
 			if (*it == '*')
 				return calculate_part(start, it) * calculate_part(it + 1, stop);
 			if (*it == '/')
 				return calculate_part(start, it) / calculate_part(it + 1, stop, true);
-		}
+		};
 
 		// Поиск унарного минуса перед числом
 		it = find_first_unary_minus(start, stop);
-		if (it != stop) {
+		if (it != stop)
 			return - calculate_part(it + 1, stop, check_zero);
-		}
 
 		// Парсинг числа, проверка на ноль для исключения деления на ноль
 		std::stringstream ss(std::string(start, stop));
@@ -110,14 +104,14 @@ private:
 
 		// Инче ошибка в выражении
 		throw CalcError();
-	}
+	};
 
 public:
-		// Вычисление выражения
-		T calculate(const std::string& s) const {
+	// Вычисление выражения
+	T calculate(const std::string& s) const
+	{
 		return calculate_part(s.begin(), s.end());
-	}
-
+	};
 };
 
 int main(int argc, char* argv[])
