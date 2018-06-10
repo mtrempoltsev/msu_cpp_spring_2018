@@ -2,19 +2,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int primes[100001];
-bool binary[100];
-
-int toBin(int n){
+int toBin(int n, bool* bins){
     int t = n;
     int i = 0;
     while (t > 0){
         if (t % 2 == 0){
-            binary[i] = 0;
+            bins[i] = 0;
             t = t / 2;
         }
         else{
-            binary[i] = 1;
+            bins[i] = 1;
             t = (t - 1) / 2;
         }
             
@@ -24,9 +21,11 @@ int toBin(int n){
 }
 
 bool MillerRabin(int p){
+    bool binary[100];
+    
     for (int i = 0; i < 5; i++){
         long int a = rand() % (p-1) + 1;
-        int l = toBin(p-1);
+        int l = toBin(p-1, binary);
         long int d = 1;
         for (int j = l - 1; j >= 0; j--){
             long int x = d;
@@ -42,20 +41,22 @@ bool MillerRabin(int p){
     return true;
 }
 
-void generatePrimes(void){    
-    primes[0] = 0;
-    primes[1] = 0;
-    primes[2] = 1;
+void generatePrimes(int* arr){    
+    arr[0] = 0;
+    arr[1] = 0;
+    arr[2] = 1;
     for (int i = 3; i < 100000; i++)
-        primes[i] = MillerRabin(i);
+        arr[i] = MillerRabin(i);
 }
 
 int main(int argc, char** argv){
+    int primes[100001];
+    
     if ((argc == 1) || (argc % 2 == 0))
         return -1;
     
-    generatePrimes();
-    for (int pair =  0; pair < ((argc - 1) / 2); pair++){
+    generatePrimes(primes);
+    for (int pair = 0; pair < ((argc - 1) / 2); pair++){
         int cnt = 0;        
         int lower = atoi(argv[2*pair + 1]);
         int upper = atoi(argv[2*pair + 2]);

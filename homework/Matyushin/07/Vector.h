@@ -145,7 +145,8 @@ public:
         if (nsize > capct){
             T* newData = all.allocate(nsize);
             if (newData && data){
-                std::copy(data, data + sz, newData);
+                for (int t = 0; t < sz; t++)
+                    all.construct(newData + t, data[t]);
                 std::swap(data, newData);
                 all.deallocate(newData);
                 capct = nsize;
@@ -182,7 +183,7 @@ public:
         }
         
         else{
-            this->reserve(2*capct);
+            reserve(2*capct);
             all.construct(data + sz, std::move(elem));
             sz++;
         }
@@ -195,7 +196,7 @@ public:
         }
         
         else{
-            this->reserve(2*capct);
+            reserve(2*capct);
             all.construct(data + sz, elem);
             sz++;
         }
