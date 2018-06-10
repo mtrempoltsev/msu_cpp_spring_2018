@@ -165,21 +165,13 @@ private:
 
 public:
 
-	Vector(size_type count = 0):_capacity(count), _size(0), _data(nullptr)
+	Vector(): _capacity(0), _size(0), _data(nullptr){};				
+		
+	Vector(size_type count, const_reference val = value_type()): _capacity(count), _size(count), _data(nullptr)
 	{
 		_data = _alloc.allocate(count);
 		for (int i = 0; i < count; i++)
-			_alloc.construct(_data + i);
-	};				
-		
-	Vector(size_type count, const_reference val): _capacity(count), _size(count), _data(nullptr)
-	{
-		if (count != 0)
-		{
-			_data = _alloc.allocate(count);
-			for (int i = 0; i < count; i++)
-				_alloc.construct(_data + i, val);
-		};
+			_alloc.construct(_data + i, val);
 	};				
 
 	~Vector()
@@ -226,7 +218,7 @@ public:
 		return reverse_iterator(begin());
 	};
 
-	bool empty(){
+	bool empty() const{
 		return _size == 0;
 	};
 
@@ -254,30 +246,52 @@ public:
 		return;
 	};
 
-	value_type operator=(const_reference other)
+	Vector& operator=(const Vector & other)
 	{
 		_alloc.allocate(other._capacity);
 		std::copy(other._data, other._data + other._capacity, _data);	
 	};
 
-	value_type operator[](size_type pos) const
+	reference operator[](size_type pos)
 	{
 		return *(_data + pos);
 	};
 
-	value_type at(size_type pos) const
+	const_reference operator[] const(size_type pos)
+	{
+		return *(_data + pos);
+	};
+	
+	reference at(size_type pos)
 	{
 		if ((pos < 0) || (pos >= _size))	
 			throw std::invalid_argument("Error, position should be in [0, size].");
 		return *(_data + pos);
 	};
 
-	value_type front() const
+	const_reference at(size_type pos) const
+	{
+		if ((pos < 0) || (pos >= _size))	
+			throw std::invalid_argument("Error, position should be in [0, size].");
+		return *(_data + pos);
+	};
+
+	reference front()
 	{
 		return *(_data);
 	};
 
-	value_type back() const
+	const_reference front() const
+	{
+		return *(_data);
+	};
+
+	reference back()
+	{
+		return *(_data + size - 1);
+	};
+
+	const_reference back() const
 	{
 		return *(_data + size - 1);
 	};
@@ -289,7 +303,7 @@ public:
 		_size = 0;
 	};		
 
-	void resize(size_type count, const value_type value = value_type())
+	void resize(size_type count, const_reference value = value_type())
 	{
 		if (count <= _size){
 			for (int i = count; i < _size; i++)
