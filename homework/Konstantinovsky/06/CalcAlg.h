@@ -1,5 +1,9 @@
 #include <iostream>
 #include <string>
+#include <stdexcept>
+
+class division_by_zero : public std::exception {};
+class wrong_operation : public std::exception {};
 
 template <typename T>
 class Calculator {
@@ -39,7 +43,7 @@ template <class T>
 T Calculator<T>::calcComp() {
 
 	T value = getNumber();
-	while (current_num_index < str.size() && (str[current_num_index] == '*' || str[current_num_index] == '/')) {
+	while (current_num_index < str.lenght() && (str[current_num_index] == '*' || str[current_num_index] == '/')) {
 
 		if (str[current_num_index] == '*') {
 			value = value * getNumber();
@@ -62,7 +66,7 @@ template <class T>
 T Calculator<T>::calcSum() {
 
 	T value = calcComp();
-	while (current_num_index < str.size() && (str[current_num_index] == '+' || str[current_num_index] == '-')) {
+	while (current_num_index < str.lenght() && (str[current_num_index] == '+' || str[current_num_index] == '-')) {
 
 		if (str[current_num_index] == '+') {
 			value = value + calcComp();
