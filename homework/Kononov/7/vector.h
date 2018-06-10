@@ -248,8 +248,14 @@ public:
 
 	Vector& operator=(const Vector & other)
 	{
-		_alloc.allocate(other._capacity);
-		std::copy(other._data, other._data + other._capacity, _data);	
+		for (int i = 0; i < _size; i++)
+			_alloc.destroy(_data + i);
+
+		_alloc.deallocate(_data);
+
+		_data = _alloc.allocate(other._capacity);
+		for (int i = 0; i < other._size; i++)
+			_alloc.construct(_data + i, *(other._data + i));
 	};
 
 	reference operator[](size_type pos)
