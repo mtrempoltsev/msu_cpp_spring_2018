@@ -16,7 +16,7 @@ private:
     class Rows
     {
     public:
-        Rows(int *arrptr, int lenght) : len(lenght), arr(arrptr)
+        Rows(int *arrstr, int length) : len(length), arr(arrstr)
         {
             //int *abc = arrptr;
 
@@ -49,16 +49,16 @@ public:
          Matrix(int number_col, int number_rows): columns(number_col), rows(number_rows)
          {         //сразу присваиваем значения параметрам объекта, инициализируем матрицу
 
-             array  = new int* [rows];
-             for(int i = 0; i < rows; ++i)
-                 array[i] = new int[columns];
+             array  = new int* [columns];
+             for(int i = 0; i < columns; ++i)
+                 array[i] = new int[rows];
 
          }
 
          ~Matrix()
          {                              //деструктор  if(array != nullptr) {} ??
 
-             for (int i = 0; i < rows; ++i)
+             for (int i = 0; i < columns; ++i)
                  delete [] array[i];
 
              delete [] array;
@@ -82,8 +82,8 @@ public:
                  return false;
              }
              else {
-                 for (int i = 0; i < rows; ++i)
-                     for (int j = 0; j < columns; ++j)
+                 for (int i = 0; i < columns; ++i)
+                     for (int j = 0; j < rows; ++j)
                          if (array[i][j] != other.array[i][j])
                              return false;
                  return true;
@@ -96,15 +96,15 @@ public:
 
          Matrix& operator *=(int number) {               //умножение на число поэлементно
 
-             for (int i = 0; i < rows; ++i)
-                 for (int j = 0; j < columns; ++j)
+             for (int i = 0; i < columns; ++i)
+                 for (int j = 0; j < rows; ++j)
                      array[i][j] *= number;
          }
 
          Rows operator [](const int i){
 
-             if (0 <= i && i < rows){
-                 return Rows(array[i], columns);
+             if (0 <= i && i < columns){
+                 return Rows(array[i], rows);
 
              }
              else
@@ -113,4 +113,3 @@ public:
          }
 
 };
-
