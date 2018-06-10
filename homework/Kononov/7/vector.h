@@ -257,7 +257,7 @@ public:
 		return *(_data + pos);
 	};
 
-	const_reference operator[] const(size_type pos)
+	const_reference operator[] (size_type pos) const
 	{
 		return *(_data + pos);
 	};
