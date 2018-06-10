@@ -5,8 +5,7 @@
 #include <vector>
 #include <algorithm>
 
-bool Comparator(const std::pair<std::string, int> & a, 
-				const std::pair<std::string, int> & b)
+bool Comparator(const std::pair<std::string, int> & a, const std::pair<std::string, int> & b)
 {
 	return a.second > b.second;
 };
