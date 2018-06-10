@@ -5,8 +5,7 @@
 #include <vector>
 #include <algorithm>
 
-bool Comparator(std::pair<std::string, int> a, 
-				std::pair<std::string, int> b)
+bool Comparator(std::pair<std::string, int> a, std::pair<std::string, int> b)
 {
 	return a.second > b.second;
 };
@@ -36,7 +35,8 @@ int main(int argc,  char* argv[])
 		std::vector <std::pair <std::string, int>> vec(0);
 
 		for (auto it = dict.begin(); it != dict.end(); it++)
-			vec.push_back(std::make_pair(it -> first, it -> second));
+			vec.push_back(std::make_pair(std::move(it -> first), 
+						     std::move(it -> second)));
 
 		std::sort(vec.begin(), vec.end(), Comparator);
 
