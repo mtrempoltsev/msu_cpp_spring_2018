@@ -1,5 +1,3 @@
-// Kononov Sergey BD-11
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -15,16 +13,14 @@ bool Comparator(std::pair<std::string, int> a,
 
 int main(int argc,  char* argv[])
 {
-	try
-	{
 		if (argc !=2)
-			throw std::invalid_argument("Error, program should use run with one parametr!");
+			return 1;
 		
 		std::string filepath = argv[1];
 	
 		std::ifstream file(filepath);
 		if (!file.good())
-			throw std::invalid_argument("Error, invalid file path!");
+			return 1;
 
 		std::string word;
 		std::map <std::string, int> dict;
@@ -46,12 +42,6 @@ int main(int argc,  char* argv[])
 
 		for (auto it = vec.begin(); (it != vec.end()) && (it != vec.begin() + 10); it++)
 			std::cout << it -> second << " " << it -> first << "\n";
-
-	}
-	catch (const std::exception & Error){
-		std::cout << Error.what();
-		return 1;
-	};
 
 	return 0;
 };
