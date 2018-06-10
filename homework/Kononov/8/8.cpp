@@ -5,7 +5,8 @@
 #include <vector>
 #include <algorithm>
 
-bool Comparator(std::pair<std::string, int> a, std::pair<std::string, int> b)
+bool Comparator(const std::pair<std::string, int> & a, 
+				const std::pair<std::string, int> & b)
 {
 	return a.second > b.second;
 };
@@ -25,18 +26,16 @@ int main(int argc,  char* argv[])
 		std::map <std::string, int> dict;
 
 		while (file >> word){
-			auto  position = dict.find(word);
-			if (position == dict.end())
-				dict.emplace(word, 1);
+			if (dict.count(word))
+				dict[word]++;
 			else
-				(position -> second)++;
+				dict.emplace(word, 1);
 		};
 
 		std::vector <std::pair <std::string, int>> vec(0);
 
 		for (auto it = dict.begin(); it != dict.end(); it++)
-			vec.push_back(std::make_pair(std::move(it -> first), 
-						     std::move(it -> second)));
+			vec.emplace_back(std::move(*it));
 
 		std::sort(vec.begin(), vec.end(), Comparator);
 
