@@ -19,7 +19,7 @@ private:
 			arr = a;
                 }
 
-                int &operator[](int i)
+                int operator[](int i) const
 		{
                         if(i < arr_len && i>-1)
 			{
@@ -29,7 +29,7 @@ private:
 				throw std::out_of_range("");
 		}
 
-                const int &operator[](int i) const
+                int &operator[](int i)
                 {
                         if(i < arr_len && i>-1)
                         {

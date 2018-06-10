@@ -1,4 +1,3 @@
-#pragma once
 #include <stdexcept>
 #include <limits>
 #include <iterator>
@@ -144,13 +143,6 @@ public:
                 throw std::out_of_range("Out of range");
             return data_[id];
         }
-
-        const_reference operator[] (size_type id) const {
-            if (id >= size_)
-                throw std::out_of_range("Out of range");
-            return data_[id];
-        }
-
 
         bool empty() const noexcept
         {

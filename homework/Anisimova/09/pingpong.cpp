@@ -31,7 +31,7 @@ void pong() {
                 if (i % 2 == 0) {
                         c_v.wait(lock);
                 }
-                std::cout << "pong" <<std::endl;;
+                std::cout << "pong" <<std::endl;
                 i++;
                 c_v.notify_one();
 
