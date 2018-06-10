@@ -11,7 +11,7 @@ public:
     int code;
     std::string msg;
     
-    calcException(int errcode, std::string errmsg):
+    calcException(int errcode, std::string&& errmsg):
                                                 code(errcode),
                                                 msg(errmsg){
     }
@@ -22,7 +22,7 @@ public:
     int code;
     std::string msg;
     
-    parseException(int errcode, std::string errmsg):
+    parseException(int errcode, std::string&& errmsg):
                                                 code(errcode),
                                                 msg(errmsg){
     }
@@ -132,7 +132,7 @@ private:
         return std::stoi(tokens[std::move(bounds.first)]);
     }
 
-    bool isNumber(std::string s){
+    bool isNumber(std::string& s){
         std::string::const_iterator iterator = s.begin();
         
         if (*iterator == '-')
