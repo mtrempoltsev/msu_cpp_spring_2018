@@ -13,7 +13,7 @@ public:
     
     calcException(int errcode, std::string&& errmsg):
                                                 code(errcode),
-                                                msg(errmsg){
+                                                msg(std::move(errmsg)){
     }
 };
 
@@ -24,7 +24,7 @@ public:
     
     parseException(int errcode, std::string&& errmsg):
                                                 code(errcode),
-                                                msg(errmsg){
+                                                msg(std::move(errmsg)){
     }
 };
 
@@ -54,7 +54,7 @@ void parse(int argc, args_t& argv, std::vector<std::string>& tokens){
         }
         
         if (std::isdigit(inputstr[i]) && (pmin || ((i > 0) && std::isdigit(inputstr[i - 1]))))
-            tokens[total-1].append(1, inputstr[i]);
+            tokens[total - 1].append(1, inputstr[i]);
         
         else{
             tokens.push_back(std::string(1, inputstr[i]));
