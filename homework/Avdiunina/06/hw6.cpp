@@ -1,10 +1,6 @@
 #include <algorithm>
 #include <stdexcept>
 #include <iostream>
-#include <iterator>
-#include <vector>
-#include <sstream>
-#include <string>
 
 class division_by_zero: public std::exception {};
 class wrong_operation: public std::exception {};
@@ -15,76 +11,66 @@ class Calculator
 {
 
 private:
-    std::vector<std::string> results;
+    std::string results;
     int number = 0;
-    std::string plus = "+";
-    std::string minus = "-";
-    std::string multiplier = "*";
-    std::string divider = "/";
+
+    T get_next();
 
     T get_value()
     {
         T value = get_result();
         while(number < results.size())
+            if(results[number] == '+' || results[number] == '-')
         {
-            if (results[number] == plus || results[number] == minus) {
                 number++;
-                if (results[number - 1] == plus)
+                if(results[number - 1] == '+')
                     value = value + get_result();
                 else
                     value = value - get_result();
-            }
         }
         if(number < results.size())
             throw wrong_operation();
         return value;
     }
 
-
     T get_result()
     {
         T value = get_next();
-        while(number < results.size())
+        while(number < results.size() && (results[number] == '*' || results[number] == '/'))
         {
-            if (results[number] == multiplier || results[number] == divider) {
-                number++;
-                if (results[number - 1] == multiplier)
-                    value = value * get_next();
-                else {
-                    T next = get_next();
-                    if (next == T(0))
-                        throw division_by_zero();
-                    value = value / next;
-                }
+            number++;
+            if(results[number - 1] == '*')
+                value = value * get_next();
+            else
+            {
+                T next = get_next();
+                if(next == T(0))
+                    throw division_by_zero();
+                value = value / next;
             }
         }
         return value;
     }
 
-    T get_next()
-    {
-        std::string* it = results.data() + number;
-        auto next = std::stoi(*it);
-        number ++;
-        return next;
-
-    }
-
 public:
-
     T str_to_arr(const std::string &str)
     {
-        std::istringstream iss(str);
-        std::vector<std::string> results_((std::istream_iterator<std::string>(iss)),
-                                         std::istream_iterator<std::string>());
-        std::swap(results_, results);
-
+        results = str;
+        results.erase(std::remove_if(results.begin(), results.end(), isspace), results.end());
+        
         number = 0;
         return get_value();
     }
-
-
 };
+
+template<>
+int Calculator<int>::get_next()
+{
+    size_t tmp = 0;
+    int next = std::stoi(results.data() + number, &tmp);
+    number += tmp;
+    return next;
+}
 
 int main(int argc, char* argv[])
 {
@@ -99,19 +85,19 @@ int main(int argc, char* argv[])
 
     catch(const division_by_zero& error)
     {
-        std::cerr << "Error!" << std::endl;
+        std::cerr << "error" << std::endl;
         return 1;
     }
 
     catch(const wrong_operation& error)
     {
-        std::cerr << "Error!" << std::endl;
+        std::cerr << "error" << std::endl;
         return 1;
     }
 
     catch(...)
     {
-        std::cerr << "Error!" << std::endl;
+        std::cerr << "error" << std::endl;
         return 1;
     }
     return 0;
