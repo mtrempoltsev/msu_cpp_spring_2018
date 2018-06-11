@@ -1,39 +1,44 @@
 #include <iostream>
 
-class BigInt {
+class BigInt
+{
 private:
-	
-	bool is_negative = false;
-	size_t len = 64;
-	char* number;
+	char *number;
 	size_t index = 0;
-	
-	char binSearch(const BigInt& first, const BigInt& second) const;
-	void push_back(char a);
-	void push_front(char a);
-	char pop();
-	void allocate();
+	bool minus = false;
+	size_t len = 64;
 
+	char search(const BigInt& first, const BigInt& second) const;
+	void push_back(char element);
+	void push_front(char element);
+	char pop();
+	void mem();
 public:
 	BigInt();
-	BigInt(const BigInt& number);
-	BigInt(BigInt&& number);
-	BigInt(int64_t value);
+	BigInt(const BigInt& a);
+	BigInt(BigInt&& a);
+	BigInt(int64_t a);
 	~BigInt();
+
+	BigInt operator-() const;
+	BigInt abs() const;
+
 	BigInt& operator=(const BigInt& a);
+	BigInt& operator=(BigInt&& a);
+
+	BigInt operator+(const BigInt& a) const;
+	BigInt operator-(const BigInt& a) const;
+	BigInt operator*(const BigInt& a) const;
+	BigInt operator/(const BigInt& a) const;
+
 	bool operator==(const BigInt& a) const;
 	bool operator!=(const BigInt& a) const;
 	bool operator<(const BigInt& a) const;
 	bool operator>(const BigInt& a) const;
 	bool operator<=(const BigInt& a) const;
 	bool operator>=(const BigInt& a) const;
-	BigInt operator-() const;
-	BigInt abs() const;
-	BigInt operator+(const BigInt& a) const;
-	BigInt operator-(const BigInt& a) const;
-	BigInt operator*(const BigInt& a) const;
-	BigInt operator/(const BigInt& a) const;
-	friend std::ostream& operator<<(std::ostream& out, const BigInt& number);
+	
+	friend std::ostream& operator<<(std::ostream& out, const BigInt& a);
 };
 
 BigInt::BigInt() {
@@ -43,7 +48,7 @@ BigInt::BigInt() {
 
 BigInt::BigInt(int64_t a) {
 	if (a < 0) {
-		is_negative = true;
+		minus = true;
 		a = a * -1;
 	}
 
@@ -62,7 +67,7 @@ BigInt::BigInt(int64_t a) {
 
 BigInt::BigInt(const BigInt& a) {
 	index = a.index;
-	is_negative = a.is_negative;
+	minus = a.minus;
 	len = a.len;
 
 	number = new char[len];
@@ -74,37 +79,22 @@ BigInt::BigInt(const BigInt& a) {
 
 BigInt::BigInt(BigInt&& a) {
 	index = a.index;
-	is_negative = a.is_negative;
+	minus = a.minus;
 	len = a.len;
 	number = a.number;
 	a.number = nullptr;
-}
-
-BigInt::~BigInt() {
-	delete[] number;
-}
-
-BigInt& BigInt::operator=(const BigInt& a) {
-	if (this == &a) {
-		return *this;
-	}
-
-	index = a.index;
-	len = a.len;
-	is_negative = a.is_negative;
-
-	delete[] number;
-	number = new char[len];
-	memcpy(number, a.number, index);
-	return *this;
 }
 
 void BigInt::push_back(char a) {
 	number[index] = a;
 	++index;
 	if (len == index) {
-		allocate();
-	}	
+		mem();
+	}
+}
+
+char BigInt::pop() {
+	return number[--index];
 }
 
 void BigInt::push_front(char a) {
@@ -116,31 +106,15 @@ void BigInt::push_front(char a) {
 	++index;
 
 	if (len == index) {
-		allocate();
-	}	
+		mem();
+	}
 	number[0] = a;
 }
 
-char BigInt::pop() {
-	return number[--index];
-}
-
-std::ostream& operator<<(std::ostream& out, const BigInt& a) {
-
-	if (a.is_negative) {
-		out << '-';
-	}
-
-	for (int i = a.index - 1; i != -1; i--) {
-		out << static_cast<char>('0' + a.number[i]);
-	}
-	return out;
-}
-
-void BigInt::allocate() {
+void BigInt::mem() {
 	len = len * 2;
 	char* tmp = new char[len];
-	
+
 	for (size_t i = 0; i < len; i++) {
 		tmp[i] = number[i];
 	}
@@ -149,22 +123,56 @@ void BigInt::allocate() {
 	number = tmp;
 }
 
-BigInt BigInt::abs() const {
-	BigInt ans(*this);
-	ans.is_negative = false;
+BigInt& BigInt::operator=(BigInt&& a) {
+	if (this == &a) {
+		return *this;
+	}
+		
+	index = a.index;
+	minus = a.minus;
+	len = a.len;
 
-	return ans;
+	delete[] number;
+
+	number = a.number;
+	a.number = nullptr;
+
+	return *this;
 }
 
-BigInt BigInt::operator-() const {
-	BigInt ans(*this);
-	ans.is_negative = !(is_negative);
+BigInt& BigInt::operator=(const BigInt& a) {
+	if (this == &a) {
+		return *this;
+	}
 
-	return ans;
+	index = a.index;
+	len = a.len;
+	minus = a.minus;
+
+	delete[] number;
+	number = new char[len];
+	memcpy(number, a.number, index);
+	return *this;
+}
+
+BigInt::~BigInt() {
+	delete[] number;
+}
+
+std::ostream& operator<<(std::ostream& out, const BigInt& a) {
+
+	if (a.minus) {
+		out << '-';
+	}
+
+	for (int i = a.index - 1; i != -1; i--) {
+		out << char('0' + a.number[i]);
+	}
+	return out;
 }
 
 bool BigInt::operator==(const BigInt& a) const {
-	if (index != a.index || is_negative != a.is_negative) {
+	if (index != a.index || minus != a.minus) {
 		return false;
 	}
 
@@ -177,106 +185,87 @@ bool BigInt::operator==(const BigInt& a) const {
 	return true;
 }
 
-bool BigInt::operator>(const BigInt& a) const {
-
-	if (index > a.index && is_negative == false && a.is_negative == false) {
-		return true;
-	}
-	else if (index < a.index && is_negative == false && a.is_negative == false) {
-		return false;
-	}
-	else if (index == a.index && is_negative == false && a.is_negative == false) {
-		for (size_t i = index - 1; i >= 0; i--) {
-			if (number[i] > a.number[i]) {
-				return true;
-			} 
-			else if (number[i] < a.number[i]) {
-				return false;
-			}
-		}
-		return false;
-	}
-	else if (index == a.index && is_negative && a.is_negative) {
-		for (size_t i = index - 1; i >= 0; i--) {
-			if (number[i] > a.number[i]) {
-				return false;
-			}
-			else if (number[i] < a.number[i]) {
-				return true;
-			}
-		}
-		return true;
-	}
-	else if (is_negative == true && a.is_negative == false) {
-		return false;
-	}
-	else if (is_negative == false && a.is_negative == true) {
-		return true;
-	} 
-
-	return true;
+bool BigInt::operator!=(const BigInt& a) const {
+	return !operator==(a);
 }
 
 bool BigInt::operator<(const BigInt& a) const {
-
-	if (index > a.index && is_negative == false && a.is_negative == false) {
-		return false;
+	if (minus != a.minus) {
+		return minus;
 	}
-	else if (index < a.index && is_negative == false && a.is_negative == false) {
-		return true;
+		
+	if (index > a.index) {
+		return minus;
 	}
-	else if (index == a.index && is_negative == false && a.is_negative == false) {
-		for (size_t i = index - 1; i >= 0; i--) {
+	else if (index < a.index) {
+		return !minus;
+	}
+	else {
+		for (int i = index - 1; i != -1; i--) {
 			if (number[i] > a.number[i]) {
-				return false;
+				return minus;
 			}
 			else if (number[i] < a.number[i]) {
-				return true;
-			}
-		}
-		return true;
-	}
-	else if (index == a.index && is_negative && a.is_negative) {
-		for (size_t i = index - 1; i >= 0; i--) {
-			if (number[i] > a.number[i]) {
-				return true;
-			}
-			else if (number[i] < a.number[i]) {
-				return false;
+				return !minus;
 			}
 		}
 		return false;
 	}
-	else if (is_negative == true && a.is_negative == false) {
-		return true;
+}
+
+bool BigInt::operator>(const BigInt& a) const {
+	if (minus != a.minus) {
+		return !minus;
 	}
-	else if (is_negative == false && a.is_negative == true) {
+		
+	if (index < a.index) {
+		return minus;
+	}
+	else if (index > a.index) {
+		return !minus;
+	}
+	else {
+		for (int i = index - 1; i != -1; i--) {
+			if (number[i] < a.number[i]) {
+				return minus;
+			}
+			else if (number[i] > a.number[i])
+				return !minus;
+		}
 		return false;
 	}
-
-	return true;
 }
 
 bool BigInt::operator<=(const BigInt& a) const {
-	return !this->operator>(a);
+	return !operator>(a);
 }
 
 bool BigInt::operator>=(const BigInt& a) const {
-	return !this->operator<(a);
+	return !operator<(a);
 }
 
-bool BigInt::operator!=(const BigInt& a) const {
-	return !this->operator==(a);
+BigInt BigInt::operator-() const {
+	BigInt ans(*this);
+	ans.minus = !(minus);
+
+	return ans;
+}
+
+BigInt BigInt::abs() const {
+	BigInt ans(*this);
+	ans.minus = false;
+
+	return ans;
 }
 
 BigInt BigInt::operator+(const BigInt& a) const {
 	BigInt ans(*this);
 	char tmp = 0;
 
-	if (a.is_negative && is_negative == false) {
+	if (a.minus && minus == false) {
 		return (*this) - a.abs();
 	}
-	else if (a.is_negative == false && is_negative) {
+	else if (a.minus == false && minus) {
 		return a.abs() - (*this).abs();
 	}
 
@@ -289,7 +278,7 @@ BigInt BigInt::operator+(const BigInt& a) const {
 		if (tmp != 0) {
 			ans.push_back(tmp);
 		}
-	} 
+	}
 	else if (a.index > ans.index) {
 		for (size_t i = ans.index; i < a.index; i++) {
 			ans.push_back(0);
@@ -319,7 +308,7 @@ BigInt BigInt::operator+(const BigInt& a) const {
 			ans.push_back(tmp);
 		}
 	}
-	
+
 	for (size_t i = ans.index - 1; i > 0; i--) {
 		if (ans.number[i] > 0) {
 			break;
@@ -328,7 +317,7 @@ BigInt BigInt::operator+(const BigInt& a) const {
 	}
 
 	if (ans.index == 1 && ans.number[0] == 0) {
-		ans.is_negative = false;
+		ans.minus = false;
 	}
 
 	//std::cout << ans;
@@ -338,8 +327,8 @@ BigInt BigInt::operator+(const BigInt& a) const {
 
 BigInt BigInt::operator-(const BigInt& a) const {
 
-	if (is_negative != a.is_negative) {
-		if (is_negative) {
+	if (minus != a.minus) {
+		if (minus) {
 			return -(abs() + a);
 		}
 		else {
@@ -347,7 +336,7 @@ BigInt BigInt::operator-(const BigInt& a) const {
 		}
 	}
 
-	if (is_negative) {
+	if (minus) {
 		return a.abs() + *this;
 	}
 	if (*this < a) {
@@ -390,7 +379,7 @@ BigInt BigInt::operator-(const BigInt& a) const {
 	}
 
 	if (ans.index == 1 && ans.number[0] == 0) {
-		ans.is_negative = false;
+		ans.minus = false;
 	}
 
 	return ans;
@@ -400,7 +389,7 @@ BigInt BigInt::operator*(const BigInt& a) const {
 
 	BigInt ans;
 
-	if ((number[0] == 0 && len == 1) || (a.number[0] == 0 && len ==1)) {
+	if ((number[0] == 0 && len == 1) || (a.number[0] == 0 && len == 1)) {
 		return ans;
 	}
 
@@ -426,7 +415,7 @@ BigInt BigInt::operator*(const BigInt& a) const {
 		ans = ans + tmp;
 	}
 
-	ans.is_negative = is_negative != a.is_negative;
+	ans.minus = minus != a.minus;
 	for (size_t i = ans.index - 1; i > 0; i--) {
 		if (ans.number[i] > 0) {
 			break;
@@ -435,24 +424,23 @@ BigInt BigInt::operator*(const BigInt& a) const {
 	}
 
 	if (ans.index == 1 && ans.number[0] == 0) {
-		ans.is_negative = false;
+		ans.minus = false;
 	}
 
 	return ans;
 }
 
-char BigInt::binSearch(const BigInt &first, const BigInt &second) const {
-	// result = max(x : divisor * x <= dividend)
+char BigInt::search(const BigInt &first, const BigInt &second) const {
 	char ans = 0, min = 0, max = 10;
 
 	while (min <= max) {
-		char curr = (max + min) / 2;
-		if (BigInt(curr) * second <= first) {
-			ans = curr;
-			min = curr + 1;
+		char c = (max + min) / 2;
+		if (BigInt(c) * second <= first) {
+			ans = c;
+			min = c + 1;
 		}
 		else {
-			max = curr - 1;
+			max = c - 1;
 		}
 	}
 
@@ -467,7 +455,7 @@ BigInt BigInt::operator/(const BigInt& a) const {
 	BigInt abs_number = a.abs();
 
 	for (size_t i = 0; i < index; i++) {
-		tmp.push_front(number[index - 1 - i]);
+		tmp.push_front(number[index-1-i]);
 
 		for (size_t i = tmp.index - 1; i > 0; i--) {
 			if (tmp.number[i] > 0) {
@@ -476,7 +464,7 @@ BigInt BigInt::operator/(const BigInt& a) const {
 			tmp.index--;
 		}
 
-		char div = binSearch(tmp, abs_number);
+		char div = search(tmp, abs_number);
 		ans.push_front(div);
 		tmp = tmp - abs_number * BigInt(div);
 	}
@@ -488,11 +476,11 @@ BigInt BigInt::operator/(const BigInt& a) const {
 		ans.index--;
 	}
 
-	ans.is_negative = is_negative != a.is_negative;
+	ans.minus = minus != a.minus;
 
 	if (ans.index == 1 && ans.number[0] == 0) {
-		ans.is_negative = false;
+		ans.minus = false;
 	}
-	
+
 	return ans;
 }
