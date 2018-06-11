@@ -1,7 +1,3 @@
-//
-// Created by polina997 on 3/16/18.
-//
-//
 using namespace std;
 #include <iostream>
 
@@ -34,10 +30,6 @@ private:
 
         }
 
-        ~Rows()
-        {
-            delete [] arr;
-        }
 
     private:
 
@@ -96,9 +88,12 @@ public:
 
          Matrix& operator *=(int number) {               //умножение на число поэлементно
 
-             for (int i = 0; i < columns; ++i)
-                 for (int j = 0; j < rows; ++j)
+             for (int i = 0; i < columns; ++i){
+                 for (int j = 0; j < rows; ++j) {
                      array[i][j] *= number;
+                 }
+             }
+             return *this;
          }
 
          Rows operator [](const int i){
