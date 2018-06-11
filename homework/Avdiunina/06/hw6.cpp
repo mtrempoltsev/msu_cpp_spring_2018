@@ -75,8 +75,9 @@ public:
     T str_to_arr(const std::string &str)
     {
         std::istringstream iss(str);
-        std::vector<std::string> results((std::istream_iterator<std::string>(iss)),
+        std::vector<std::string> results_((std::istream_iterator<std::string>(iss)),
                                          std::istream_iterator<std::string>());
+        results = results_;
 
         number = 0;
         return get_value();
