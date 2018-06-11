@@ -31,14 +31,14 @@ public:
     pointer allocate(size_type count)
     {
         if (count > max_size())
-            throw std::bad_alloc();                                                            //std::length_error("Exceeds the maximum size allowed!");
+            throw std::bad_alloc();
         auto ptr = (pointer) malloc(count * sizeof(value_type));
         return ptr;
     }
 
     void deallocate(pointer ptr, size_type count)
     {
-        ::operator delete(ptr);
+        free(ptr);
     }
 
     size_t max_size() const noexcept
@@ -199,6 +199,7 @@ public:
             {
                 alloc_.construct(newData + i, data_[i]);
                 alloc_.destroy(newData + i);
+
             }
             std::swap(data_, newData);
             alloc_.deallocate(newData, capacity_);
