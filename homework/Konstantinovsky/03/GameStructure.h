@@ -48,21 +48,19 @@ class Living_Creature {
 
 };
 
-class Animal : Living_Creature {};
-
-class Pig : Animal {
+class Pig : Living_Creature {
 	
 	public:
 		void heal();
 
 };
-class Hourse : Animal {
+class Hourse : Living_Creature {
 
 	public:
 		void jump();
 
 };
-class Dog : Animal {
+class Dog : Living_Creature {
 
 	protected:
 		int min_damage, max_damage;
