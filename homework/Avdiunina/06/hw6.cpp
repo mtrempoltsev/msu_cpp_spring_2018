@@ -77,7 +77,7 @@ public:
         std::istringstream iss(str);
         std::vector<std::string> results_((std::istream_iterator<std::string>(iss)),
                                          std::istream_iterator<std::string>());
-        results = results_;
+        std::swap(results_, results);
 
         number = 0;
         return get_value();
