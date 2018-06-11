@@ -245,6 +245,11 @@ bool BigInt::operator>=(const BigInt& a) const {
 
 BigInt BigInt::operator-() const {
 	BigInt ans(*this);
+
+	if (index == 1 && number[0] == 0) {
+		return ans;
+	}
+
 	ans.minus = !(minus);
 
 	return ans;
