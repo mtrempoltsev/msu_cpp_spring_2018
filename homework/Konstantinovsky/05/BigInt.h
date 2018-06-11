@@ -4,11 +4,10 @@ class BigInt
 {
 private:
 	char *number;
-	size_t index = 0;
 	bool minus = false;
+	size_t index = 0;
 	size_t len = 64;
 
-	char search(const BigInt& first, const BigInt& second) const;
 	void push_back(char element);
 	void push_front(char element);
 	char pop();
@@ -430,30 +429,14 @@ BigInt BigInt::operator*(const BigInt& a) const {
 	return ans;
 }
 
-char BigInt::search(const BigInt &first, const BigInt &second) const {
-	char ans = 0, min = 0, max = 10;
-
-	while (min <= max) {
-		char c = (max + min) / 2;
-		if (BigInt(c) * second <= first) {
-			ans = c;
-			min = c + 1;
-		}
-		else {
-			max = c - 1;
-		}
-	}
-
-	return ans;
-}
-
 BigInt BigInt::operator/(const BigInt& a) const {
 
+	char div = 0, min = 0, max = 10;
 	BigInt ans;
 	BigInt tmp;
 	tmp.pop();
 	BigInt abs_number = a.abs();
-
+	
 	for (size_t i = 0; i < index; i++) {
 		tmp.push_front(number[index-1-i]);
 
@@ -464,7 +447,19 @@ BigInt BigInt::operator/(const BigInt& a) const {
 			tmp.index--;
 		}
 
-		char div = search(tmp, abs_number);
+		min = 0;
+		max = 10;
+		while (min <= max) {
+			char c = (max + min) / 2;
+			if (BigInt(c) * abs_number <= tmp) {
+				div = c;
+				min = c + 1;
+			}
+			else {
+				max = c - 1;
+			}
+		}
+		
 		ans.push_front(div);
 		tmp = tmp - abs_number * BigInt(div);
 	}
