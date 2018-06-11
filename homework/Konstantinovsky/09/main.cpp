@@ -24,7 +24,6 @@ void ping() {
 
 		condition.notify_one();
 	}
-
 }
 
 void pong() {
