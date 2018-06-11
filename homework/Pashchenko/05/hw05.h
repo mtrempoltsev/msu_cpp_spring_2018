@@ -1,5 +1,9 @@
 #pragma once
+#include <iostream>
 #include <cstdint>
+#include <cstring>
+#include <algorithm>
+#include <tuple>
 
 int64_t abs64(int64_t value)
 {
@@ -8,44 +12,44 @@ int64_t abs64(int64_t value)
     return value;
 }
 
-class BigInt
-{
-    using digit = int8_t;
-    using sign = bool;
+class BigInt {
+    using digit = char;
+    using sign = int;
 
-    digit *data_;   // reversed data
-    size_t len_;
-    sign sgn_;  //  true := '+', false := '-'
+    char *data_ = nullptr;     // reversed data
+    size_t len_ = 0;
+    mutable int sgn_ = 1;   // true := 1, false := -1
 
 public:
-    explicit BigInt() : len_(1), sgn_(true), data_((digit*) malloc(sizeof(digit) * 1)) {*data_ = 0;}
-    explicit BigInt(bool rand_size_mode, size_t n) : len_(n), sgn_(true), data_((digit*) malloc(sizeof(digit) * n)) {*data_ = 0;}
+    BigInt() : data_((digit*) malloc(sizeof(digit) * 2)), len_(1)
+    {
+        data_[0] = '0';
+        data_[1] = '\0';
+    }
 
     BigInt(int64_t init)
     {
+        int64_t tmp = abs64(init);
+        if (init < 0)
+        {
+            sgn_ = -1;
+            init = abs64(init);
+        }
+
         size_t count = 0;
-        int64_t abs_init = abs64(init);
 
-        do
-        {
-            abs_init /= 10;
-            count++;
-        }
-        while(abs_init > 0);
+        if (init == 0)
+            count = 1;
+        for (count; tmp != 0; count++)
+            tmp /= 10;
 
+        data_ = (digit*) malloc(sizeof(digit) * count + 1);
+
+        sprintf(data_, "%lld", init);
+        std::reverse(data_, data_ + count);
+
+        data_[count] = '\0';
         len_ = count;
-        data_ = (digit*) malloc(sizeof(digit) * count);
-        abs_init = abs64(init);
-
-        for(size_t i = 0; i < len_; i++)
-        {
-            data_[i] = digit(abs_init % 10);
-            abs_init /= 10;
-        }
-
-        sgn_ = true;
-        if(init < 0)
-            sgn_ = false;
     }
 
     ~BigInt()
@@ -53,60 +57,29 @@ public:
         free(data_);
     }
 
-    BigInt(const BigInt& copied) : len_(copied.len_), sgn_(copied.sgn_) //  copy constructor
+    BigInt(const BigInt &other) //  copy constructor
     {
-        data_ = (digit*) malloc(sizeof(digit) * len_);
-        for(size_t i = 0; i < len_; ++i)
-            data_[i] = copied.data_[i];
+        data_ = (digit*) malloc(sizeof(digit) * other.len_ + 1);
+        std::strcpy(data_, other.data_);
+
+        data_[other.len_] = '\0';
+        len_ = other.len_;
+        sgn_ = other.sgn_;
     }
 
-    ////////////////////////////////////
-
-    BigInt& operator=(const BigInt& copied) //  copy operator
+    BigInt &operator=(const BigInt &copied)  //  copy operator
     {
-        if(*this == copied)
-            return *this;
-
-        free(data_);
-
+        if (this == &copied) return *this;
+        delete[] data_;
+        data_ = new char[copied.len_ + 1];
+        std::strcpy(data_, copied.data_);
         len_ = copied.len_;
         sgn_ = copied.sgn_;
-        data_ = (digit*) malloc(sizeof(digit) * len_);
-        for(size_t i = 0; i < len_; ++i)
-            data_[i] = copied.data_[i];
-
-        return *this;
-    }
-
-    BigInt& operator=(const int64_t& init)  //  convertion from int64_t
-    {
-        size_t count = 0;
-        int64_t abs_init = abs64(init);
-
-        while(abs_init > 0)
-        {
-            abs_init /= 10;
-            count++;
-        }
-
-        len_ = count;
-        data_ = (digit*) malloc(sizeof(digit) * len_);
-        abs_init = abs64(init);
-
-        for(size_t i = 0; i < len_; i++)
-        {
-            data_[i] = digit(abs_init % 10);
-            abs_init /= 10;
-        }
-
-        sgn_ = true;
-        if(init < 0)
-            sgn_ = false;
     }
 
     //////////////////////////////////////////////////  сравнение
 
-    bool operator==(const BigInt& other) const
+    bool operator==(const BigInt &other) const
     {
         if (sgn_ != other.sgn_)
             return false;
@@ -118,35 +91,47 @@ public:
         return true;
     }
 
-    bool operator!=(const BigInt& other) const
+    bool operator!=(const BigInt &other) const
     {
         return !(*this == other);
     }
 
-    bool less(const BigInt& other) const
+    bool operator<(const BigInt &other) const
     {
-        if(len_ < other.len_)
+        if (len_ < other.len_)
             return true;
-        if(len_ > other.len_)
-            return  false;
-
-        for(size_t i = other.len_; i > 0; i--)
-        {
-            if(data_[i - 1] > other.data_[i - 1])
-                return false;
-        }
-        return true;
-    }
-
-    bool operator<(const BigInt& other) const
-    {
-        if(sgn_ != other.sgn_)
-            return sgn_ < other.sgn_;
-
-        if(*this == other)
+        if (len_ > other.len_)
             return false;
 
-        return less(other) == sgn_; //  less_out XAND sign
+        if (sgn_ < other.sgn_)
+            return true;
+        else if (sgn_ > other.sgn_)
+            return false;
+
+        if (*this == other)
+            return false;
+
+        if (sgn_ < 0)
+        {
+            sgn_ = 1;
+            other.sgn_ = 1;
+
+            bool res = *this > other;
+
+            sgn_ = -1;
+            other.sgn_ = -1;
+
+            return res;
+        }
+
+        for (size_t i = len_; i > 0; i--)
+        {
+            if (data_[i - 1] > other.data_[i - 1])
+                return false;
+            else if (data_[i - 1] < other.data_[i - 1])
+                return true;
+        }
+        return false;
     }
 
     bool operator<=(const BigInt& other) const
@@ -166,166 +151,333 @@ public:
 
     /////////////////////////////////////////////////   arithmetic
 
-    BigInt abs_val(const BigInt &arg) const
-    {
-        BigInt abs_v = arg;
-        abs_v.sgn_ = '+';
-        return abs_v;
-    }
-
-    BigInt adder(const BigInt& other, sign sgn) const
-    {
-        BigInt tmp(true, std::max(len_, other.len_) + 1);
-
-        for(size_t i = 0; i < len_; i++)
-            tmp.data_[i] = data_[i];
-
-        for(size_t i = len_; i < tmp.len_; i++)
-            tmp.data_[i] = 0;
-
-        digit passing_digit = 0;
-
-        for(size_t i = 0; i < other.len_; i++)
-        {
-            digit part_sum = tmp.data_[i] + passing_digit + other.data_[i];
-            if(part_sum > 9)
-            {
-                tmp.data_[i] = digit(part_sum % 10);
-                passing_digit = 1;
-            } else
-            {
-                tmp.data_[i] = part_sum;
-                passing_digit = 0;
-            }
-        }
-
-        tmp.data_[tmp.len_ - 1] = passing_digit;
-        tmp.sgn_ = sgn;
-
-        BigInt tmp2 = remove_end_zeros(tmp);
-        return tmp2;
-    }
-
-    BigInt remove_end_zeros(BigInt& value) const
-    {
-        if(value.len_ == 1)
-            return value;
-
-        if(value.data_[value.len_ - 1] == 0)
-        {
-            BigInt tmp(true, value.len_ - 1);
-            tmp.sgn_ = value.sgn_;
-
-            //std::cout << "jojo " << tmp.len_ << std::endl;
-
-            for(size_t i = 0; i < tmp.len_; i++)
-                tmp.data_[i] = value.data_[i];
-
-            return remove_end_zeros(tmp);
-        }
-        return value;
-    }
-
     BigInt operator+(const BigInt &other) const
     {
-        //bool abs_l_greater = (abs_val(*this) > abs_val(other));
-
-        if(sgn_ == other.sgn_)
+        if (sgn_ * other.sgn_ < 0)
         {
-            return adder(other, sgn_);
-        } else
-        {
-            if(*this > other)
-                return (*this - abs_val(other));
-            else
-                return (other - abs_val(*this));
-        }
-    }
-
-    BigInt subtractor(const BigInt& other, sign sgn) const
-    {
-        BigInt tmp(true, std::max(len_, other.len_) + 1);
-        BigInt tmp_other(true, std::max(len_, other.len_) + 1);
-
-        for(size_t i = 0; i < len_; i++)    //  *this and other to be same length
-            tmp.data_[i] = data_[i];
-        for(size_t i = len_; i < tmp.len_; i++)
-            tmp.data_[i] = 0;
-
-        for(size_t i = 0; i < other.len_; i++)  //  *this and other to be same length
-            tmp_other.data_[i] = other.data_[i];
-        for(size_t i = other.len_; i < tmp_other.len_; i++)
-            tmp_other.data_[i] = 0;
-
-        digit passing_digit = 0;
-
-        for(size_t i = 0; i < tmp.len_; i++)
-        {
-            digit part_diff = tmp.data_[i] - passing_digit - tmp_other.data_[i];
-
-            if(part_diff < 0)
+            if (other.sgn_ < 0)
             {
-                tmp.data_[i] = digit(part_diff + 10);
-                passing_digit = 1;
+                other.sgn_ = 1;
+                auto tmp_res = *this - other;
+                other.sgn_ = -1;
+
+                return tmp_res;
             } else
             {
-                tmp.data_[i] = part_diff;
-                passing_digit = 0;
+                sgn_ = 1;
+                auto tmp_res = other - *this;
+                sgn_ = -1;
+
+                return tmp_res;
             }
         }
 
-        BigInt tmp2 = remove_end_zeros(tmp);
-        tmp2.data_[tmp2.len_ - 1] -= passing_digit;
-        tmp2.sgn_ = sgn;
+        size_t end_len_ = std::max(len_, other.len_);
+        size_t min_len_ = std::min(len_, other.len_);
 
-        tmp = remove_end_zeros(tmp2);
-        return tmp;
+        auto tmp = (digit*) malloc(sizeof(digit) * end_len_ + 2);
+        int passing_digit = 0;
+
+        for (size_t i = 0; i < end_len_; ++i)
+        {
+            int a, b;
+
+            if (i < len_)
+                a = data_[i] - '0';
+            else
+                a = 0;
+
+            if (i < other.len_)
+                b = other.data_[i] - '0';
+            else
+                b = 0;
+
+            int sum = a + b + passing_digit;
+            tmp[i] = char(sum % 10) + '0';
+            passing_digit = sum / 10;
+        }
+
+        auto res = BigInt();
+        res.len_ = 0;
+        free(res.data_);
+
+        if (passing_digit > 0)
+        {
+            tmp[end_len_] = char(passing_digit) + '0';
+            tmp[end_len_ + 1] = '\0';
+
+            res.len_ = end_len_ + 1;
+        } else
+        {
+            tmp[end_len_] = '\0';
+            res.len_ = end_len_;
+        }
+
+        res.data_ = tmp;
+        res.sgn_ = sgn_;
+
+        return res;
     }
 
     BigInt operator-(const BigInt &other) const
     {
-        bool abs_l_more_or_equal = (abs_val(*this) >= abs_val(other));
+        if (sgn_ * other.sgn_ < 0)
+        {
+            if (other.sgn_ < 0)
+            {
+                other.sgn_ = 1;
+                auto tmp_res = *this + other;
+                other.sgn_ = -1;
 
-        if(abs_l_more_or_equal)
-        {
-            if(sgn_ && other.sgn_)  //  Greater_abs positive - positive => guaranteed to be pos
-                return subtractor(other, true);
-            if(sgn_ && !other.sgn_) //  Greater_abs positive - negative => guaranteed to be pos
-                return adder(abs_val(other), true);   // <=> positive + positive
-            if(!sgn_ && other.sgn_) //  Greater_abs negative - positive => guaranteed to be neg
-                return other.adder(abs_val(*this), false);   // <=> negative - negative
-            if(!sgn_ && !other.sgn_)    //  Greater_abs negative - negative => guaranteed to be neg
-                return abs_val(*this).subtractor(abs_val(other), false);
-        } else
-        {
-            if(sgn_ && other.sgn_)  //  positive - greater_abs positive => guaranteed to be neg
-                return other.subtractor(*this, false);
-            if(sgn_ && !other.sgn_) //  positive - greater_abs negative => guaranteed to be pos
-                return adder(abs_val(other), true);   // <=> positive + positive
-            if(!sgn_ && other.sgn_) //  negative - greater_abs positive => guaranteed to be neg
-                return other.adder(abs_val(*this), false);   // <=> negative - negative
-            if(!sgn_ && !other.sgn_)    //  negative - greater_abs negative => guaranteed to be pos
-                return abs_val(other).subtractor(abs_val(*this), true);
+                return tmp_res;
+            } else if (sgn_ < 0)
+            {
+                other.sgn_ = -1;
+                auto tmp_res = *this + other;
+                other.sgn_ = 1;
+
+                return tmp_res;
+            }
         }
+
+        char *first_numb = nullptr;
+        char *second_numb = nullptr;
+        int res_sgn_ = 0;
+
+        std::tie(first_numb, second_numb, res_sgn_) = this->cons(other);
+        size_t second_len_ = std::min(len_, other.len_);
+        size_t end_len_ = std::max(len_, other.len_);
+
+        auto res_data_ = (digit*) malloc(sizeof(digit) * end_len_ + 1);
+        auto res = BigInt();
+        res.len_ = 0;
+        free (res.data_);
+
+        if (res_sgn_ == 0)
+        {
+            res_data_[0] = '0';
+            res_data_[1] = '\0';
+            res.data_ = res_data_;
+            res.sgn_ = 1;
+            res.len_ = 1;
+            return res;
+        }
+
+        int passing_digit = 0;
+        for (size_t i = 0; i < end_len_; ++i)
+        {
+            int sub;
+            if (i < second_len_)
+                sub = second_numb[i] - '0';
+            else
+                sub = 0;
+            int dif = first_numb[i] - '0' - sub;
+            if (dif < 0)
+            {
+                if (passing_digit == 0)
+                    passing_digit = 10;
+                else
+                    passing_digit = 9;
+                dif += passing_digit;
+            } else if(dif > 0 && passing_digit > 0)
+            {
+                dif -= 1;
+                passing_digit = 0;
+            } else if (passing_digit != 0)
+            {
+                passing_digit = 9;
+                dif += passing_digit;
+            }
+
+            res_data_[i] = char(dif + '0');
+        }
+
+        size_t last_sig_char = end_len_ - 1;
+
+        for (last_sig_char; res_data_[last_sig_char] == '0' && last_sig_char > 0; --last_sig_char);
+        res_data_[last_sig_char + 1] = '\0';
+        res.data_ = res_data_;
+        res.sgn_ = res_sgn_;
+        res.len_ = last_sig_char + 1;
+
+        return res;
     }
+
+    std::tuple<char *, char *, int> cons(const BigInt &other) const
+    {
+        if (other.len_ > len_)
+            return std::make_tuple(other.data_, data_, sgn_ * -1);
+        else if (other.len_ < len_)
+            return std::make_tuple(data_, other.data_, sgn_);
+        for (size_t i = len_; i > 0; --i)
+        {
+            if (data_[i - 1] < other.data_[i - 1])
+                return std::make_tuple(other.data_, data_, sgn_ * -1);
+            else if (data_[i - 1] > other.data_[i - 1])
+                return std::make_tuple(data_, other.data_, sgn_);
+        }
+        return std::make_tuple(data_, other.data_, 0);
+    }
+
 
     BigInt operator-() const
     {
-        BigInt new_value = *this;
-        if(*this != 0)
-            new_value.sgn_ = !(this->sgn_);
+        if (data_[len_ - 1] == '0')
+            return BigInt(*this);
 
+        auto new_value = BigInt(*this);
+        new_value.sgn_ *= -1;
         return new_value;
     }
 
-    BigInt operator*(const BigInt& other) const //  ЗАГЛУШКА
+    BigInt operator*(const BigInt &other) const
     {
-        return other;
+        size_t end_len_ = len_ + other.len_;
+        auto res = BigInt();
+        res.len_ = 0;
+        free(res.data_);
+
+        res.data_ = (digit*) malloc(sizeof(digit) * end_len_ + 2);
+        std::fill(res.data_, res.data_ + end_len_ + 1, '0');
+        res.data_[end_len_ + 1] = '\0';
+        res.len_ = end_len_ + 1;
+
+        for (size_t i = 0; i < other.len_; ++i)
+        {
+            int curr_dig = other.data_[i] - '0';
+            auto tmp = new char[len_ + 2 + i];
+            int remind = 0;
+            for (size_t q = 0; q < len_ + 1 + i; ++q)
+                tmp[q] = '0';
+
+            for (size_t j = i; j < len_ + i; ++j)
+            {
+                int mul = (data_[j - i] - '0') * curr_dig + remind;
+                auto tmp_dig = char(mul % 10 + '0');
+                remind = mul / 10;
+                tmp[j] = tmp_dig;
+            }
+            if (remind > 0)
+                tmp[len_ + i] = char(remind + '0');
+
+            auto tmp_obj = BigInt();
+            tmp_obj.len_ = 0;
+            free(tmp_obj.data_);
+            tmp_obj.data_ = tmp;
+            tmp_obj.len_ = len_ + i + 1;
+            tmp_obj.data_[tmp_obj.len_] = '\0';
+            res = res + tmp_obj;
+        }
+        for (res.len_; res.data_[res.len_ - 1] == '0' && res.len_ > 1; --res.len_);
+        res.data_[res.len_] = '\0';
+        if (res.data_[res.len_ - 1] == '0')
+            res.sgn_ = 1;
+        else
+            res.sgn_ = sgn_ * other.sgn_;
+
+        return res;
     }
 
-    BigInt operator/(const BigInt& other) const //  ЗАГЛУШКА
+    BigInt operator/(const BigInt &other) const
     {
-        return other;
+
+        if (len_ < other.len_ || other.data_[other.len_ - 1] == '0')
+            return BigInt(0);
+
+        int this_sgn_ = sgn_;
+        int other_sgn_ = other.sgn_;
+        sgn_ = 1;
+        other.sgn_ = 1;
+
+        if (*this < other)
+        {
+            sgn_ = this_sgn_;
+            other.sgn_ = other_sgn_;
+            return BigInt(0);
+        }
+
+        auto curr_divider = BigInt(0);
+        auto res = BigInt();
+        res.len_ = 0;
+        free(res.data_);
+        res.data_ = new char[len_ + 1];
+
+        size_t curr_not_taken = len_;
+        bool fin_flag = false;
+        bool first_time = true;
+
+        while(true)
+        {
+            int counter = 0;
+            while (num(curr_divider, other) == -1)
+            {
+                if (curr_not_taken == 0)
+                {
+                    fin_flag = true;
+                    break;
+                }
+                if (counter >= 1 && !first_time)
+                {
+                    res.data_[res.len_] = '0';
+                    res.len_++;
+                }
+                int curr_dig = data_[curr_not_taken - 1] - '0';
+                curr_divider = curr_divider * 10;
+                curr_divider = curr_divider + curr_dig;
+
+                --curr_not_taken;
+                counter++;
+            }
+            first_time = false;
+            if (fin_flag)
+            {
+                if (counter > 0)
+                {
+                    res.data_[res.len_] = '0';
+                    res.len_++;
+                }
+                break;
+            }
+
+            auto curr_mul = BigInt(0);
+            int curr_numb = 0;
+            while (num(curr_divider, curr_mul) >= 0)
+            {
+                curr_mul = curr_mul + other;
+                ++curr_numb;
+            }
+            curr_mul = curr_mul - other;
+            --curr_numb;
+
+            curr_divider = curr_divider - curr_mul;
+
+            res.data_[res.len_] = char(curr_numb + '0');
+            res.len_++;
+        }
+        std::reverse(res.data_, res.data_ + res.len_);
+        res.data_[res.len_] = '\0';
+        res.sgn_ = other_sgn_ * this_sgn_;
+
+        other.sgn_ = other_sgn_;
+        sgn_ = this_sgn_;
+
+        return res;
+    }
+
+    static int num(const BigInt &first, const BigInt &second)
+    {
+        if (first.len_ > second.len_)
+            return 1;
+        else if (first.len_ < second.len_)
+            return -1;
+        for (size_t i = first.len_; i > 0; --i)
+        {
+            if (first.data_[i - 1] < second.data_[i - 1])
+                return -1;
+            else if (first.data_[i - 1] > second.data_[i - 1])
+                return 1;
+        }
+        return 0;
     }
 
     friend std::ostream& operator<<(std::ostream& out, const BigInt& value);
@@ -333,9 +485,14 @@ public:
 
 std::ostream& operator<<(std::ostream& out, const BigInt& value)
 {
-    if(!value.sgn_ && value != (BigInt(-10) - BigInt(-10))) // avoiding -0
+    auto buf = (char*) malloc(sizeof(char) * value.len_ + 1);
+    std::reverse_copy(value.data_, value.data_ + value.len_, buf);
+    if (value.sgn_ < 0)
         out << '-';
-    for(size_t i = value.len_; i > 0; i--)
-        out << int(value.data_[i - 1]);
+
+    buf[value.len_] = '\0';
+    out << buf;
+
+    free(buf);
     return out;
 }
