@@ -1,3 +1,5 @@
+#include <algorithm>
+
 class BigInt
 {
     using Character = signed char;
@@ -85,13 +87,13 @@ BigInt::BigInt(const BigInt &other)
     }
 }
 
-BigInt::BigInt(BigInt &&other)
+BigInt::BigInt(BigInt &&moved)
 {
-    is_true = other.is_true;
-    sec_size = other.sec_size;
-    max_ = other.max_;
-    array = other.array;
-    other.array = nullptr;
+    is_true = moved.is_true;
+    sec_size = moved.sec_size;
+    max_ = moved.max_;
+    array = std::move(moved.array);
+    moved.array = nullptr;
 }
 
 bool operator>(const BigInt &first, const BigInt &second)
@@ -366,7 +368,6 @@ void BigInt::norm_2()
         ++i;
     }
 }
-
 
 
 
