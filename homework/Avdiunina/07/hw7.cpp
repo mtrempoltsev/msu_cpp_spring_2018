@@ -197,8 +197,8 @@ public:
             pointer newData = alloc_.allocate(n);
             for (int i = 0; i < size_; ++i)
             {
+                alloc_.construct(newData + i, data_[i]);
                 alloc_.destroy(newData + i);
-                newData[i] = data_[i];
             }
             std::swap(data_, newData);
             alloc_.deallocate(newData, capacity_);
