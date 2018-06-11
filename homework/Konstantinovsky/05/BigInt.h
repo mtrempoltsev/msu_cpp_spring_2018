@@ -5,6 +5,8 @@ private:
 	
 	bool is_negative = false;
 	size_t len = 64;
+	char* number;
+	size_t index = 0;
 	
 	char binSearch(const BigInt& first, const BigInt& second) const;
 	void push_back(char a);
@@ -13,9 +15,6 @@ private:
 	void allocate();
 
 public:
-	char* number;
-	size_t index = 0;
-
 	BigInt();
 	BigInt(const BigInt& number);
 	BigInt(BigInt&& number);
