@@ -93,7 +93,11 @@ BigInt::BigInt(BigInt &&moved)
     sec_size = moved.sec_size;
     max_ = moved.max_;
     array = std::move(moved.array);
+
     moved.array = nullptr;
+    moved.is_true = 1;
+    moved.sec_size = 0;
+    moved.max_ = 0;
 }
 
 bool operator>(const BigInt &first, const BigInt &second)
