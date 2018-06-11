@@ -213,14 +213,18 @@ BigInt &BigInt::operator=(const BigInt &other)
     return *this;
 }
 
-BigInt &BigInt::operator=(BigInt &&other)
+BigInt &BigInt::operator=(BigInt &&moved)
 {
-    max_ = other.max_;
-    is_true = other.is_true;
-    sec_size = other.sec_size;
-    delete[] array;
-    array = other.array;
-    other.array = nullptr;
+    is_true = moved.is_true;
+    sec_size = moved.sec_size;
+    max_ = moved.max_;
+    array = std::move(moved.array);
+
+    moved.array = nullptr;
+    moved.is_true = 1;
+    moved.sec_size = 0;
+    moved.max_ = 0;
+
     return *this;
 }
 
