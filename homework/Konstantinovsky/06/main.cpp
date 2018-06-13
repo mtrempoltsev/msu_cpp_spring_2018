@@ -12,15 +12,10 @@ int main(int argc, char *argv[]) {
 		Calculator<int> calc;
 		std::cout << calc.calculate(argv[1]) << std::endl;
 	}
-	catch (std::runtime_error err) {
-		std::cout << err.what() << std::endl;
-
-		return  -1;
-	}
 	catch (...) {
 		std::cout << "error" << std::endl;
 
-		return -2;
+		return 1;
 	}
 	
 
