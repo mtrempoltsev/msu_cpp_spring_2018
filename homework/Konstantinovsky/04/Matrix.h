@@ -15,7 +15,7 @@ private:
 			this->column = column;
 		};
 
-		int &operator[](int i) const {
+		int& operator[](int i) const {
 			if (i < len && i >= 0) {
 				return column[i];
 			}
@@ -63,7 +63,7 @@ public:
 	}
 
 
-	int& getNumber(int i, int j) const {
+	const int& getNumber(int i, int j) const {
 		return m[i][j];
 	}
 
@@ -84,27 +84,15 @@ public:
 
 
 	bool operator != (const Matrix &m2) const {
-		if (num_rows != m2.getRows() || num_cols != m2.getColumns()) {
-			return true;
-		}
-		else {
-			for (int i = 0; i < num_rows; i++) {
-				for (int j = 0; j < num_cols; j++) {
-					if (m[i][j] != m2.m[i][j]) {
-						return true;
-					}
-				}
-			}
-		}
-
-		return false;
+		return !(*this == m2);
 	}
 
-	void operator *= (int a) {
+	Matrix& operator *= (int a) {
 		for (int i = 0; i < num_cols; i++) {
 			for (int j = 0; j < num_rows; j++) {
 				m[i][j] *= a;
 			}
 		}
+		return *this;
 	}
 };
