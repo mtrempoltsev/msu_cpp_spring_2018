@@ -15,7 +15,6 @@ private:
 public:
 	BigInt();
 	BigInt(const BigInt& a);
-	BigInt(BigInt&& a);
 	BigInt(int64_t a);
 	~BigInt();
 
@@ -23,7 +22,6 @@ public:
 	BigInt abs() const;
 
 	BigInt& operator=(const BigInt& a);
-	BigInt& operator=(BigInt&& a);
 
 	BigInt operator+(const BigInt& a) const;
 	BigInt operator-(const BigInt& a) const;
@@ -76,14 +74,6 @@ BigInt::BigInt(const BigInt& a) {
 	}
 }
 
-BigInt::BigInt(BigInt&& a) {
-	index = a.index;
-	minus = a.minus;
-	len = a.len;
-	number = a.number;
-	a.number = nullptr;
-}
-
 void BigInt::push_back(char a) {
 	number[index] = a;
 	++index;
@@ -120,23 +110,6 @@ void BigInt::mem() {
 
 	delete[] number;
 	number = tmp;
-}
-
-BigInt& BigInt::operator=(BigInt&& a) {
-	if (this == &a) {
-		return *this;
-	}
-		
-	index = a.index;
-	minus = a.minus;
-	len = a.len;
-
-	delete[] number;
-
-	number = a.number;
-	a.number = nullptr;
-
-	return *this;
 }
 
 BigInt& BigInt::operator=(const BigInt& a) {
