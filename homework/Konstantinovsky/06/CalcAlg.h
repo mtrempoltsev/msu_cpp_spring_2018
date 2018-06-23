@@ -12,7 +12,7 @@ class Calculator {
 private:
 	std::string expression = "";
 	int current_num_index = 0;
-	T getNumber();
+	int getNumber();
 	T calcComp();
 	T calcSum();
 
@@ -34,10 +34,10 @@ T Calculator<T>::calculate(const std::string &expression_) {
 }
 
 template <class T>
-T Calculator<T>::getNumber() {
+int Calculator<T>::getNumber() {
 	size_t tmp = 0;
 
-	T ans = std::stoi(expression.data() + current_num_index, &tmp);
+	int ans = std::stoi(expression.data() + current_num_index, &tmp);
 	current_num_index = current_num_index + tmp;
 	return ans;
 }
@@ -49,12 +49,12 @@ T Calculator<T>::calcComp() {
 
 	while (current_num_index < expression.length() && (expression[current_num_index] == '*' || expression[current_num_index] == '/')) {
 
-		++current_num_index;
-
-		if (expression[current_num_index-1] == '*') {
+		if (expression[current_num_index] == '*') {
+			++current_num_index;
 			value = value * getNumber();
 		}
-		else if (expression[current_num_index-1] == '/') {
+		else if (expression[current_num_index] == '/') {
+			++current_num_index;
 			T number = getNumber();
 			if (number == T(0)) {
 				throw division_by_zero();
@@ -73,12 +73,12 @@ T Calculator<T>::calcSum() {
 
 	while (current_num_index < expression.length() && (expression[current_num_index] == '+' || expression[current_num_index] == '-')) {
 		
-		++current_num_index;
-
-		if (expression[current_num_index-1] == '+') {
+		if (expression[current_num_index] == '+') {
+			++current_num_index;
 			value = value + calcComp();
 		}
-		else if (expression[current_num_index-1] == '-') {
+		else if (expression[current_num_index] == '-') {
+			++current_num_index;
 			value = value - calcComp();
 		}
 	}
