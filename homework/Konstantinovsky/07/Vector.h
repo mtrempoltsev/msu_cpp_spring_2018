@@ -257,15 +257,7 @@ public:
 		alloc.construct(buffer + lenght, val);
 		lenght++;
 	}
-/*
-	void push_back(T&& val) {
-		if (lenght == cap) {
-			reserve(cap * 2);
-		}
-		alloc.construct(buffer + lenght, std::move(val));
-		lenght++;
-	}
-*/
+
 	void pop_back() { resize(lenght - 1); }
 	void clear() { resize(0); }
 	size_t capacity() { return cap; }
