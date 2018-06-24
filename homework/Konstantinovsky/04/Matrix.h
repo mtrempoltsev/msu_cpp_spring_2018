@@ -15,7 +15,7 @@ private:
 			this->column = column;
 		};
 
-		int& operator[](int i) {
+		int& operator[](const int i) {
 			if (i < len && i >= 0) {
 				return column[i];
 			}
@@ -24,7 +24,7 @@ private:
 			}
 		}
 		
-		int operator[](int i) const {
+		int operator[](const int i) const {
 			if (i < len && i >= 0) {
 				return column[i];
 			}
@@ -61,7 +61,7 @@ public:
 		return num_cols;
 	}
 
-	const Column operator[](int i) const {
+	const Column operator[](const int i) const {
 		if (i < num_cols && i >=0) {
 			Column arr(m[i], num_rows);
 			return arr;
@@ -71,7 +71,7 @@ public:
 		}
 	}
 
-	Column operator[](int i) {
+	Column operator[](const int i) {
 		if (i < num_cols && i >=0) {
 			Column arr(m[i], num_rows);
 			return arr;
