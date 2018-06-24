@@ -15,7 +15,16 @@ private:
 			this->column = column;
 		};
 
-		int& operator[](int i) const {
+		int& operator[](int i) {
+			if (i < len && i >= 0) {
+				return column[i];
+			}
+			else {
+				throw std::out_of_range("");
+			}
+		}
+		
+		int operator[](int i) const {
 			if (i < len && i >= 0) {
 				return column[i];
 			}
@@ -62,6 +71,15 @@ public:
 		}
 	}
 
+	Column operator[](int i) {
+		if (i < num_cols && i >=0) {
+			Column arr(m[i], num_rows);
+			return arr;
+		}
+		else {
+			throw std::out_of_range("");
+		}
+	}
 
 	const int& getNumber(int i, int j) const {
 		return m[i][j];
