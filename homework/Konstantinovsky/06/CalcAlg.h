@@ -2,6 +2,8 @@
 #include <string>
 #include <stdexcept>
 #include <algorithm>
+#include <cctype>
+#include <sstream>
 
 class division_by_zero : public std::exception {};
 class wrong_operation : public std::exception {};
@@ -12,7 +14,7 @@ class Calculator {
 private:
 	std::string expression = "";
 	int current_num_index = 0;
-	int getNumber();
+	T getNumber();
 	T calcComp();
 	T calcSum();
 
@@ -34,11 +36,47 @@ T Calculator<T>::calculate(const std::string &expression_) {
 }
 
 template <class T>
-int Calculator<T>::getNumber() {
+T Calculator<T>::getNumber() {
 	size_t tmp = 0;
+	T ans;
+	std::stringstream s;
+	int flag = 0, i = 0;
+	bool negative = false;
+	std::string str = expression.data() + current_num_index;
 
-	int ans = std::stoi(expression.data() + current_num_index, &tmp);
-	current_num_index = current_num_index + tmp;
+	if (str[0] == '-') {
+		negative = true;
+		str = str.substr(1);
+	}
+
+	for (i = 0; i < str.length(); i++) {
+		if (!isdigit(str[i])) {
+			if (str[i] == '.' && flag++ == 0) {
+				continue;
+			}
+			else if (str[i] == '+' || str[i] == '-' || str[i] == '*' || str[i] == '/') {
+				break;
+			}
+			else {
+				throw std::runtime_error("");
+			}
+		}
+	}
+
+	if (i == 0) {
+		throw std::runtime_error("");
+	}
+
+	s << str.substr(0, i);
+	s >> ans;
+
+	if (negative) {
+		++i;
+		ans = (-1) * ans;
+	}
+	
+	current_num_index = current_num_index + i;
+
 	return ans;
 }
 
